@@ -1,0 +1,28 @@
+.hideit{ display: none}
+.tebal, .bold{font-weight: bold}
+.tengah, .center{text-align: center}
+.biru{color: blue}
+.green, .ijo, .hijau{color: green}
+.red, .merah{color: red}
+.blue, .biru{color: blue}
+.pink{color: pink}
+.yellow,.kuning{color: yellow}
+.purple,.ungu{color: purple}
+
+
+.help{
+  cursor: pointer;
+  vertical-align: super;
+  opacity: 0.7;
+}
+.help:hover{
+  opacity: 1;
+  border: solid 1px white;
+}
+.help2{
+  cursor: pointer;
+  border: solid 1px white;
+}
+.help2:hover{
+  border: solid 2px yellow;
+}
