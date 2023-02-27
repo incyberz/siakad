@@ -31,21 +31,6 @@ if ($cn -> connect_errno) {
 
 
 # ============================================================
-# IS IDENTITY
-# ============================================================
-$nama_si 	= "SIAKAD STMIK IKMI"; 
-$judul_menu = "SIAKAD IKMI"; 
-$lembaga 	= "STMIK IKMI";
-$title 		= "$judul_menu :: $lembaga"; // muncul di title
-$nama_author = "Iin Sholihin";
-$tahun_release = 2021; 
-$dev_kontak = '';
- 
-$dev_name = "Iin Sholihin, M.Kom"; 
-
-
-
-# ============================================================
 # DATE AND TIMEZONE
 # ============================================================
 date_default_timezone_set("Asia/Jakarta");
@@ -63,6 +48,20 @@ $nama_hari = ['Ahad','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
 $nama_bulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
 $hari_ini = $nama_hari[date('w')].', '.date('d').' '.$nama_bulan[intval(date('m'))-1].' '.date('Y');
 
+
+
+# ============================================================
+# IS IDENTITY
+# ============================================================
+$nama_si 	= "SIAKAD STMIK IKMI"; 
+$judul_menu = "SIAKAD IKMI"; 
+$lembaga 	= "STMIK IKMI";
+$title 		= "$judul_menu :: $lembaga"; // muncul di title
+$nama_author = "Iin Sholihin";
+$tahun_release = 2021; 
+$dev_kontak = '';
+ 
+$dev_name = "Iin Sholihin, M.Kom"; 
 
 
 
@@ -107,7 +106,16 @@ function artikan_kode($nama_kode,$nilai){
   }
 }
 
+function go($a){
+  $b = strtolower(str_replace(' ','_',$a));
+  $c = ucwords(strtolower(str_replace('_',' ',$a)));
+  return " | <a href='?$b'>$c</a>";
+}
 
+function erid($a)
+{
+    return "Error, index $a belum terdefinisi.";
+}
 
 function durasi_hari($a,$b){
   if (intval($a) == 0 || intval($b) == 0) {

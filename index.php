@@ -1,9 +1,11 @@
 <?php 
+# ========================================================
+# SIAKAD PUBLIC INDEX
+# ========================================================
 session_start();
 $dm = 1;
 
 $cusername = '';
-
 $cnama_pegawai = "Pengunjung";
 $cjenis_user = "Pengunjung";
 $cadmin_level = 0;
