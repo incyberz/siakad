@@ -1,0 +1,26 @@
+<?php
+$rmaster = [
+'pt',
+'fakultas',
+'jenjang',
+'prodi',
+'angkatan',
+'kalender',
+'semester',
+'bk',
+'mk',
+'dosen',
+'output_pmb',
+'jalur',
+'kelas',
+'shift_kelas',
+'kurikulum',
+'kurikulum_semester',
+'kurikulum_semester_mk',
+'jadwal',
+'peserta_kelas',
+'ruang',
+'sesi_kuliah',
+'presensi',
+'mhs'
+];
