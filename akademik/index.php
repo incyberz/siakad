@@ -4,31 +4,22 @@
 # ========================================================
 session_start();
 include "../config.php";
-$insho_styles = '../../insho_styles.php';
-if(file_exists($insho_styles)){
-
-}
-
-include $insho_styles;
-
-if(1){
-  $cusername = "insho";
-  $cnama_pegawai = "Iin Sholihin";
-  $cjenis_user = "Staf Akademik";
-  $cadmin_level = 6;
-  $is_login = 1;
-  $img_pegawai = "img/pegawai/admin.jpg";
-}
-
 
 
 # ========================================================
-# SIAKAD RULE
+# INCLUDE INSHO STYLES
 # ========================================================
-$is_ready = 0;
-// include 'install.php';
+include 'include/insho_styles.php';
 
+# ========================================================
+# INCLUDE LOGIN PETUGAS
+# ========================================================
+include 'include/data_login_petugas.php';
 
+# ========================================================
+# SIAKAD INSTALL HISTORY
+# ========================================================
+include 'include/install_history.php';
 
 # ========================================================
 # ROUTING < AFTER INSTALL READY
@@ -36,33 +27,17 @@ $is_ready = 0;
 include 'routing_akd.php';
 
 
-
-
-
-
-
-
-
-
-
 ?>
-
-
-
-
-
-
-
-<!-- ========================================================================== -->
+<!-- ======================================================== -->
 <!-- HTML BEGIN -->
-<!-- ========================================================================== -->
+<!-- ======================================================== -->
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="PMB Admin STMIK IKMI Cirebon">
+  <meta name="description" content="SIAKAD Admin STMIK IKMI Cirebon">
   <meta name="author" content="Iin Sholihin">
   <meta name="keyword" content="SIAKAD, Sistem Informasi, akademik, Dashboard, Admin, STMIK, IKMI, Cirebon, Pendaftaran, Kuliah">
   <link rel="shortcut icon" href="img/icons/favicon.png">
