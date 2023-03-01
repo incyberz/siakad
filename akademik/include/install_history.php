@@ -1,3 +1,3 @@
 <?php
-$is_ready = 0;
+$is_ready = 1;
 // include 'install.php';

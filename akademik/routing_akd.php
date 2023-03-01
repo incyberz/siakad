@@ -9,6 +9,14 @@ if (!strpos($a, "&")) $a.="&";
 $b = explode("?", $a);
 $c = explode("&", $b[1]);
 
+switch ($c[0]){
+  case '':
+  case 'dashboard': $konten = 'modul/dashboard/dashboard.php';break;
+  case 'master': $konten = 'modul/master.php';break;
+  case 'kurikulum': $konten = 'modul/kurikulum/kurikulum.php';break;
+}
+
+/*
 # ========================================================
 # MENU CONTROLLERS 
 # ========================================================
@@ -67,4 +75,4 @@ if(file_exists($file_modul)){
   }
 }
 
-
+*/
