@@ -7,6 +7,7 @@
 # FORM ACTION HANDLER
 # ==============================================================
 include 'manage_form_handler.php';
+include 'manage_pesan_handler.php';
 
 
 # ==============================================================
@@ -155,7 +156,7 @@ if($page==''){
 
         $ATTR = "name='$nama_kolom' id='$nama_kolom' $disabled $required";
 
-        if($Key[$j]=='MUL'){
+        if($Key[$j]=='MUL' and $aksi=='update'){
           // echo "<hr>Key[$j] = $Key[$j] = $nama_kolom <hr>";
           # ========================================================
           # HANDLER FOREIGN KEY
@@ -172,7 +173,6 @@ if($page==''){
           if($tabel_select=='homebase') $tabel_select='prodi';
           if($nama_kolom=='jenjang') {$kolom_acuan_select='jenjang';}
 
-
           $s2 = "DESCRIBE tb_$tabel_select";
           $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
           $k=0;
@@ -181,11 +181,9 @@ if($page==''){
             $k++;
           }
           $kolom_isi_select = in_array('nama',$Field2) ? 'nama' : 'id';
-
           $defid = $d[$nama_kolom];
 
-
-          $script = "
+          echo "
           <script>
             $(function(){
               $.ajax({
@@ -201,9 +199,11 @@ if($page==''){
           </script>
           ";
 
-          echo $script;
           $input = "<select class='form-control' $ATTR ></select>";
-          $input .= "<div class='input-keterangan'>Opsi : <a href='?manage&p=$tabel_select' class='proper'>manage $tabel_select</a></div>";
+
+          $opsi = "<div class='input-keterangan'>Opsi : <a href='?manage&p=$tabel_select' class='proper'>manage $tabel_select</a></div>";
+          $input .= $opsi;
+
         }else{
 
           # ========================================================
@@ -258,7 +258,7 @@ if($page==''){
   $tr = $tr=='' ? "<tr><td class='red'>Belum ada data $page.</td></tr>" : $tr;
   $tb = "<table class='table table-striped'><thead>$th</thead>$tr</table>";
 
-  $btn_tambah = $aksi=='tambah'?'':"<div style='padding:10px'><a href='?manage&p=$page&aksi=tambah' class='btn btn-primary'>Tambah</a></div>";
+  $btn_tambah = $aksi!=''?'':"<div style='padding:10px'><a href='?manage&p=$page&aksi=tambah' class='btn btn-primary'>Tambah</a></div>";
 
   echo "
   <form method=post>

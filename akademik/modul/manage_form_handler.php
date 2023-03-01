@@ -13,16 +13,22 @@ if(isset($_POST['btn_update']) || isset($_POST['btn_hapus']) || isset($_POST['bt
   }elseif(isset($_POST['btn_tambah'])){
     $aksi = 'tambah';
 
-    $s = "INSERT INTO tb_$tabel 
-    () VALUES 
-    ()
-    ";
+    $koloms = '__';
+    $isis = '__';
+    foreach($_POST as $a=>$x){
+      if($a=='tabel' || $a=='kolom_acuan' || $a=='id' || $a=='btn_tambah') continue;
+      $isi = $x=='' ? 'NULL' : "'$x'";
+      $koloms .= ",$a";
+      $isis .= ",$isi";
+    }
+    $koloms = str_replace('__,','',$koloms);
+    $isis = str_replace('__,','',$isis);
 
-    echo "<pre>";
-    echo "$s<hr>";
-    var_dump($_POST);
-    echo "</pre>";
-    die();
+    $s = "INSERT INTO tb_$tabel ($koloms) VALUES ($isis)";
+    $q = mysqli_query($cn, $s)or die(mysqli_error($cn));
+
+    echo "<script>location.replace('?manage&p=$tabel&pesan=data $tabel baru berhasil ditambahkan')</script>";
+    exit;
 
   }else{
     die('POST handler tanpa tombol aksi.');
