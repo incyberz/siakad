@@ -7,28 +7,35 @@ if(isset($_POST['btn_update']) || isset($_POST['btn_hapus']) || isset($_POST['bt
   if(isset($_POST['btn_hapus'])){
     $aksi = 'hapus';
     $s = "DELETE from tb_$tabel WHERE $kolom_acuan = '$id'";
-  }elseif(isset($_POST['btn_update'])){
-    $aksi = 'update';
-    die('POST update ready.');
-  }elseif(isset($_POST['btn_tambah'])){
-    $aksi = 'tambah';
+  }elseif(isset($_POST['btn_tambah']) || isset($_POST['btn_update'])){
+    $aksi = isset($_POST['btn_tambah']) ? 'tambah' : 'update';
 
     $koloms = '__';
     $isis = '__';
+    $sets = '__';
     foreach($_POST as $a=>$x){
-      if($a=='tabel' || $a=='kolom_acuan' || $a=='id' || $a=='btn_tambah') continue;
+      if($a=='tabel' || $a=='kolom_acuan' || $a=='id' || $a=='btn_tambah' || $a=='btn_update') continue;
       $isi = $x=='' ? 'NULL' : "'$x'";
       $koloms .= ",$a";
       $isis .= ",$isi";
+      $sets .= ",$a=$isi";
     }
     $koloms = str_replace('__,','',$koloms);
     $isis = str_replace('__,','',$isis);
+    $sets = str_replace('__,','',$sets);
 
-    $s = "INSERT INTO tb_$tabel ($koloms) VALUES ($isis)";
+    $s = $aksi=='tambah' 
+    ? "INSERT INTO tb_$tabel ($koloms) VALUES ($isis)"
+    : "UPDATE tb_$tabel SET $sets WHERE $kolom_acuan = '$id'";
+    ;
+
     $q = mysqli_query($cn, $s)or die(mysqli_error($cn));
 
-    echo "<script>location.replace('?manage&p=$tabel&pesan=data $tabel baru berhasil ditambahkan')</script>";
-    exit;
+    $pesan = $aksi=='tambah'
+    ? "<script>location.replace('?manage&p=$tabel&pesan=Data $tabel baru berhasil ditambahkan')</script>"
+    : "<script>location.replace('?manage&p=$tabel&pesan=Update data $tabel berhasil.')</script>"
+    ;
+    die($pesan);
 
   }else{
     die('POST handler tanpa tombol aksi.');
