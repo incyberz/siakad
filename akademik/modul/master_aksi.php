@@ -42,7 +42,9 @@ for ($j=0; $j < count($Field); $j++) {
     if($tabel_select=='kaprodi') $tabel_select='dosen';
     if($tabel_select=='homebase') $tabel_select='prodi';
     if($tabel_select=='pmb') $tabel_select='output_pmb';
+    if($tabel_select=='is_publish') $tabel_select='status_mk';
     if($nama_kolom=='jenjang') {$kolom_acuan_select='jenjang';}
+    if($nama_kolom=='kelas') {$kolom_acuan_select='kelas';}
     if($nama_kolom=='kelas') {$kolom_acuan_select='kelas';}
 
     $s2 = "DESCRIBE tb_$tabel_select";
@@ -64,7 +66,7 @@ for ($j=0; $j < count($Field); $j++) {
         $.ajax({
           url:'ajax_akademik/ajax_get_option.php?tabel=$tabel_select&id=$kolom_acuan_select&val=$kolom_isi_select&defid=$defid&is_null=$Null[$j]',
           success: function(a){
-            console.log(a);
+            // console.log(a);
             $('#$nama_kolom').empty();
             $('#$nama_kolom').append(a);
             // $('#nama').val(a);

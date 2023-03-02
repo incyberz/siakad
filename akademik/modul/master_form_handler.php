@@ -41,6 +41,6 @@ if(isset($_POST['btn_update']) || isset($_POST['btn_hapus']) || isset($_POST['bt
     die('POST handler tanpa tombol aksi.');
   }
 
-  // $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
+  $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   die("<div class='alert alert-success'>Proses $aksi berhasil.<hr><a href='?master&p=$tabel' class='upper'>Back to List $tabel</a></div>");
 }

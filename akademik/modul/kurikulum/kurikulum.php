@@ -88,7 +88,9 @@ while ($d=mysqli_fetch_assoc($q)) {
   $s2 = "SELECT *   
   FROM tb_mk a 
   JOIN tb_kurikulum_mk b ON a.id=b.id_mk 
-  WHERE b.id='$d[id_semester]'";
+  JOIN tb_semester c ON b.id_semester=c.id  
+  WHERE c.id='$d[id_semester]'";
+  // echo "<hr>$s2";
   $q2 = mysqli_query($cn, $s2)or die(mysqli_error($cn));
 
   $tr = '';
@@ -129,7 +131,7 @@ while ($d=mysqli_fetch_assoc($q)) {
         
       </table>
       <div class='text-right'>
-        <button class='btn btn-primary btn-sm btn_aksi' id='tambah__mk__$d[id_semester]'>Tambah MK</button>
+        <button class='btn btn-primary btn-sm btn_aksi' id='assign__mk__$d[id_semester]'>Tambah MK</button>
         <button class='btn btn-danger btn-sm btn_aksi' id='hapus__semester__$d[id_semester]'>Hapus Semester</button>
       </div>
     </div>
@@ -204,8 +206,21 @@ echo $kurikulum;
         // let y = confirm(`Ingin menambah ${tabel.toUpperCase()} Baru?`);
         // if(!y) return;
         
-        let koloms = 'id_kurikulum,nomor,keterangan';
-        let isis = `'${id}','${$('#max_no_semester').text()}','${$('#keterangan_kurikulum').text()}'`;
+        let koloms = null;
+        let isis = null;
+
+        if(tabel=='semester'){
+          koloms = 'id_kurikulum,nomor,keterangan';
+          isis = `'${id}','${$('#max_no_semester').text()}','${$('#keterangan_kurikulum').text()}'`;
+        }
+
+        if(tabel=='mk'){
+          let kode = Math.random() % 10000;
+          let nama = Math.random() % 10000;
+          let singkatan = Math.random() % 10000;
+          koloms = 'kode,nama,singkatan,bobot_teori,bobot_praktik,is_publish';
+          isis = `'AAA-NEW${kode}','AAA-NEW${nama}','AAA-NEW${singkatan}',0,0,-1`;
+        }
 
         let link_ajax = `ajax_global/ajax_global_insert.php?tabel=tb_${tabel}&koloms=${koloms}&isis=${isis}`;
         $.ajax({
@@ -221,6 +236,40 @@ echo $kurikulum;
           }
         })        
       }
+
+      if(aksi=='assign'){
+        // let y = confirm(`Ingin menambah ${tabel.toUpperCase()} Baru?`);
+        // if(!y) return;
+        
+        let koloms = null;
+        let isis = null;
+
+        if(tabel=='mk'){
+          let kode = Math.random() % 10000;
+          let nama = Math.random() % 10000;
+          let singkatan = Math.random() % 10000;
+          koloms = 'kode,nama,singkatan,bobot_teori,bobot_praktik,is_publish';
+          isis = `'AAA-NEW${kode}','AAA-NEW${nama}','AAA-NEW${singkatan}',0,0,-1`;
+        }
+
+        let tabel2 = 'kurikulum_mk'; //assign to tb_kurikulum_mk
+        let kolom2 = 'id_semester'; //foreign key column in tb_kurikulum_mk
+        let id2 = id; //id_semester
+
+        let link_ajax = `ajax_global/ajax_global_insert_and_assign.php?tabel=${tabel}&koloms=${koloms}&isis=${isis}&tabel2=${tabel2}&id2=${id2}&kolom2=${kolom2}`;
+        $.ajax({
+          url:link_ajax,
+          success:function(a){
+            if(a.trim()=='sukses'){
+              // alert('Proses tambah sukses.');
+              location.reload();
+            }else{
+              // alert('Gagal menambah data.');
+              console.log(a);
+            }
+          }
+        })        
+      }      
     }) // end btn_aksi
 
     $(".editable").click(function(){
