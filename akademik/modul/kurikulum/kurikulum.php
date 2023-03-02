@@ -84,28 +84,39 @@ while ($d=mysqli_fetch_assoc($q)) {
   $i++; 
   array_push($rnomor_semester,$d['no_semester']);
 
+  # ==============================================================
+  # LIST MATA KULIAH
+  # ==============================================================
+  $s2 = "SELECT 
+  a.id as id_mk,
+  a.kode as kode_mk,
+  a.nama as nama_mk,
+  a.bobot_teori,
+  a.bobot_praktik,
+  a.prasyarat 
 
-  $s2 = "SELECT *   
   FROM tb_mk a 
   JOIN tb_kurikulum_mk b ON a.id=b.id_mk 
   JOIN tb_semester c ON b.id_semester=c.id  
   WHERE c.id='$d[id_semester]'";
   // echo "<hr>$s2";
   $q2 = mysqli_query($cn, $s2)or die(mysqli_error($cn));
+  $jumlah_mk = mysqli_num_rows($q2);
+  echo "<div class=debug>jumlah_mk__$d[id_semester]: <span id='jumlah_mk__$d[id_semester]'>$jumlah_mk</span></div>";
 
   $tr = '';
   $j=0;
   while ($d2=mysqli_fetch_assoc($q2)) {
     $j++;
     $tr.="
-    <tr>
+    <tr id='tr__$d2[id_mk]'>
       <td>$j</td>
-      <td class='editable' id='kode__$d2[id]'>$d2[kode]</td>
-      <td class='editable' id='kode__$d2[id]'>$d2[nama]</td>
-      <td class='editable' id='kode__$d2[id]'>$d2[bobot_teori]</td>
-      <td class='editable' id='kode__$d2[id]'>$d2[bobot_praktik]</td>
-      <td class='editable' id='kode__$d2[id]'>$d2[prasyarat]</td>
-      <td class='deletable btn_aksi' id='hapus__mk__$d2[id]'>Hapus</td>
+      <td class='editable' id='kode__$d2[id_mk]'>$d2[kode_mk]</td>
+      <td class='editable' id='kode__$d2[id_mk]'>$d2[nama_mk]</td>
+      <td class='editable' id='kode__$d2[id_mk]'>$d2[bobot_teori]</td>
+      <td class='editable' id='kode__$d2[id_mk]'>$d2[bobot_praktik]</td>
+      <td class='editable' id='kode__$d2[id_mk]'>$d2[prasyarat]</td>
+      <td class='deletable btn_aksi' id='hapus__mk__$d2[id_mk]'>Hapus</td>
     </tr>    
     ";
   }
@@ -181,18 +192,53 @@ echo $kurikulum;
 
       // alert(`${aksi} ${tabel} ${id} `);return;
 
-      if(aksi=='hapus' || aksi=='delete'){
-        let y = confirm('Yakin untuk menghapus data ini?');
-        if(!y) return;
+      if(aksi=='hapus' && tabel=='semester'){
+        let jumlah_mk = $('#jumlah_mk__'+id).text();
+        if(parseInt(jumlah_mk)>0){
+          alert('Untuk menghapus semester, silahkan hapus dahulu Data MK semester ini!');
+          return;
+        }
+      }
 
-        let link_ajax = 'ajax_global/ajax_global_delete.php?username='+username;
+      if(aksi=='hapus' || aksi=='delete'){
+
+        // let y = confirm('Yakin untuk menghapus data ini?');
+        // if(!y) return;
+        let link_ajax = '';
+        let kolom_acuan = '';
+        let acuan = '';
+        let tabel2 = '';
+        let kolom_acuan2 = '';
+        let acuan2 = '';
+
+        if(tabel=='semester'){
+          kolom_acuan = 'id';
+          acuan = id;
+          link_ajax = `ajax_global/ajax_global_delete.php?tabel=${tabel}&kolom_acuan=${kolom_acuan}&acuan=${acuan}&`;
+        }else if(tabel=='mk'){
+          kolom_acuan = 'id';
+          acuan = id;
+          tabel2 = 'kurikulum_mk';
+          kolom_acuan2 = 'id_mk';
+          acuan2 = id;
+          link_ajax = `ajax_global/ajax_global_unassign_and_delete.php?tabel=${tabel}&kolom_acuan=${kolom_acuan}&acuan=${acuan}&tabel2=${tabel2}&kolom_acuan2=${kolom_acuan2}&acuan2=${acuan2}&`;
+        }else{
+          alert('Belum ada ajax target untuk aksi tabel: '+tabel);
+          return;
+        }
+
         $.ajax({
           url:link_ajax,
           success:function(a){
             if(a.trim()=='sukses'){
-              $('#tr__'+username).fadeOut();
+              if(tabel=='mk'){
+                $('#tr__'+id).fadeOut();
+              }else if(tabel=='semester'){
+                $('#semester__'+id).fadeOut();
+              }
             }else{
-              if(a.toLowerCase().search('cannot delete or update a parent row')){
+              console.log(a);
+              if(a.toLowerCase().search('cannot delete or update a parent row')>0){
                 alert('Gagal menghapus data. \n\nData ini dibutuhkan untuk relasi data ke tabel lain.\n\n'+a);
               }else{
                 alert('Gagal menghapus data.');
