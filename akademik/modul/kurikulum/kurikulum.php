@@ -23,6 +23,7 @@ a.nama as nama_kurikulum,
 c.angkatan,
 d.nama as jenjang,
 a.basis, 
+c.jumlah_semester,
 a.is_publish, 
 a.tanggal_penetapan, 
 a.ditetapkan_oleh
@@ -35,13 +36,15 @@ WHERE a.id='$id'";
 $q = mysqli_query($cn, $s)or die(mysqli_error($cn));
 if(!mysqli_num_rows($q)) die('Data kurikulum tidak ditemukan.');
 $d = mysqli_fetch_assoc($q);
+$jumlah_semester = $d['jumlah_semester'];
+echo "<div class=debug id=keterangan_kurikulum>$d[nama_kurikulum] Prodi $d[nama_prodi] Angkatan $d[angkatan] Jenjang $d[jenjang]</div>";
 
 $tr='';
 foreach($d as $kolom=>$isi){
   if($kolom=='is_publish') {$isi = $isi==0 ? 'belum' : 'sudah'; $isi="<span class='abu miring'>-- $isi --</span>"; }
-  $kolom = str_replace('_',' ',$kolom);
+  $kolom_caption = str_replace('_',' ',$kolom);
   $isi = $isi=='' ? '<span class="abu miring">-- null --</span>' : $isi;
-  $tr.="<tr><td class=upper>$kolom</td><td>$isi</td></td>";
+  $tr.="<tr><td class=upper>$kolom_caption</td><td id='$kolom'>$isi</td></td>";
 }
 
 
@@ -55,11 +58,6 @@ echo "
 </div>";
 
 
-# ==============================================================
-# TAMBAH SEMESTER
-# ==============================================================
-$btn_tambah = "<button class='btn btn-primary btn_aksi btn_tambah_semester' id='tambah_semester__$id'>Tambah Semester</button>";
-echo $btn_tambah;
 
 
 # ==============================================================
@@ -73,22 +71,27 @@ a.tanggal_akhir
 FROM tb_semester a 
 JOIN tb_kurikulum b ON b.id=a.id_kurikulum 
 
-WHERE b.id='$id'";
+WHERE b.id='$id' 
+ORDER BY a.nomor 
+";
 $q = mysqli_query($cn, $s)or die(mysqli_error($cn));
 
-$jumlah_semester = mysqli_num_rows($q);
+$jumlah_semester_real = mysqli_num_rows($q);
 $semesters = '';
+$rnomor_semester = [];
 $i=0;
 while ($d=mysqli_fetch_assoc($q)) {
   $i++; 
+  array_push($rnomor_semester,$d['no_semester']);
 
-  $tr = '';
 
   $s2 = "SELECT *   
   FROM tb_mk a 
   JOIN tb_kurikulum_mk b ON a.id=b.id_mk 
   WHERE b.id='$d[id_semester]'";
   $q2 = mysqli_query($cn, $s2)or die(mysqli_error($cn));
+
+  $tr = '';
   $j=0;
   while ($d2=mysqli_fetch_assoc($q2)) {
     $j++;
@@ -100,7 +103,7 @@ while ($d=mysqli_fetch_assoc($q)) {
       <td class='editable' id='kode__$d2[id]'>$d2[bobot_teori]</td>
       <td class='editable' id='kode__$d2[id]'>$d2[bobot_praktik]</td>
       <td class='editable' id='kode__$d2[id]'>$d2[prasyarat]</td>
-      <td class='deletable btn_aksi' id='hapus_mk__$d2[id]'>Hapus</td>
+      <td class='deletable btn_aksi' id='hapus__mk__$d2[id]'>Hapus</td>
     </tr>    
     ";
   }
@@ -126,16 +129,33 @@ while ($d=mysqli_fetch_assoc($q)) {
         
       </table>
       <div class='text-right'>
-        <button class='btn btn-primary btn-sm btn_aksi' id='tambah_mk__$d[id_semester]'>Tambah MK</button>
-        <button class='btn btn-danger btn-sm btn_aksi' id='hapus_semester__$d[id_semester]'>Hapus Semester</button>
+        <button class='btn btn-primary btn-sm btn_aksi' id='tambah__mk__$d[id_semester]'>Tambah MK</button>
+        <button class='btn btn-danger btn-sm btn_aksi' id='hapus__semester__$d[id_semester]'>Hapus Semester</button>
       </div>
     </div>
   </div>
   ";
 }
 
+$max_no_semester = 1;
+for ($i=1; $i <= $jumlah_semester ; $i++) { 
+  if(!in_array($i,$rnomor_semester)){
+    $max_no_semester = $i; break;
+  }
+}
+echo "<div class=debug id=max_no_semester>$max_no_semester</div>";
 
 $kurikulum = $semesters=='' ? 'Belum ada semester' : "<div class='row kurikulum'>$semesters</div>";
+
+# ==============================================================
+# TAMBAH SEMESTER
+# ==============================================================
+$btn_tambah = $jumlah_semester==$jumlah_semester_real ? '' : "<button class='btn btn-primary btn_aksi btn_tambah_semester' id='tambah__semester__$id'>Tambah Semester</button>";
+echo $btn_tambah;
+
+# ==============================================================
+# FINAL OUTPUT SEMESTERS
+# ==============================================================
 echo $kurikulum;
 
 
@@ -145,18 +165,25 @@ echo $kurikulum;
 
 <script>
   $(function(){
+    // ===============================================
+    // GLOBAL AKSI AND EDITABLE HANDLER
+    // v.1.0.1
+    // by: InSho
+    // ===============================================
     $(".btn_aksi").click(function(){
       let tid = $(this).prop('id');
-      alert(tid);return;
       let rid = tid.split('__');
       let aksi = rid[0];
-      let id = rid[1];
+      let tabel = rid[1];
+      let id = rid[2];
+
+      // alert(`${aksi} ${tabel} ${id} `);return;
 
       if(aksi=='hapus' || aksi=='delete'){
         let y = confirm('Yakin untuk menghapus data ini?');
         if(!y) return;
 
-        let link_ajax = 'ajax/ajax_user_hapus.php?username='+username;
+        let link_ajax = 'ajax_global/ajax_global_delete.php?username='+username;
         $.ajax({
           url:link_ajax,
           success:function(a){
@@ -174,51 +201,25 @@ echo $kurikulum;
       } // end of hapus
 
       if(aksi=='tambah' || aksi=='add'){
-        let y = confirm('Ingin menambah data Petugas Baru?');
-        if(!y) return;        
+        // let y = confirm(`Ingin menambah ${tabel.toUpperCase()} Baru?`);
+        // if(!y) return;
+        
+        let koloms = 'id_kurikulum,nomor,keterangan';
+        let isis = `'${id}','${$('#max_no_semester').text()}','${$('#keterangan_kurikulum').text()}'`;
 
-
-        let link_ajax = 'ajax/ajax_user_new.php';
+        let link_ajax = `ajax_global/ajax_global_insert.php?tabel=tb_${tabel}&koloms=${koloms}&isis=${isis}`;
         $.ajax({
           url:link_ajax,
           success:function(a){
             if(a.trim()=='sukses'){
-              alert('Add Rows Data Baru sukses. Silahkan Edit isi data tersebut!');
+              // alert('Proses tambah sukses.');
               location.reload();
             }else{
-              alert('Gagal menambah data.');
+              // alert('Gagal menambah data.');
+              console.log(a);
             }
           }
         })        
-      }
-
-      if(aksi=='ubah_password'){
-        let y = confirm(`Ingin mengubah password atas username: ${username}?`);
-        if(!y) return;
-
-        let np = prompt('Password baru Anda:');
-        if(!y) return;
-
-        let cp = prompt('Konfirmasi Password baru Anda:');
-        if(!y) return;
-
-        if(np!==cp){
-          alert('Maaf, password baru dan konfirmasi password tidak sama.');
-          return;
-        }
-
-        let link_ajax = `ajax/ajax_user_update.php?username=${username}&kolom=password&isi_baru=${np}`;
-
-        $.ajax({
-          url:link_ajax,
-          success:function(a){
-            if(a.trim()=='sukses'){
-              alert('Sukses mengubah password. \n\nSilahkan diingat dan dicatat password tersebut agar tidak lupa.');
-            }else{
-              alert('Gagal mengubah data.\n\n'+a)
-            }
-          }
-        })
       }
     }) // end btn_aksi
 
@@ -247,7 +248,7 @@ echo $kurikulum;
         }
       }
 
-      let link_ajax = `ajax/ajax_user_update.php?username=${username}&kolom=${kolom}&isi_baru=${isi_baru}`;
+      let link_ajax = `ajax_global/ajax_global_update.php?username=${username}&kolom=${kolom}&isi_baru=${isi_baru}`;
 
       $.ajax({
         url:link_ajax,
