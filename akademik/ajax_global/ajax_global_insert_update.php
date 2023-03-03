@@ -13,7 +13,7 @@ $fields = isset($_GET['fields']) ? $_GET['fields'] : die(erjx("fields"));
 $values = isset($_GET['values']) ? $_GET['values'] : die(erjx("values"));
 $pair_updates = isset($_GET['pair_updates']) ? $_GET['pair_updates'] : die(erjx("pair_updates"));
 
-if ($table=="" OR $fields=="" OR $values=="" OR $pair_updates=="") die("Error AJAX-global-insert-update. Salah satu index masih kosong.");
+if ($table=='' OR $fields=='' OR $values=='' OR $pair_updates=='') die("Error AJAX-global-insert-update. Salah satu index masih kosong.");
 
 
 # ================================================
@@ -36,5 +36,5 @@ ON DUPLICATE KEY UPDATE $pair_updates
 ";
 $q = mysqli_query($cn,$s) or die("Error @ajax. Tidak bisa menambah data. SQL:$s. ".mysqli_error($cn));
 
-die("sukses");
+die('sukses');
 ?>

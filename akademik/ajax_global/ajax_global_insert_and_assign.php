@@ -43,5 +43,5 @@ $s = "INSERT INTO tb_$tabel2 (id_$tabel, $kolom2) VALUES ($new_id , $id2)";
 $q = mysqli_query($cn,$s) or die("Error Second @ajax. ".mysqli_error($cn));
 
 // die("$tmp\n\n$s");
-die("sukses");
+die('sukses');
 ?>

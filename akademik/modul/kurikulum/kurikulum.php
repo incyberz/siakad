@@ -111,18 +111,18 @@ while ($d=mysqli_fetch_assoc($q)) {
     $tr.="
     <tr id='tr__$d2[id_mk]'>
       <td>$j</td>
-      <td class='editable' id='kode__$d2[id_mk]'>$d2[kode_mk]</td>
-      <td class='editable' id='kode__$d2[id_mk]'>$d2[nama_mk]</td>
-      <td class='editable' id='kode__$d2[id_mk]'>$d2[bobot_teori]</td>
-      <td class='editable' id='kode__$d2[id_mk]'>$d2[bobot_praktik]</td>
-      <td class='editable' id='kode__$d2[id_mk]'>$d2[prasyarat]</td>
+      <td class='editable' id='kode__mk__$d2[id_mk]'>$d2[kode_mk]</td>
+      <td class='editable' id='nama__mk__$d2[id_mk]'>$d2[nama_mk]</td>
+      <td class='editable' id='bobot_teori__mk__$d2[id_mk]'>$d2[bobot_teori]</td>
+      <td class='editable' id='bobot_praktik__mk__$d2[id_mk]'>$d2[bobot_praktik]</td>
+      <td class='editable' id='prasyarat__mk__$d2[id_mk]'>$d2[prasyarat]</td>
       <td class='deletable btn_aksi' id='hapus__mk__$d2[id_mk]'>Hapus</td>
     </tr>    
     ";
   }
 
   $semesters .= "
-  <div class='col-lg-6'>
+  <div class='col-lg-6' id='semester__$d[id_semester]'>
     <div class=wadah>
       <div class='semester-ke'>
         Semester $d[no_semester]
@@ -158,7 +158,7 @@ for ($i=1; $i <= $jumlah_semester ; $i++) {
 }
 echo "<div class=debug id=max_no_semester>$max_no_semester</div>";
 
-$kurikulum = $semesters=='' ? 'Belum ada semester' : "<div class='row kurikulum'>$semesters</div>";
+$kurikulum = $semesters=='' ? '<div class="alert alert-danger">Belum ada data semester</div>' : "<div class='row kurikulum'>$semesters</div>";
 
 # ==============================================================
 # TAMBAH SEMESTER
@@ -265,7 +265,7 @@ echo $kurikulum;
           let nama = Math.random() % 10000;
           let singkatan = Math.random() % 10000;
           koloms = 'kode,nama,singkatan,bobot_teori,bobot_praktik,is_publish';
-          isis = `'AAA-NEW${kode}','AAA-NEW${nama}','AAA-NEW${singkatan}',0,0,-1`;
+          isis = `'AA${kode}','AA${nama}','AA${singkatan}',0,0,-1`;
         }
 
         let link_ajax = `ajax_global/ajax_global_insert.php?tabel=tb_${tabel}&koloms=${koloms}&isis=${isis}`;
@@ -295,7 +295,7 @@ echo $kurikulum;
           let nama = Math.random() % 10000;
           let singkatan = Math.random() % 10000;
           koloms = 'kode,nama,singkatan,bobot_teori,bobot_praktik,is_publish';
-          isis = `'AAA-NEW${kode}','AAA-NEW${nama}','AAA-NEW${singkatan}',0,0,-1`;
+          isis = `'AA${kode}','AA${nama}','AA${singkatan}',0,0,-1`;
         }
 
         let tabel2 = 'kurikulum_mk'; //assign to tb_kurikulum_mk
@@ -322,7 +322,8 @@ echo $kurikulum;
       let tid = $(this).prop('id');
       let rid = tid.split('__');
       let kolom = rid[0];
-      let username = rid[1];
+      let tabel = rid[1];
+      let acuan = rid[2];
       let isi = $(this).text();
 
       let petunjuk = `Data ${kolom} baru:`;
@@ -332,26 +333,40 @@ echo $kurikulum;
       
       // VALIDASI UPDATE DATA
       if(kolom=='no_wa' || kolom=='no_hp'){
-        if((isi_baru.substring(0, 3)=='628' || isi_baru.substring(0, 2)=='08') && isi_baru.length>9 && isi_baru.length<15){
-          // alert('OK');
-          if(isi_baru.substring(0, 2)=='08'){
-            isi_baru = '62'+ isi_baru.substring(1, isi_baru.length);
-          }
-        }else{
-          alert('Format No. HP tidak tepat. Awali dengan 08xx, antara 10 s.d 13 digit.');
+        // if((isi_baru.substring(0, 3)=='628' || isi_baru.substring(0, 2)=='08') && isi_baru.length>9 && isi_baru.length<15){
+        //   // alert('OK');
+        //   if(isi_baru.substring(0, 2)=='08'){
+        //     isi_baru = '62'+ isi_baru.substring(1, isi_baru.length);
+        //   }
+        // }else{
+        //   alert('Format No. HP tidak tepat. Awali dengan 08xx, antara 10 s.d 13 digit.');
+        //   return;
+        // }
+      }else if(kolom=='bobot_teori' || kolom=='bobot_praktik'){
+        if(isNaN(isi_baru) || parseInt(isi_baru)>4){
+          alert('Invalid bobot. \n\nMasukan bobot SKS antara 0 s.d 4');
           return;
         }
       }
 
-      let link_ajax = `ajax_global/ajax_global_update.php?username=${username}&kolom=${kolom}&isi_baru=${isi_baru}`;
+      let kolom_acuan = 'id';
+      let link_ajax = `ajax_global/ajax_global_update.php?tabel=${tabel}&kolom_target=${kolom}&isi_baru=${isi_baru}&acuan=${acuan}&kolom_acuan=${kolom_acuan}`;
 
       $.ajax({
         url:link_ajax,
         success:function(a){
           if(a.trim()=='sukses'){
-            $("#"+kolom+"__"+username).text(isi_baru)
+            $("#"+kolom+"__"+tabel+"__"+acuan).text(isi_baru)
           }else{
-            alert('Gagal mengubah data.\n\n'+a)
+            console.log(a);
+            if(a.toLowerCase().search('cannot delete or update a parent row')>0){
+              alert('Gagal menghapus data. \n\nData ini dibutuhkan untuk relasi data ke tabel lain.\n\n'+a);
+            }else if(a.toLowerCase().search('duplicate entry')>0){
+              alert(`Kode ${isi_baru} telah dipakai pada data lain.\n\nSilahkan masukan kode unik lainnya.`)
+            }else{
+              alert('Gagal menghapus data.');
+            }
+
           }
         }
       })

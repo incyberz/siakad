@@ -32,8 +32,8 @@ if(isset($_POST['btn_update']) || isset($_POST['btn_hapus']) || isset($_POST['bt
     $q = mysqli_query($cn, $s)or die(mysqli_error($cn));
 
     $pesan = $aksi=='tambah'
-    ? "<script>location.replace('?master&p=$tabel&pesan=Data $tabel baru berhasil ditambahkan')</script>"
-    : "<script>location.replace('?master&p=$tabel&pesan=Update data $tabel berhasil.')</script>"
+    ? "<script>location.replace('?manage&p=$tabel&pesan=Data $tabel baru berhasil ditambahkan')</script>"
+    : "<script>location.replace('?manage&p=$tabel&pesan=Update data $tabel berhasil.')</script>"
     ;
     die($pesan);
 
@@ -42,5 +42,5 @@ if(isset($_POST['btn_update']) || isset($_POST['btn_hapus']) || isset($_POST['bt
   }
 
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-  die("<div class='alert alert-success'>Proses $aksi berhasil.<hr><a href='?master&p=$tabel' class='upper'>Back to List $tabel</a></div>");
+  die("<div class='alert alert-success'>Proses $aksi berhasil.<hr><a href='?manage&p=$tabel' class='upper'>Back to List $tabel</a></div>");
 }

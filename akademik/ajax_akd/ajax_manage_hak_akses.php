@@ -8,14 +8,14 @@ $fitur_sistem = $_GET['fitur_sistem'];
 
 if (!isset($_GET['cpage']))die("$msg #12");
 $cpage = $_GET['cpage'];
-if($cpage=="" or $cpage<=0) $cpage=1;
+if($cpage=='' or $cpage<=0) $cpage=1;
 $limit_start = $cpage*10-10;
 
 $sql_modul_admin = " modul_sistem like '%$modul_sistem%' ";
 $sql_fitur_admin = " fitur_sistem like '%$fitur_sistem%' ";
 
-if(trim($modul_sistem)=="") $sql_modul_admin = " 1 ";
-if(trim($fitur_sistem)=="") $sql_fitur_admin = " 1 ";
+if(trim($modul_sistem)=='') $sql_modul_admin = " 1 ";
+if(trim($fitur_sistem)=='') $sql_fitur_admin = " 1 ";
 
 include "../../config.php";
 

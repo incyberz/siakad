@@ -31,11 +31,11 @@ if($id_konsentrasi=="all") $sql_id_konsentrasi = " 1 ";
 if($id_konsentrasi=="none") $sql_id_konsentrasi = " a.id_konsentrasi is null ";
 if($jenis_mk=="all") $sql_jenis_mk = " 1 ";
 if($no_semester=="all") $sql_no_semester = " 1 ";
-if(trim($nama_mk)=="") $sql_nama_mk = " 1 ";
+if(trim($nama_mk)=='') $sql_nama_mk = " 1 ";
 if($is_mk_suspend=="true") $sql_suspend = " (a.status_mk=1 or a.status_mk=0) ";
 
 $cpage = $_GET['cpage'];
-if($cpage=="" or $cpage<=0) $cpage=1;
+if($cpage=='' or $cpage<=0) $cpage=1;
 $limit_start = $cpage*10-10;
 
 

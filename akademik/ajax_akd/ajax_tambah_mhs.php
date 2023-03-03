@@ -16,7 +16,7 @@ $status_daftar = $_GET['status_daftar'];
 $id_prodi = $_GET['id_prodi'];
 $include_rejected = $_GET['include_rejected'];
 $cpage = $_GET['cpage'];
-if($cpage=="" or $cpage<=0) $cpage=1;
+if($cpage=='' or $cpage<=0) $cpage=1;
 $limit_start = $cpage*10-10;
 
 

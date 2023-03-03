@@ -25,8 +25,8 @@ if(mysqli_num_rows($q)==0){
 
     $nama_prodi = ["","S1-Teknik Informatika", "S1-Rekayasa Perangkat Lunak","S1-Sistem Informasi","D3-Manajemen Informatika","D3-Komputerisasi Akuntansi"];
 
-    if($jabatan_akademik=="") $jabatan_akademik="-";
-    if($email_dosen=="") $email_dosen="-";
+    if($jabatan_akademik=='') $jabatan_akademik="-";
+    if($email_dosen=='') $email_dosen="-";
 
     $img = "assets/img/dosen/$id_dosen.jpg";
     if(!file_exists("../".$img)) $img = "assets/img/dosen/dosen_na.jpg";

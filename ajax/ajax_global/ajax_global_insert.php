@@ -14,7 +14,7 @@ $values = isset($_GET['values']) ? $_GET['values'] : die(erjx("values"));
 
 // var_dump($_GET);
 
-if ($table=="" OR $fields=="" OR $values=="") die("Error AJAX-global-insert. Salah satu index masih kosong.");
+if ($table=='' OR $fields=='' OR $values=='') die("Error AJAX-global-insert. Salah satu index masih kosong.");
 
 # ================================================
 # MAIN HANDLE
@@ -22,5 +22,5 @@ if ($table=="" OR $fields=="" OR $values=="") die("Error AJAX-global-insert. Sal
 $s = "INSERT INTO $table ($fields) VALUES ($values)";
 $q = mysqli_query($cn,$s) or die("Error @ajax. ".mysqli_error($cn));
 
-die("sukses");
+die('sukses');
 ?>

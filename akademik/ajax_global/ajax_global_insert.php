@@ -14,7 +14,7 @@ $isis = isset($_GET['isis']) ? $_GET['isis'] : die(erjx("isis"));
 
 // var_dump($_GET);
 
-if ($tabel=="" OR $koloms=="" OR $isis=="") die("Error AJAX-global-insert. Salah satu index masih kosong.");
+if ($tabel=='' OR $koloms=='' OR $isis=='') die("Error AJAX-global-insert. Salah satu index masih kosong.");
 
 # ================================================
 # MAIN HANDLE
@@ -22,5 +22,5 @@ if ($tabel=="" OR $koloms=="" OR $isis=="") die("Error AJAX-global-insert. Salah
 $s = "INSERT INTO $tabel ($koloms) VALUES ($isis)";
 $q = mysqli_query($cn,$s) or die("Error @ajax. ".mysqli_error($cn));
 
-die("sukses");
+die('sukses');
 ?>

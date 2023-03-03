@@ -52,7 +52,7 @@ if($_GET['fka']=="true") $fka=1;
 
 $cpage = $_GET['cpage'];
 // die($cpage);
-if($cpage=="" or $cpage<=0 or $cpage==null) $cpage=1;
+if($cpage=='' or $cpage<=0 or $cpage==null) $cpage=1;
 $limit_start = $cpage*10-10;
 
 $sql_where_nama_mhs = " 1 ";

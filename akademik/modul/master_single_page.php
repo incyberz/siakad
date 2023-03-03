@@ -16,6 +16,7 @@ $i=0;
 while ($d=mysqli_fetch_assoc($q)) {
   if($d['Extra']=='auto_increment') continue;
   if($d['Field']=='folder_uploads') continue;
+  if($d['Field']=='tanggal_buat') continue;
   $Field[$i] = $d['Field'];
   $Type[$i] = $d['Type'];
   $Null[$i] = $d['Null'];

@@ -19,7 +19,7 @@ if (!isset($_GET['cpage']))die("$msg #7");
 // $include_rejected = $_GET['include_rejected']; 
 
 $cpage = $_GET['cpage'];
-if($cpage=="" or $cpage<=0) $cpage=1;
+if($cpage=='' or $cpage<=0) $cpage=1;
 $limit_start = $cpage*10-10;
 
 

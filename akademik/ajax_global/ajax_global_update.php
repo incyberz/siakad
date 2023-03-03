@@ -8,18 +8,18 @@ include "ajax_session_security.php";
 # ================================================
 # GET VARIABLES
 # ================================================
-$table = isset($_GET['table']) ? $_GET['table'] : die(erjx("table"));
-$field = isset($_GET['field']) ? $_GET['field'] : die(erjx("field"));
+$tabel = isset($_GET['tabel']) ? $_GET['tabel'] : die(erjx("tabel"));
+$kolom_target = isset($_GET['kolom_target']) ? $_GET['kolom_target'] : die(erjx("kolom_target"));
+$kolom_acuan = isset($_GET['kolom_acuan']) ? $_GET['kolom_acuan'] : die(erjx("kolom_acuan"));
 $acuan = isset($_GET['acuan']) ? $_GET['acuan'] : die(erjx("acuan"));
-$acuan_val = isset($_GET['acuan_val']) ? $_GET['acuan_val'] : die(erjx("acuan_val"));
-$field_val = isset($_GET['field_val']) ? $_GET['field_val'] : die(erjx("field_val"));
+$isi_baru = isset($_GET['isi_baru']) ? $_GET['isi_baru'] : die(erjx("isi_baru"));
 
-if ($table=="" OR $field=="" OR $acuan=="" OR $acuan_val=="" OR $field_val=="") die("Error AJAX-global-update. Salah satu index masih kosong.");
+if ($tabel=='' OR $kolom_target=='' OR $kolom_acuan=='' OR $acuan=='' OR $isi_baru=='') die("Error AJAX-global-update. Salah satu index masih kosong.");
 
 # ================================================
 # MAIN HANDLE
 # ================================================
-$s = "UPDATE $table SET $field = '$field_val' WHERE $acuan = '$acuan_val' ";
+$s = "UPDATE tb_$tabel SET $kolom_target = '$isi_baru' WHERE $kolom_acuan = '$acuan' ";
 $q = mysqli_query($cn,$s) or die("Error @ajax. Tidak bisa mengupdate values. SQL:$s. ".mysqli_error($cn));
-die("sukses");
+die('sukses');
 ?>
