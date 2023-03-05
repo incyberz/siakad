@@ -8,6 +8,7 @@
   .btn_tambah_semester {margin-bottom:10px}
 </style>
 <?php
+
 $id = isset($_GET['id']) ? $_GET['id'] : '';
 if($id<1) die('<script>location.replace("?master&p=kurikulum")</script>');
 
@@ -37,6 +38,8 @@ $q = mysqli_query($cn, $s)or die(mysqli_error($cn));
 if(!mysqli_num_rows($q)) die('Data kurikulum tidak ditemukan.');
 $d = mysqli_fetch_assoc($q);
 $jumlah_semester = $d['jumlah_semester'];
+$nama_kurikulum = $d['nama_kurikulum'];
+
 echo "<div class=debug id=keterangan_kurikulum>$d[nama_kurikulum] Prodi $d[nama_prodi] Angkatan $d[angkatan] Jenjang $d[jenjang]</div>";
 
 $tr='';
@@ -79,6 +82,8 @@ $q = mysqli_query($cn, $s)or die(mysqli_error($cn));
 $jumlah_semester_real = mysqli_num_rows($q);
 $semesters = '';
 $rnomor_semester = [];
+$total_teori = 0;
+$total_praktik = 0;
 $i=0;
 while ($d=mysqli_fetch_assoc($q)) {
   $i++; 
@@ -93,7 +98,9 @@ while ($d=mysqli_fetch_assoc($q)) {
   a.nama as nama_mk,
   a.bobot_teori,
   a.bobot_praktik,
-  a.prasyarat 
+  a.prasyarat,
+  b.id as id_kurikulum_mk, 
+  (SELECT count(1) from tb_kurikulum_mk WHERE id_mk=a.id) as jumlah_assign_mk 
 
   FROM tb_mk a 
   JOIN tb_kurikulum_mk b ON a.id=b.id_mk 
@@ -105,9 +112,17 @@ while ($d=mysqli_fetch_assoc($q)) {
   echo "<div class=debug>jumlah_mk__$d[id_semester]: <span id='jumlah_mk__$d[id_semester]'>$jumlah_mk</span></div>";
 
   $tr = '';
+  $jumlah_teori[$d['id_semester']] = 0;
+  $jumlah_praktik[$d['id_semester']] = 0;
   $j=0;
   while ($d2=mysqli_fetch_assoc($q2)) {
     $j++;
+    $jumlah_teori[$d['id_semester']] += $d2['bobot_teori'];
+    $jumlah_praktik[$d['id_semester']] += $d2['bobot_praktik'];
+
+    $hapus = $d2['jumlah_assign_mk'] > 1 ? '' : "<td class='deletable btn_aksi text-center' id='hapus__mk__$d2[id_mk]__$d[id_semester]'>H</td>";
+    $drop = "<td class='deletable btn_aksi text-center' id='drop__mk__$d2[id_mk]__$d[id_semester]'>D</td>";
+    $jadwal = "<td class='text-center gradasi-biru'><a href='?manage_jadwal&id_kurikulum_mk=$d2[id_kurikulum_mk]'>J</a></td>";
     $tr.="
     <tr id='tr__$d2[id_mk]'>
       <td>$j</td>
@@ -116,10 +131,24 @@ while ($d=mysqli_fetch_assoc($q)) {
       <td class='editable' id='bobot_teori__mk__$d2[id_mk]'>$d2[bobot_teori]</td>
       <td class='editable' id='bobot_praktik__mk__$d2[id_mk]'>$d2[bobot_praktik]</td>
       <td class='editable' id='prasyarat__mk__$d2[id_mk]'>$d2[prasyarat]</td>
-      <td class='deletable btn_aksi' id='hapus__mk__$d2[id_mk]'>Hapus</td>
+      $drop  $hapus $jadwal  
     </tr>    
     ";
-  }
+  } //end while list MK
+
+  $total_teori +=   $jumlah_teori[$d['id_semester']];
+  $total_praktik +=   $jumlah_praktik[$d['id_semester']];
+
+
+  $tr = $tr=='' ? "<tr><td class='red miring' colspan=9>Belum ada MK pada semester ini.</td></tr>" : $tr;
+
+  $tr .= "
+  <tr>
+    <td colspan=3>Total SKS</td>
+    <td>".$jumlah_teori[$d['id_semester']]."</td>
+    <td>".$jumlah_praktik[$d['id_semester']]."</td>
+    <td colspan=4>(".($jumlah_teori[$d['id_semester']]+$jumlah_praktik[$d['id_semester']])." SKS Total)</td>
+  </tr>";
 
   $semesters .= "
   <div class='col-lg-6' id='semester__$d[id_semester]'>
@@ -135,20 +164,21 @@ while ($d=mysqli_fetch_assoc($q)) {
           <th>Teori</th>
           <th>Praktik</th>
           <th>Prasyarat</th>
-          <th>Hapus</th>
+          <th colspan=3 style='text-align:center'>Aksi</th>
         </thead>
         
         $tr
         
       </table>
       <div class='text-right'>
-        <button class='btn btn-primary btn-sm btn_aksi' id='assign__mk__$d[id_semester]'>Tambah MK</button>
+        <a href='?assign_mk&id_kurikulum=$id&id_semester=$d[id_semester]&no_semester=$d[no_semester]&nama_kurikulum=$nama_kurikulum' class='btn btn-primary btn-sm'>Assign MK</a>
+        <button class='btn btn-primary btn-sm btn_aksi' id='tambah_dan_assign__mk__$d[id_semester]'>Tambah MK</button>
         <button class='btn btn-danger btn-sm btn_aksi' id='hapus__semester__$d[id_semester]'>Hapus Semester</button>
       </div>
     </div>
   </div>
   ";
-}
+} // end while semesters
 
 $max_no_semester = 1;
 for ($i=1; $i <= $jumlah_semester ; $i++) { 
@@ -158,7 +188,17 @@ for ($i=1; $i <= $jumlah_semester ; $i++) {
 }
 echo "<div class=debug id=max_no_semester>$max_no_semester</div>";
 
-$kurikulum = $semesters=='' ? '<div class="alert alert-danger">Belum ada data semester</div>' : "<div class='row kurikulum'>$semesters</div>";
+$total_sks = $total_praktik + $total_teori;
+$ui_total_sks = "
+<div class=wadah>
+  <ul style='font-size:24px'>
+    <li>Total Teori: $total_teori SKS</li>
+    <li>Total Praktik: $total_praktik SKS</li>
+    <li class='tebal biru'>Total SKS Kurikulum: $total_sks SKS</li>
+  </ul>
+</div>";
+
+$kurikulum = $semesters=='' ? '<div class="alert alert-danger">Belum ada data semester</div>' : "<div class='row kurikulum'>$semesters</div>$ui_total_sks";
 
 # ==============================================================
 # TAMBAH SEMESTER
@@ -195,15 +235,19 @@ echo $kurikulum;
       if(aksi=='hapus' && tabel=='semester'){
         let jumlah_mk = $('#jumlah_mk__'+id).text();
         if(parseInt(jumlah_mk)>0){
-          alert('Untuk menghapus semester, silahkan hapus dahulu Data MK semester ini!');
+          alert('Semester ini belum bisa dihapus.\n\nUntuk menghapus semester, silahkan DROP dahulu Semua Data MK pada semester ini!');
           return;
         }
       }
 
-      if(aksi=='hapus' || aksi=='delete'){
+      if(aksi=='hapus' || aksi=='drop'){
 
-        // let y = confirm('Yakin untuk menghapus data ini?');
-        // if(!y) return;
+        if(aksi=='hapus'){
+          let y = confirm('Yakin untuk menghapus data ini?\n\nPERHATIAN! Data MK akan hilang dari database.');
+        }else{
+          let y = confirm('Yakin untuk dropping data ini?\n\nDrop = melepas tanpa menghapus data');
+        }
+        if(!y) return;
         let link_ajax = '';
         let kolom_acuan = '';
         let acuan = '';
@@ -216,16 +260,23 @@ echo $kurikulum;
           acuan = id;
           link_ajax = `ajax_global/ajax_global_delete.php?tabel=${tabel}&kolom_acuan=${kolom_acuan}&acuan=${acuan}&`;
         }else if(tabel=='mk'){
-          kolom_acuan = 'id';
-          acuan = id;
+          let tabel_semester = 'semester';
+          kolom_acuan = 'id_semester';
+          acuan = rid[3]; //id_semester
           tabel2 = 'kurikulum_mk';
           kolom_acuan2 = 'id_mk';
-          acuan2 = id;
-          link_ajax = `ajax_global/ajax_global_unassign_and_delete.php?tabel=${tabel}&kolom_acuan=${kolom_acuan}&acuan=${acuan}&tabel2=${tabel2}&kolom_acuan2=${kolom_acuan2}&acuan2=${acuan2}&`;
+          acuan2 = id; //id_mk
+          if(aksi=='hapus'){
+            link_ajax = `ajax_global/ajax_global_drop_and_delete.php?tabel=${tabel}&kolom_acuan=${kolom_acuan}&acuan=${acuan}&tabel2=${tabel2}&kolom_acuan2=${kolom_acuan2}&acuan2=${acuan2}&`;
+          }else if(aksi=='drop'){
+            link_ajax = `ajax_global/ajax_global_drop.php?tabel=${tabel_semester}&kolom_acuan=${kolom_acuan}&acuan=${acuan}&tabel2=${tabel2}&kolom_acuan2=${kolom_acuan2}&acuan2=${acuan2}&`;
+          }
         }else{
           alert('Belum ada ajax target untuk aksi tabel: '+tabel);
           return;
         }
+
+        // console.log(link_ajax); return;
 
         $.ajax({
           url:link_ajax,
@@ -248,7 +299,7 @@ echo $kurikulum;
         })
       } // end of hapus
 
-      if(aksi=='tambah' || aksi=='add'){
+      if(aksi=='tambah'){ // untuk tambah Semester
         // let y = confirm(`Ingin menambah ${tabel.toUpperCase()} Baru?`);
         // if(!y) return;
         
@@ -256,19 +307,12 @@ echo $kurikulum;
         let isis = null;
 
         if(tabel=='semester'){
-          koloms = 'id_kurikulum,nomor,keterangan';
-          isis = `'${id}','${$('#max_no_semester').text()}','${$('#keterangan_kurikulum').text()}'`;
+          let max_no_semester = $("#max_no_semester").text();
+          koloms = 'id_kurikulum,nomor';
+          isis = `'${id}','${max_no_semester}'`;
         }
 
-        if(tabel=='mk'){
-          let kode = Math.random() % 10000;
-          let nama = Math.random() % 10000;
-          let singkatan = Math.random() % 10000;
-          koloms = 'kode,nama,singkatan,bobot_teori,bobot_praktik,is_publish';
-          isis = `'AA${kode}','AA${nama}','AA${singkatan}',0,0,-1`;
-        }
-
-        let link_ajax = `ajax_global/ajax_global_insert.php?tabel=tb_${tabel}&koloms=${koloms}&isis=${isis}`;
+        let link_ajax = `ajax_global/ajax_global_insert.php?tabel=${tabel}&koloms=${koloms}&isis=${isis}`;
         $.ajax({
           url:link_ajax,
           success:function(a){
@@ -276,14 +320,15 @@ echo $kurikulum;
               // alert('Proses tambah sukses.');
               location.reload();
             }else{
-              // alert('Gagal menambah data.');
+              alert('Gagal menambah data.');
               console.log(a);
             }
           }
         })        
-      }
+      }      
 
-      if(aksi=='assign'){
+
+      if(aksi=='tambah_dan_assign'){ // untuk tambah MK baru
         // let y = confirm(`Ingin menambah ${tabel.toUpperCase()} Baru?`);
         // if(!y) return;
         
@@ -291,11 +336,12 @@ echo $kurikulum;
         let isis = null;
 
         if(tabel=='mk'){
-          let kode = Math.random() % 10000;
-          let nama = Math.random() % 10000;
-          let singkatan = Math.random() % 10000;
+          let r = '_'+Math.random();
+          let kode = 'MK'+id+ r.substring(3,8);
+          let nama = 'NEW MATA KULIAH';
+          let singkatan = 'SINGKATAN-MK';
           koloms = 'kode,nama,singkatan,bobot_teori,bobot_praktik,is_publish';
-          isis = `'AA${kode}','AA${nama}','AA${singkatan}',0,0,-1`;
+          isis = `'${kode}','${nama}','${singkatan}',0,0,-1`;
         }
 
         let tabel2 = 'kurikulum_mk'; //assign to tb_kurikulum_mk
@@ -329,7 +375,10 @@ echo $kurikulum;
       let petunjuk = `Data ${kolom} baru:`;
 
       let isi_baru = prompt(petunjuk,isi);
-      if(!isi_baru || isi_baru.trim()==isi) return;
+      if(isi_baru===null) return;
+      if(isi_baru.trim()==isi) return;
+
+      isi_baru = isi_baru.trim()==='' ? 'NULL' : isi_baru.trim();
       
       // VALIDASI UPDATE DATA
       if(kolom=='no_wa' || kolom=='no_hp'){

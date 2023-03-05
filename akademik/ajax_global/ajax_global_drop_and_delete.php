@@ -22,14 +22,14 @@ if ($tabel=='' OR $kolom_acuan=='' OR $acuan=='' OR $tabel2=='' OR $kolom_acuan2
 # ================================================
 # DELETE CHILD RELATION FROM TABEL2
 # ================================================
-$s = "DELETE FROM tb_$tabel2 WHERE $kolom_acuan2 = '$acuan2' ";
+$s = "DELETE FROM tb_$tabel2 WHERE $kolom_acuan = '$acuan' AND $kolom_acuan2 = '$acuan2' ";
 $q = mysqli_query($cn,$s) or die("Error @ajax. Tidak bisa menghapus child relation. \n\nSQL: $s\n\n".mysqli_error($cn));
 // $tmp = $s;
 
 # ================================================
 # DELETE MAIN TABEL
 # ================================================
-$s = "DELETE FROM tb_$tabel WHERE $kolom_acuan = '$acuan' ";
+$s = "DELETE FROM tb_$tabel WHERE id = '$acuan2' ";
 // $tmp .= "\n\n$s";
 $q = mysqli_query($cn,$s) or die("Error @ajax. Tidak bisa menghapus pada main tabel. \n\nSQL: $s\n\n".mysqli_error($cn));
 // die($tmp);

@@ -19,7 +19,8 @@ if ($tabel=='' OR $kolom_target=='' OR $kolom_acuan=='' OR $acuan=='' OR $isi_ba
 # ================================================
 # MAIN HANDLE
 # ================================================
-$s = "UPDATE tb_$tabel SET $kolom_target = '$isi_baru' WHERE $kolom_acuan = '$acuan' ";
+$isi_baru = strtoupper($isi_baru)=='NULL' ? 'NULL' : "'$isi_baru'";
+$s = "UPDATE tb_$tabel SET $kolom_target = $isi_baru WHERE $kolom_acuan = '$acuan' ";
 $q = mysqli_query($cn,$s) or die("Error @ajax. Tidak bisa mengupdate values. SQL:$s. ".mysqli_error($cn));
 die('sukses');
 ?>

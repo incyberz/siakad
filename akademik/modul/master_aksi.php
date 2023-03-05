@@ -45,9 +45,10 @@ for ($j=0; $j < count($Field); $j++) {
     if($tabel_select=='is_publish') $tabel_select='status_mk';
     if($nama_kolom=='jenjang') {$kolom_acuan_select='jenjang';}
     if($nama_kolom=='kelas') {$kolom_acuan_select='kelas';}
-    if($nama_kolom=='kelas') {$kolom_acuan_select='kelas';}
+    if($nama_kolom=='angkatan') {$kolom_acuan_select='angkatan';}
 
     $s2 = "DESCRIBE tb_$tabel_select";
+    // if($Field[$j]=='angkatan') die("zzz $s2");
     $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
     $k=0;
     while ($d2=mysqli_fetch_assoc($q2)) {
@@ -55,10 +56,12 @@ for ($j=0; $j < count($Field); $j++) {
       $k++;
     }
     $kolom_isi_select = in_array('nama',$Field2) ? 'nama' : 'id';
-    $defid = $nama_kolom;
+    $defid = $d[$nama_kolom];
 
     // exception
+    if($nama_kolom=='jenjang') {$kolom_isi_select='jenjang';}
     if($nama_kolom=='kelas') {$kolom_isi_select='kelas';}
+    if($nama_kolom=='angkatan') {$kolom_isi_select='angkatan';}
 
     echo "
     <script>

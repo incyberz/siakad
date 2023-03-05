@@ -11,9 +11,12 @@ $c = explode("&", $b[1]);
 
 switch ($c[0]){
   case '':
-  case 'dashboard': $konten = 'modul/dashboard/dashboard.php';break;
+  case 'dashboard': $konten = 'modul/dashboard/siakad_dashboard.php';break;
   case 'master': $konten = 'modul/master.php';break;
-  case 'kurikulum': $konten = 'modul/kurikulum/kurikulum.php';break;
+  case 'kurikulum': $konten = 'modul/kurikulum/manage_kurikulum.php';break;
+  case 'manage_jadwal': $konten = 'modul/jadwal/manage_jadwal.php';break;
+  case 'manage_sesi': $konten = 'modul/sesi_kuliah/manage_sesi.php';break;
+  case 'assign_mk': $konten = 'modul/kurikulum/assign_mk.php';break;
 }
 
 /*

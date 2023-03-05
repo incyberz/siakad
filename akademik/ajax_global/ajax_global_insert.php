@@ -19,7 +19,7 @@ if ($tabel=='' OR $koloms=='' OR $isis=='') die("Error AJAX-global-insert. Salah
 # ================================================
 # MAIN HANDLE
 # ================================================
-$s = "INSERT INTO $tabel ($koloms) VALUES ($isis)";
+$s = "INSERT INTO tb_$tabel ($koloms) VALUES ($isis)";
 $q = mysqli_query($cn,$s) or die("Error @ajax. ".mysqli_error($cn));
 
 die('sukses');

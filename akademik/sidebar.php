@@ -8,10 +8,12 @@
       ?>
       <li><a href="?"><i class="icon_easel_alt"></i>Dashboard</a></li>
       <li><a href="?master"><i class="icon_genius"></i>Master Data</a></li>
-      <li><a href="?master&p=kurikulum"><i class="icon_genius"></i>Kurikulum</a></li>
+      <li><a href="?master&p=kurikulum"><i class="icon_genius"></i>Manage Kurikulum</a></li>
+      <li><a href="?manage_jadwal"><i class="icon_genius"></i>Manage Jadwal</a></li>
+      <li><a href="../tmp/relasi.png" target="_blank"><i class="icon_genius"></i>Relasi DB</a></li>
 
 
-      <li><a href="../"><i class="icon_house_alt"></i>Siakad Home</a></li>
+      <!-- <li><a href="../"><i class="icon_house_alt"></i>Siakad Home</a></li> -->
     </ul>
   </div>
 </aside>

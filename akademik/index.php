@@ -117,4 +117,8 @@ include 'routing_akd.php';
   $(document).on("click",".not_ready",function(){
     return alert("Maaf, fitur ini sedang dalam tahap pengembangan. Terimakasih sudah mencoba!");
   })
+
+  $(function(){
+    $(".closable").click(function(){$(this).fadeOut()})
+  })
 </script>
