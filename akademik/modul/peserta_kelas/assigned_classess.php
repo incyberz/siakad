@@ -27,7 +27,7 @@ while ($d=mysqli_fetch_assoc($q)) {
     <td id=$d[nama_dosen]>$d[nama_dosen]</td>
     <td>
       <a class='btn btn-info btn-sm' href='?master&p=peserta_kelas&aksi=update&id=$d[id_peserta_kelas]' target='_blank'>Edit</a>
-      <button class='btn btn-danger btn-sm btn_aksi' id='drop__$d[kelas]'>Drop</button>
+      <button class='btn btn-danger btn-sm btn_aksi' id='drop__$d[id_peserta_kelas]'>Drop</button>
     </td>
   </tr>";
 }
@@ -65,11 +65,21 @@ $tb_ascl = $tr=='' ? "<div class='alert alert-danger'>Belum ada peserta kelas</d
       let tid = $(this).prop('id');
       let rid = tid.split('__');
       let aksi = rid[0];
-      let kelas = rid[0];
+      let id_peserta_kelas = rid[1];
       let link_ajax;
 
       if(aksi=='drop'){
-        link_ajax = `ajax_akademik/ajax_`
+        link_ajax = `ajax_akademik/ajax_drop_peserta_kelas.php?id_peserta_kelas=${id_peserta_kelas}`;
+        $.ajax({
+          url: link_ajax,
+          success: function(a){
+            if(a.trim()=='sukses'){
+              $("#tr__"+id_peserta_kelas).fadeOut();
+            }else{
+              alert(a);
+            }
+          }
+        })
 
       }
     })

@@ -12,7 +12,6 @@ akademik/modul/data_tendik
 akademik/modul/jadwal_kuliah
 akademik/modul/konfigurasi_sistem
 akademik/modul/presensi_kuliah
-akademik/modul/sesi_kuliah
 assets/vendor
 docs
 dosen

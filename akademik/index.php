@@ -57,6 +57,8 @@ include 'routing_akd.php';
 
   <link href="css/admin_siakad.css" rel="stylesheet">
   <link href="css/akd.css" rel="stylesheet">
+  <?php include 'akd_styles.php'; ?>
+  <?php include 'akd_function.php'; ?>
 </head>
 
 <body>
