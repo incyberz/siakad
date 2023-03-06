@@ -13,7 +13,6 @@ $keycol['dosen'] = ['nama','nidn'];
 $keycol['output_pmb'] = ['nama'];
 $keycol['jalur'] = ['nama'];
 $keycol['kelas'] = ['kelas'];
-$keycol['shift_kelas'] = ['nama'];
 $keycol['kurikulum'] = ['nama'];
 $keycol['kurikulum_mk'] = ['id_semester'];
 $keycol['jadwal'] = ['id_kurikulum_semester_mk'];

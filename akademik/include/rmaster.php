@@ -13,7 +13,6 @@ $rmaster = [
 'output_pmb',
 'jalur',
 'kelas',
-'shift_kelas',
 'kurikulum',
 'kurikulum_mk',
 'jadwal',

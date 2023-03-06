@@ -10,7 +10,7 @@
       <li><a href="?master"><i class="icon_genius"></i>Master Data</a></li>
       <li><a href="?master&p=kurikulum"><i class="icon_genius"></i>Manage Kurikulum</a></li>
       <li><a href="?manage_jadwal"><i class="icon_genius"></i>Manage Jadwal</a></li>
-      <li><a href="?manage_peserta"><i class="icon_genius"></i>Manage Peserta</a></li>
+      <li><a href="?manage_kelas"><i class="icon_genius"></i>Manage Kelas</a></li>
       <li><a href="?manage_sesi"><i class="icon_genius"></i>Manage Sesi</a></li>
       <li><a href="../tmp/relasi.png" target="_blank"><i class="icon_genius"></i>Relasi DB</a></li>
 

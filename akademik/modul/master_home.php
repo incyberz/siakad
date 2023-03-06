@@ -57,7 +57,7 @@ for ($i=0; $i < count($rmaster); $i++) {
 </div>
 
 <div class="master-home">
-  <?php  echo "$ui_master[jalur] $ui_master[kelas] $ui_master[shift_kelas]";?>
+  <?php  echo "$ui_master[jalur] $ui_master[kelas] ";?>
 </div>
 
 <div class="master-home">

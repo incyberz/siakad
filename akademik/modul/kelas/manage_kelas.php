@@ -1,4 +1,4 @@
-<h1>Manage Peserta Kelas</h1>
+<h1>Manage Kelas Peserta</h1>
 <?php
 if(isset($_POST['btn_assign_peserta_kelas'])){
 
@@ -17,13 +17,19 @@ if(isset($_POST['btn_assign_peserta_kelas'])){
     $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
 
-    echo div_alert('success',"Assign Peserta Kelas sukses.<hr><a href='?manage_peserta&id_jadwal=$_GET[id_jadwal]'>Lanjutkan Proses</a>");
+    echo div_alert('success',"Assign Peserta Kelas sukses.<hr><a href='?manage_kelas&id_jadwal=$_GET[id_jadwal]'>Lanjutkan Proses</a>");
     exit;
   }
 }
 
 
-$id_jadwal = isset($_GET['id_jadwal']) ? $_GET['id_jadwal'] : die(erid('id_jadwal'));
+$id_jadwal = isset($_GET['id_jadwal']) ? $_GET['id_jadwal'] : '';
+
+if($id_jadwal==''){
+  include 'modul/jadwal_kuliah/list_jadwal.php';
+  exit;
+}
+
 echo "<span class=debug id=id_jadwal>$id_jadwal</span>";
 $s = "SELECT 
 a.keterangan,
@@ -83,7 +89,7 @@ include 'include/option_prodi.php';
     </div>
   </div>
   <div class="col-lg-6">
-    <?php include 'modul/peserta_kelas/assigned_classess.php'; ?>
+    <?php include 'modul/kelas/assigned_classess.php'; ?>
   </div>
 </div>
 

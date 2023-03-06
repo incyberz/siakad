@@ -16,6 +16,7 @@ switch ($c[0]){
   case 'kurikulum': $konten = 'modul/kurikulum/manage_kurikulum.php';break;
   case 'manage_jadwal': $konten = 'modul/jadwal/manage_jadwal.php';break;
   case 'manage_sesi': $konten = 'modul/sesi_kuliah/manage_sesi_kuliah.php';break;
-  case 'manage_peserta': $konten = 'modul/peserta_kelas/manage_peserta_kelas.php';break;
+  case 'batch_tanggal_sesi': $konten = 'modul/sesi_kuliah/batch_tanggal_sesi.php';break;
+  case 'manage_kelas': $konten = 'modul/kelas/manage_kelas.php';break;
   case 'assign_mk': $konten = 'modul/kurikulum/assign_mk.php';break;
 }

@@ -114,7 +114,7 @@ if($id_kurikulum_mk==''){
   $primary_set_dosen = $dkmk['nama_dosen']=='' ? 'primary' : 'warning';
   $btn_set_sesi = $dkmk['nama_dosen']=='' ? '' : "
     <div class=btn-link>
-      <a href='?manage_peserta&id_jadwal=$dkmk[id_jadwal]' class='btn btn-primary btn-block'>Set Peserta Kuliah</a>
+      <a href='?manage_kelas&id_jadwal=$dkmk[id_jadwal]' class='btn btn-primary btn-block'>Set Peserta Kuliah</a>
     </div>
     <div class=btn-link>
       <a href='?manage_sesi&id_jadwal=$dkmk[id_jadwal]' class='btn btn-primary btn-block'>Set Jadwal Sesi Kuliah</a>
