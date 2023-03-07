@@ -3,10 +3,14 @@ include '../../conn.php';
 include 'session_security.php';
 
 $keyword = isset($_GET['keyword']) ? $_GET['keyword'] : die(erid('keyword'));
+$kelas = isset($_GET['kelas']) ? $_GET['kelas'] : die(erid('kelas'));
+$punya_kelas = isset($_GET['punya_kelas']) ? $_GET['punya_kelas'] : die(erid('punya_kelas'));
 
 # ===================================================
 # LIST JADWAL
 # ===================================================
+$kelas_is_null = $punya_kelas ? 'kelas is not null' : 'kelas is null';
+
 $limit = 10;
 $s = "SELECT 
 a.id,
@@ -16,6 +20,9 @@ a.kelas
 
 FROM tb_mhs a 
 WHERE (a.nim like '%$keyword%' OR a.nama like '%$keyword%') 
+AND (kelas != '$kelas' OR kelas is null) 
+AND $kelas_is_null 
+
 ORDER BY a.nama    
 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
@@ -48,7 +55,7 @@ while ($d = mysqli_fetch_assoc($q)) {
     <td>$i</td>
     <td>$d[nim]</td>
     <td>$d[nama_mhs]</td>
-    <td>$kelas</td>
+    <td id=kelas_asal__$d[id]>$kelas</td>
     <td>
       $btn_assign
     </td>

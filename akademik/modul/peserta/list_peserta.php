@@ -30,7 +30,7 @@ while ($d = mysqli_fetch_assoc($q)) {
   $i++;
   $btn_drop = "<button class='btn btn-danger btn-sm btn_aksi' id='drop__$d[id]'>Drop</button>";
   $kelas = $d['kelas']==''?'<span class="abu miring">-- null --</span>':$d['kelas'];
-  $tr .= "<tr>
+  $tr .= "<tr id=tr2__$d[id]>
     <td>$i</td>
     <td>$d[nim]</td>
     <td>$d[nama_mhs]</td>

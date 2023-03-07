@@ -20,6 +20,8 @@ if(isset($_POST['btn_set_dosen'])){
 $id_kurikulum_mk = isset($_GET['id_kurikulum_mk']) ? $_GET['id_kurikulum_mk'] : '';
 
 if($id_kurikulum_mk==''){
+  include 'modul/kurikulum/list_kurikulum_mk.php';
+  exit;
   $blok_mk = "
   <div class='alert alert-info'>
     <span class=red>ID-MK pada Kurikulum belum terdefinisi.</span>
@@ -80,7 +82,7 @@ if($id_kurikulum_mk==''){
   # ==========================================================
   # OUTPUT BLOK MK
   # ==========================================================
-  $pilih_mk_lain = "<div class='btn-link kecil'>Opsi : <a href='?kurikulum&id=$dkmk[id_kurikulum]'>Pilih MK lain</a></div>";
+  $pilih_mk_lain = "<div class='btn-link kecil'>Opsi : <a href='?manage_kurikulum&id=$dkmk[id_kurikulum]'>Pilih MK lain</a></div>";
   $blok_mk = "<table class=table>$tr_mk</table>$pilih_mk_lain";
 
 

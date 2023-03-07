@@ -2,7 +2,8 @@
 $s = "SELECT 
 a.kelas,
 e.nama as nama_dosen,  
-b.id as id_kelas_peserta   
+b.id as id_kelas_peserta,
+(SELECT count(1) from tb_mhs where kelas=a.kelas) as jumlah_mhs    
 from tb_kelas a 
 join tb_kelas_peserta b on a.kelas=b.kelas 
 join tb_kurikulum_mk c on c.id=b.id_kurikulum_mk 
@@ -23,7 +24,7 @@ while ($d=mysqli_fetch_assoc($q)) {
   $i++;
   $tr .= "<tr id=tr__$d[id_kelas_peserta]>
     <td>$i</td>
-    <td id=$d[kelas]>$d[kelas]</td>
+    <td><span id=$d[kelas]>$d[kelas]</span> | $d[jumlah_mhs] | <a href='?manage_peserta&kelas=$d[kelas]' target=_blank>Manage</a></td>
     <td id=$d[nama_dosen]>$d[nama_dosen]</td>
     <td>
       <a class='btn btn-info btn-sm' href='?master&p=kelas_peserta&aksi=update&id=$d[id_kelas_peserta]' target='_blank'>Edit</a>

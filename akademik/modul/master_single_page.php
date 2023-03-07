@@ -104,7 +104,7 @@ while ($d = mysqli_fetch_assoc($q)) {
     # SPECIAL MANAGE FOR KURIKULUM
     # ===============================================
     $btn_master_kurikulum = $page!='kurikulum' ? '' 
-    : "<a class='btn btn-primary btn-sm btn-block mb-2 upper' href='?kurikulum&$param_id=$d[$param_id]'>manage</a>";
+    : "<a class='btn btn-primary btn-sm btn-block mb-2 upper' href='?manage_kurikulum&$param_id=$d[$param_id]'>manage</a>";
 
 
 

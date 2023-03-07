@@ -10,14 +10,14 @@ if(isset($_POST['btn_assign'])){
   // die(var_dump($_POST));
   $s = "INSERT INTO tb_kurikulum_mk (id_semester,id_mk) VALUES ($_POST[id_semester],$_POST[id_mk])";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  echo "<div class='alert alert-success'>Assign MK Sukses<hr><a class='btn btn-success' href='?kurikulum&id=$_POST[id_kurikulum]'>kembali ke Kurikulum</a></div>";
+  echo "<div class='alert alert-success'>Assign MK Sukses<hr><a class='btn btn-success' href='?manage_kurikulum&id=$_POST[id_kurikulum]'>kembali ke Kurikulum</a></div>";
   exit;
 }
 
 $id_kurikulum = isset($_GET['id_kurikulum']) ? $_GET['id_kurikulum'] : die("<script>location.replace('?master&p=kurikulum')</script>");
 $nama_kurikulum = isset($_GET['nama_kurikulum']) ? $_GET['nama_kurikulum'] : die("<script>location.replace('?master&p=kurikulum')</script>");
-$id_semester = isset($_GET['id_semester']) ? $_GET['id_semester'] : die("<script>location.replace('?kurikulum&id=$id_kurikulum')</script>");
-$no_semester = isset($_GET['no_semester']) ? $_GET['no_semester'] : die("<script>location.replace('?kurikulum&id=$id_kurikulum')</script>");
+$id_semester = isset($_GET['id_semester']) ? $_GET['id_semester'] : die("<script>location.replace('?manage_kurikulum&id=$id_kurikulum')</script>");
+$no_semester = isset($_GET['no_semester']) ? $_GET['no_semester'] : die("<script>location.replace('?manage_kurikulum&id=$id_kurikulum')</script>");
 
 $select_mk = "<select class='form-control' name='id_mk' id='id_mk' >";
 

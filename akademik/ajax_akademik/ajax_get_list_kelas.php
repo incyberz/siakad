@@ -11,7 +11,8 @@ $keyword = isset($_GET['keyword']) ? $_GET['keyword'] : die(erid('keyword'));
 # ===================================================
 $s = "SELECT 
 a.kelas,
-b.nama as nama_jalur   
+b.nama as nama_jalur,
+(SELECT count(1) from tb_mhs WHERE kelas=a.kelas ) as jumlah_mhs    
 FROM tb_kelas a 
 JOIN tb_jalur b on a.id_jalur = b.id 
 WHERE a.id_prodi = $id_prodi 
@@ -28,7 +29,7 @@ while ($d = mysqli_fetch_assoc($q)) {
   $tr .= "<tr>
     <td>$i</td>
     <td>$d[kelas]</td>
-    <td>$d[nama_jalur]</td>
+    <td>$d[jumlah_mhs] Mhs</td>
     <td>
       <a href='?manage_peserta&kelas=$d[kelas]' class='btn btn-info btn-sm proper'>Manage Peserta</a>
     </td>

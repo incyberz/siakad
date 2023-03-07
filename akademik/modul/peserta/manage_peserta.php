@@ -54,6 +54,10 @@ $s = "";
         <div>
           <input id=keyword class="form-control">
         </div>
+        <div>
+          <input id=punya_kelas type=checkbox> 
+          <label for="punya_kelas">Sudah Punya Kelas</label>
+        </div>
         <span id=last_keyword class="debug">last_keyword</span>
       </div>
 
@@ -86,9 +90,12 @@ $s = "";
     $("#keyword").keyup(function(){
       let keyword = $("#keyword").val();
       let last_keyword = $("#last_keyword").text();
+      let kelas = $("#kelas").text();
+      let punya_kelas = $("#punya_kelas").prop("checked")==true ? 1 : 0;
 
-      if(keyword==last_keyword) return;
-      let link_ajax = `ajax_akademik/ajax_get_list_mhs.php?keyword=${keyword}&`;
+      // if(keyword==last_keyword) return;
+      let link_ajax = `ajax_akademik/ajax_get_list_mhs.php?keyword=${keyword}&kelas=${kelas}&punya_kelas=${punya_kelas}&`;
+      
 
       $.ajax({
         url:link_ajax,
@@ -100,29 +107,41 @@ $s = "";
     });
     $("#keyword").keyup();
 
+    $("#punya_kelas").click(function(){$("#keyword").keyup()});
+
 
     $(document).on("click",".btn_aksi",function(){
       let tid = $(this).prop('id');
       let rid = tid.split('__');
       let aksi = rid[0];
       let id_mhs = rid[1];
-      let link_ajax;
-      alert(aksi);
 
-      if(aksi=='drop'){
-        link_ajax = `ajax_akademik/ajax_drop_kelas_mhs.php?id_mhs=${id_mhs}`;
-        $.ajax({
-          url: link_ajax,
-          success: function(a){
-            if(a.trim()=='sukses'){
-              $("#tr__"+id_mhs).fadeOut();
-            }else{
-              alert(a);
-            }
-          }
-        })
+      let kelas_asal = $("#kelas_asal__"+id_mhs).text()
+      let kelas = $("#kelas").text()
 
+      if(aksi=='move'){
+        let y = confirm(`Yakin untuk memindahkan kelas?\n\nDari: ${kelas_asal}\nKe: ${kelas}\n\nPerhatian! Pemindahan Kelas akan berdampak pada proses KRS, KHS, dan Pembayaran.`);
+        if(!y) return;
       }
+
+      let kelas_sent = aksi=='drop' ? '' : kelas;
+      let link_ajax = `ajax_akademik/ajax_set_kelas_mhs.php?id_mhs=${id_mhs}&kelas=${kelas_sent}&`;
+      // alert(link_ajax); return;
+      $.ajax({
+        url: link_ajax,
+        success: function(a){
+          if(a.trim()=='sukses'){
+            if(aksi=='drop'){
+              $("#tr2__"+id_mhs).fadeOut();
+            }else{
+              $("#tr__"+id_mhs).fadeOut();
+            }
+          }else{
+            alert(a);
+          }
+        }
+      })
+
     })
   })
 </script>
