@@ -69,7 +69,7 @@ for ($i=0; $i < count($rmaster); $i++) {
 </div>
 
 <div class="master-home">
-  <?php  echo "$ui_master[jadwal] $ui_master[peserta_kelas] $ui_master[ruang] $ui_master[sesi_kuliah] ";?>
+  <?php  echo "$ui_master[jadwal] $ui_master[kelas_peserta] $ui_master[ruang] $ui_master[sesi_kuliah] ";?>
 </div>
 
 <div class="master-home">

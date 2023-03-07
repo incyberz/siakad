@@ -1,10 +1,10 @@
 <h1>Manage Kelas Peserta</h1>
 <?php
-if(isset($_POST['btn_assign_peserta_kelas'])){
+if(isset($_POST['btn_assign_kelas_peserta'])){
 
   $values = '';
   foreach ($_POST as $key => $value) {
-    if($key=='id_kurikulum_mk' || $key=='id_dosen' || $key=='btn_assign_peserta_kelas') continue;
+    if($key=='id_kurikulum_mk' || $key=='id_dosen' || $key=='btn_assign_kelas_peserta') continue;
     $values .= ",('$_POST[id_kurikulum_mk]','$_POST[id_dosen]','$key')";
 
   }
@@ -12,12 +12,12 @@ if(isset($_POST['btn_assign_peserta_kelas'])){
     $values = "__$values";
     $values = str_replace('__,','',$values);
 
-    $s = "INSERT INTO tb_peserta_kelas (id_kurikulum_mk,id_dosen,kelas) VALUES $values";
+    $s = "INSERT INTO tb_kelas_peserta (id_kurikulum_mk,id_dosen,kelas) VALUES $values";
     // die($s);
     $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
 
-    echo div_alert('success',"Assign Peserta Kelas sukses.<hr><a href='?manage_kelas&id_jadwal=$_GET[id_jadwal]'>Lanjutkan Proses</a>");
+    echo div_alert('success',"Assign Kelas Peserta sukses.<hr><a href='?manage_kelas&id_jadwal=$_GET[id_jadwal]'>Lanjutkan Proses</a>");
     exit;
   }
 }
@@ -71,7 +71,7 @@ include 'include/option_prodi.php';
 <hr>
 <div class="row">
   <div class="col-lg-6">
-    <p>Silahkan pilih kelas mana saja yang akan menjadi peserta kelas!</p>
+    <p>Silahkan pilih kelas mana saja yang akan menjadi kelas peserta!</p>
     <style>.blok_filter{display:flex; flex-wrap:wrap;} .blok_filter div{margin-right:10px}</style>
     <div class="blok_filter mb2">
       <div>Angkatan</div>
@@ -97,7 +97,6 @@ include 'include/option_prodi.php';
 <script>
   $(function(){
     $(".filter").change(function(){
-      console.log('zzz');
       let angkatan = $("#angkatan").val();
       let id_prodi = $("#id_prodi").val();
       let id_jadwal = $("#id_jadwal").text();

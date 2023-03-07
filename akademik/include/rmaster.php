@@ -16,7 +16,7 @@ $rmaster = [
 'kurikulum',
 'kurikulum_mk',
 'jadwal',
-'peserta_kelas',
+'kelas_peserta',
 'ruang',
 'sesi_kuliah',
 'presensi',

@@ -11,7 +11,7 @@ $id_jadwal = isset($_GET['id_jadwal']) ? $_GET['id_jadwal'] : die(erid('id_jadwa
 # ===================================================
 $sql_where_jadwal = $id_jadwal=='' ? '1' : "d.id = $id_jadwal";
 $s = "SELECT a.kelas from tb_kelas a 
-join tb_peserta_kelas b on a.kelas=b.kelas 
+join tb_kelas_peserta b on a.kelas=b.kelas 
 join tb_kurikulum_mk c on c.id=b.id_kurikulum_mk 
 join tb_jadwal d on d.id_kurikulum_mk=c.id 
 where a.angkatan=$angkatan and a.id_prodi=$id_prodi and $sql_where_jadwal";
@@ -37,5 +37,5 @@ while ($d=mysqli_fetch_assoc($q)) {
   $ceks .= "<div><label><input type=checkbox id='$d[kelas]' name='$d[kelas]'> $d[kelas]</label></div>";
 }
 
-echo $ceks==''? "<div class='abu miring alert alert-danger'>-- kelas not found --</div>" : "<div class='wadah bg-white'><div class='wadah gradasi-hijau'>$ceks</div><div class='btn-link'><button class='btn btn-primary' name='btn_assign_peserta_kelas'>Assign Peserta Kelas</button></div></div>";
+echo $ceks==''? "<div class='abu miring alert alert-danger'>-- kelas not found --</div>" : "<div class='wadah bg-white'><div class='wadah gradasi-hijau'>$ceks</div><div class='btn-link'><button class='btn btn-primary' name='btn_assign_kelas_peserta'>Assign Kelas Peserta</button></div></div>";
 ?>
