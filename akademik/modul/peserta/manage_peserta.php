@@ -94,7 +94,7 @@ $s = "";
       let punya_kelas = $("#punya_kelas").prop("checked")==true ? 1 : 0;
 
       // if(keyword==last_keyword) return;
-      let link_ajax = `ajax_akademik/ajax_get_list_mhs.php?keyword=${keyword}&kelas=${kelas}&punya_kelas=${punya_kelas}&`;
+      let link_ajax = `ajax_akademik/ajax_get_list_peserta.php?keyword=${keyword}&kelas=${kelas}&punya_kelas=${punya_kelas}&`;
       
 
       $.ajax({

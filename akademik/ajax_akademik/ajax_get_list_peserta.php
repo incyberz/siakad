@@ -3,19 +3,25 @@ include '../../conn.php';
 include 'session_security.php';
 
 $keyword = isset($_GET['keyword']) ? $_GET['keyword'] : die(erid('keyword'));
+$kelas = isset($_GET['kelas']) ? $_GET['kelas'] : die(erid('kelas'));
+$punya_kelas = isset($_GET['punya_kelas']) ? $_GET['punya_kelas'] : die(erid('punya_kelas'));
 
 # ===================================================
 # LIST JADWAL
 # ===================================================
+$kelas_is_null = $punya_kelas ? 'kelas is not null' : 'kelas is null';
 
 $limit = 10;
 $s = "SELECT 
 a.id,
 a.nim,
-a.nama as nama_mhs 
+a.nama as nama_mhs,
+a.kelas 
 
 FROM tb_mhs a 
 WHERE (a.nim like '%$keyword%' OR a.nama like '%$keyword%') 
+AND (kelas != '$kelas' OR kelas is null) 
+AND $kelas_is_null 
 
 ORDER BY a.nama    
 ";
@@ -31,6 +37,7 @@ $thead = '
     <th>No</th>
     <th>NIM</th>
     <th>Nama</th>
+    <th>Kelas</th>
     <th>Aksi</th>
   </thead>
 ';
@@ -38,12 +45,19 @@ $tr = '';
 $i=0;
 while ($d = mysqli_fetch_assoc($q)) {
   $i++;
-  $tr .= "<tr id='tr__$d[id]'>
+  $bg_merah = $d['kelas']=='' ? '' : 'bg-merah'; 
+  $tr_sty = $d['kelas']=='' ? '' : 'style="background:linear-gradient(#fee,#fcc)"'; 
+  $btn_assign = $d['kelas']=='' 
+  ? "<button class='btn btn-primary btn-sm btn_aksi' id='assign__$d[id]'>Assign</button>"
+  : "<button class='btn btn-danger btn-sm btn_aksi' id='move__$d[id]'>Move</button>";
+  $kelas = $d['kelas']==''?'<span class="abu miring">-- null --</span>':$d['kelas'];
+  $tr .= "<tr $tr_sty class='$bg_merah' id='tr__$d[id]'>
     <td>$i</td>
     <td>$d[nim]</td>
     <td>$d[nama_mhs]</td>
+    <td id=kelas_asal__$d[id]>$kelas</td>
     <td>
-      Edit | <a href='?login_as&id_mhs=$d[id]'>Login As</a> | Pembayaran | KRS | KHS | Transkrip | Delete
+      $btn_assign
     </td>
   </tr>";
 }

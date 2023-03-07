@@ -1,41 +1,6 @@
 <h1>Manage Sesi Kuliah</h1>
 <?php
-if(isset($_POST['btn_buat_sesi_default'])){
-  $id_dosen = $_POST['id_dosen'];
-  $id_jadwal = $_POST['id_jadwal'];
-  $jumlah_sesi = $_POST['jumlah_sesi'];
-  $sesi_uts = $_POST['sesi_uts'];
-  $sesi_uas = $_POST['sesi_uas'];
-  
-  $values = '__';
-  for ($i=1; $i <= $jumlah_sesi ; $i++) {
-
-    $nama_sesi = "NEW P$i";
-    $nama_sesi = $i==$sesi_uts ? 'UTS' : $nama_sesi;
-    $nama_sesi = $i==$sesi_uas ? 'UAS' : $nama_sesi;
-    
-    $values .= ",(
-    $id_jadwal,
-    $i,
-    $id_dosen,
-    '$nama_sesi'
-    )";
-  }
-  $values = str_replace('__,','',$values);
-
-  $s = "INSERT INTO tb_sesi_kuliah (
-    id_jadwal,
-    pertemuan_ke,
-    id_dosen,
-    nama
-    ) VALUES $values";
-  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-
-  echo div_alert('success',"Membuat $jumlah_sesi Sesi Kuliah Default berhasil.<hr><a href='?manage_sesi&id_jadwal=$id_jadwal'>Lanjutkan Proses</a>");
-  exit;
-  
-}
-
+include 'form_buat_sesi_default_process.php';
 
 $id_jadwal = isset($_GET['id_jadwal']) ? $_GET['id_jadwal'] : '';
 
@@ -51,7 +16,8 @@ d.id as id_dosen,
 d.nama as dosen_koordinator,  
 a.sesi_uts,  
 a.sesi_uas,  
-a.jumlah_sesi  
+a.jumlah_sesi,
+a.tanggal_jadwal   
 
 FROM tb_jadwal a 
 JOIN tb_kurikulum_mk b on b.id=a.id_kurikulum_mk 
@@ -98,18 +64,7 @@ join tb_dosen b on b.id=a.id_dosen
 where a.id_jadwal=$id_jadwal order by a.pertemuan_ke";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 if(mysqli_num_rows($q)==0){
-  $tb_sesi = "
-  <div class='alert alert-info'>
-    Belum ada sesi untuk jadwal ini.<hr>
-    <form method=post>
-      <input class=debug name=id_jadwal value='$id_jadwal'>
-      <input class=debug name=id_dosen value='$id_dosen'>
-      <input class=debug name=jumlah_sesi value='$jumlah_sesi'>
-      <input class=debug name=sesi_uts value='$sesi_uts'>
-      <input class=debug name=sesi_uas value='$sesi_uas'>
-      <button class='btn btn-primary' name=btn_buat_sesi_default>Buat $d[jumlah_sesi] Sesi Kuliah Default</button>
-    </form>
-  </div>";
+  include 'form_buat_sesi_default.php';
 }else{
 
   $thead = "
