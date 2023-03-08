@@ -14,7 +14,7 @@ include 'include/option_prodi.php';
   <div>
     <select class="filter form-control" id="id_prodi"><?=$option_prodi?></select>
   </div>
-  <div>Kurikulum <span id=last_keyword>last_keyword</span></div>
+  <div>MK <span class=debug id=last_keyword>last_keyword</span></div>
   <div>
     <input class="form-control" id=keyword placeholder="Kurikulum ...">
   </div>
@@ -32,7 +32,7 @@ include 'include/option_prodi.php';
       let keyword = $("#keyword").val();
       let last_keyword = $("#last_keyword").text();
 
-      if(keyword==last_keyword) return;
+      // if(keyword==last_keyword) return;
       let link_ajax = `ajax_akademik/ajax_get_list_kurikulum_mk.php?keyword=${keyword}&id_prodi=${id_prodi}&angkatan=${angkatan}&`;
       $("#debug1").text(link_ajax);
       $.ajax({

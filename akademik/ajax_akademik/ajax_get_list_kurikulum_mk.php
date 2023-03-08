@@ -10,23 +10,26 @@ $keyword = isset($_GET['keyword']) ? $_GET['keyword'] : die(erid('keyword'));
 # LIST JADWAL
 # ===================================================
 $s = "SELECT 
-b.id,
+a.id,
 d.nama as nama_kurikulum,
-c.nomor as semester_ke,
-g.nama as nama_mk,
+b.nomor as semester_ke,
+f.nama as nama_mk,
 d.id as id_kurikulum   
-FROM tb_kurikulum_mk b  
-JOIN tb_semester c on c.id=b.id_semester 
-JOIN tb_kurikulum d on d.id=c.id_kurikulum 
+
+FROM tb_kurikulum_mk a  
+JOIN tb_semester b on b.id=a.id_semester 
+JOIN tb_kalender c on c.id=b.id_kalender 
+JOIN tb_kurikulum d on d.id=a.id_kurikulum 
 JOIN tb_prodi e on e.id=d.id_prodi 
-JOIN tb_kalender f on f.id=d.id_kalender 
-JOIN tb_mk g on b.id_mk=g.id 
+JOIN tb_mk f on a.id_mk=f.id 
 
 WHERE e.id = $id_prodi 
-AND f.angkatan = $angkatan 
-AND d.nama like '%$keyword%' 
-ORDER BY c.nomor, g.nama
+AND c.angkatan = $angkatan 
+AND f.nama like '%$keyword%' 
+ORDER BY b.nomor, f.nama
 ";
+
+// die("<pre>$s</pre>");
 
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 

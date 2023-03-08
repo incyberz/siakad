@@ -8,11 +8,11 @@ include "ajax_session_security.php";
 # ================================================
 # GET VARIABLES
 # ================================================
-$tabel2 = isset($_GET['tabel2']) ? $_GET['tabel2'] : die(erjx("tabel2"));
-$kolom_acuan = isset($_GET['kolom_acuan']) ? $_GET['kolom_acuan'] : die(erjx("kolom_acuan"));
-$acuan = isset($_GET['acuan']) ? $_GET['acuan'] : die(erjx("acuan"));
-$kolom_acuan2 = isset($_GET['kolom_acuan2']) ? $_GET['kolom_acuan2'] : die(erjx("kolom_acuan2"));
-$acuan2 = isset($_GET['acuan2']) ? $_GET['acuan2'] : die(erjx("acuan2"));
+$tabel2 = isset($_GET['tabel2']) ? $_GET['tabel2'] : die(erid("tabel2"));
+$kolom_acuan = isset($_GET['kolom_acuan']) ? $_GET['kolom_acuan'] : die(erid("kolom_acuan"));
+$acuan = isset($_GET['acuan']) ? $_GET['acuan'] : die(erid("acuan"));
+$kolom_acuan2 = isset($_GET['kolom_acuan2']) ? $_GET['kolom_acuan2'] : die(erid("kolom_acuan2"));
+$acuan2 = isset($_GET['acuan2']) ? $_GET['acuan2'] : die(erid("acuan2"));
 
 if ($tabel2=='' OR $kolom_acuan=='' OR $acuan=='' OR $kolom_acuan2=='' OR $acuan2=='') die("Error AJAX-global-delete. Salah satu index masih kosong.");
 

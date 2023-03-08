@@ -8,9 +8,9 @@ include "ajax_session_security.php";
 # ================================================
 # GET VARIABLES
 # ================================================
-$tabel = isset($_GET['tabel']) ? $_GET['tabel'] : die(erjx("tabel"));
-$koloms = isset($_GET['koloms']) ? $_GET['koloms'] : die(erjx("koloms"));
-$isis = isset($_GET['isis']) ? $_GET['isis'] : die(erjx("isis"));
+$tabel = isset($_GET['tabel']) ? $_GET['tabel'] : die(erid("tabel"));
+$koloms = isset($_GET['koloms']) ? $_GET['koloms'] : die(erid("koloms"));
+$isis = isset($_GET['isis']) ? $_GET['isis'] : die(erid("isis"));
 
 // var_dump($_GET);
 

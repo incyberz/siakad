@@ -11,8 +11,7 @@ $keyword = isset($_GET['keyword']) ? $_GET['keyword'] : die(erid('keyword'));
 $s = "SELECT a.id 
 from tb_mk a 
 join tb_kurikulum_mk b on a.id=b.id_mk 
-join tb_semester c on c.id = b.id_semester 
-WHERE c.id_kurikulum = $id_kurikulum  
+WHERE b.id_kurikulum = $id_kurikulum  
 ";
 // die($s);
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
@@ -31,13 +30,12 @@ while ($d=mysqli_fetch_assoc($q)) {
 $s = "SELECT 
 a.nama, 
 a.id,
-c.id_kurikulum 
+b.id_kurikulum 
 
 from tb_mk a 
 join tb_kurikulum_mk b on a.id=b.id_mk 
-join tb_semester c on c.id = b.id_semester 
 
-WHERE c.id_kurikulum != $id_kurikulum  
+WHERE b.id_kurikulum != $id_kurikulum  
 AND a.nama like '%$keyword%'
 order by a.nama;
 

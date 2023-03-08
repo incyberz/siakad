@@ -8,9 +8,9 @@ include "ajax_session_security.php";
 # ================================================
 # GET VARIABLES
 # ================================================
-$table = isset($_GET['table']) ? $_GET['table'] : die(erjx("table"));
-$fields = isset($_GET['fields']) ? $_GET['fields'] : die(erjx("fields"));
-$values = isset($_GET['values']) ? $_GET['values'] : die(erjx("values"));
+$table = isset($_GET['table']) ? $_GET['table'] : die(erid("table"));
+$fields = isset($_GET['fields']) ? $_GET['fields'] : die(erid("fields"));
+$values = isset($_GET['values']) ? $_GET['values'] : die(erid("values"));
 
 // var_dump($_GET);
 

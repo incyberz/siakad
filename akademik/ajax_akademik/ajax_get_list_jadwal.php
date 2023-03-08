@@ -14,8 +14,7 @@ a.keterangan,
 a.id  
 FROM tb_jadwal a 
 JOIN tb_kurikulum_mk b on b.id=a.id_kurikulum_mk 
-JOIN tb_semester c on c.id=b.id_semester 
-JOIN tb_kurikulum d on d.id=c.id_kurikulum 
+JOIN tb_kurikulum d on d.id=b.id_kurikulum 
 JOIN tb_prodi e on e.id=d.id_prodi 
 JOIN tb_kalender f on f.id=d.id_kalender 
 WHERE e.id = $id_prodi 

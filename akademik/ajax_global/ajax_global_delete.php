@@ -9,9 +9,9 @@ include "ajax_session_security.php";
 # GET VARIABLES
 # ================================================
 // include "ajax_global_getting_variables.php";
-$tabel = isset($_GET['tabel']) ? $_GET['tabel'] : die(erjx("tabel"));
-$kolom_acuan = isset($_GET['kolom_acuan']) ? $_GET['kolom_acuan'] : die(erjx("kolom_acuan"));
-$acuan = isset($_GET['acuan']) ? $_GET['acuan'] : die(erjx("acuan"));
+$tabel = isset($_GET['tabel']) ? $_GET['tabel'] : die(erid("tabel"));
+$kolom_acuan = isset($_GET['kolom_acuan']) ? $_GET['kolom_acuan'] : die(erid("kolom_acuan"));
+$acuan = isset($_GET['acuan']) ? $_GET['acuan'] : die(erid("acuan"));
 
 if ($tabel=='' OR $kolom_acuan=='' OR $acuan=='') die("Error AJAX-global-delete. Salah satu index masih kosong.");
 

@@ -8,7 +8,7 @@
 <?php
 if(isset($_POST['btn_assign'])){
   // die(var_dump($_POST));
-  $s = "INSERT INTO tb_kurikulum_mk (id_semester,id_mk) VALUES ($_POST[id_semester],$_POST[id_mk])";
+  $s = "INSERT INTO tb_kurikulum_mk (id_semester,id_mk,id_kurikulum) VALUES ($_POST[id_semester],$_POST[id_mk],$_POST[id_kurikulum])";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   echo "<div class='alert alert-success'>Assign MK Sukses<hr><a class='btn btn-success' href='?manage_kurikulum&id=$_POST[id_kurikulum]'>kembali ke Kurikulum</a></div>";
   exit;

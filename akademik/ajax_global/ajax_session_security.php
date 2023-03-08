@@ -1,5 +1,5 @@
 <?php 
-function erjx($a){return "Error @ajax. Index($a) belum terdefinisi.";}
+// function erid($a){return "Error @ajax. Index($a) belum terdefinisi.";}
 
 // if(!isset($_SESSION['siakad_username']) or 
 // !isset($_SESSION['cnama_operator']) or 

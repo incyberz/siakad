@@ -1,7 +1,7 @@
-<h1>MANAGE KURIKULUM</h1>
+<h1>MANAGE KALENDER</h1>
 <style>
-  .ids-kurikulum h2{margin-top:0; color: darkblue; }
-  .kurikulum {}
+  .ids-kalender h2{margin-top:0; color: darkblue; }
+  .kalender {}
   .semester-ke {font-size:24px !important; color:darkblue !important; margin-bottom:10px}
   .tb-semester-mk th{text-align:left}
 
@@ -10,7 +10,7 @@
 <?php
 
 $id = isset($_GET['id']) ? $_GET['id'] : '';
-if($id<1) die('<script>location.replace("?master&p=kurikulum")</script>');
+if($id<1) die('<script>location.replace("?master&p=kalender")</script>');
 
 
 
@@ -19,47 +19,42 @@ if($id<1) die('<script>location.replace("?master&p=kurikulum")</script>');
 # GET KURIKULUM DATA
 # ==============================================================
 $s = "SELECT 
-b.nama as nama_prodi, 
-a.nama as nama_kurikulum, 
-c.angkatan,
-d.nama as jenjang,
-a.basis, 
-c.jumlah_semester,
-a.is_publish, 
-a.tanggal_penetapan, 
-a.ditetapkan_oleh,
-c.id as id_kalender 
+a.id as id_kalender, 
+a.nama as nama_kalender, 
+a.angkatan,
+a.jenjang,
+a.tanggal_mulai,
+a.jumlah_semester,
+a.jumlah_bulan_per_semester
 
-FROM tb_kurikulum a 
-JOIN tb_prodi b ON b.id=a.id_prodi 
-JOIN tb_kalender c ON c.id=a.id_kalender  
-JOIN tb_jenjang d ON d.jenjang=c.jenjang  
+FROM tb_kalender a 
+JOIN tb_jenjang b ON b.jenjang=a.jenjang  
 WHERE a.id='$id'";
 $q = mysqli_query($cn, $s)or die(mysqli_error($cn));
-if(!mysqli_num_rows($q)) die('Data kurikulum tidak ditemukan.');
+if(!mysqli_num_rows($q)) die('Data kalender tidak ditemukan.');
 $d = mysqli_fetch_assoc($q);
 $jumlah_semester = $d['jumlah_semester'];
-$nama_kurikulum = $d['nama_kurikulum'];
+$nama_kalender = $d['nama_kalender'];
 $id_kalender = $d['id_kalender'];
 
-echo "<div class=debug id=keterangan_kurikulum>$d[nama_kurikulum] Prodi $d[nama_prodi] Angkatan $d[angkatan] Jenjang $d[jenjang]</div>";
+echo "<div class=debug id=keterangan_kalender>Kalender Angkatan $d[angkatan] Jenjang $d[jenjang]</div>";
 
 $tr='';
-foreach($d as $kolom=>$isi){
-  if($kolom=='is_publish') {$isi = $isi==0 ? 'belum' : 'sudah'; $isi="<span class='abu miring'>-- $isi --</span>"; }
-  $kolom_caption = str_replace('_',' ',$kolom);
+foreach($d as $key=>$isi){
+  if($key=='id_kalender') continue;
+  $kolom_caption = str_replace('_',' ',$key);
   $isi = $isi=='' ? '<span class="abu miring">-- null --</span>' : $isi;
-  $tr.="<tr><td class=upper>$kolom_caption</td><td id='$kolom'>$isi</td></td>";
+  $tr.="<tr><td class=upper>$kolom_caption</td><td id='$key'>$isi</td></td>";
 }
 
 
 echo "
-<div class='wadah ids-kurikulum'>
-<h2>Identitas Kurikulum</h2>
+<div class='wadah ids-kalender'>
+<h2>Identitas Kalender</h2>
 <table class=table>
   $tr
 </table>
-<div class=text-right><a href='?master&p=kurikulum&aksi=update&id=$id'>Update Identitas Kurikulum</a></div>
+<div class=text-right><a href='?master&p=kalender&aksi=update&id=$id'>Update Identitas Kalender</a></div>
 </div>";
 
 
@@ -72,14 +67,15 @@ $s = "SELECT
 a.id as id_semester,
 a.nomor as no_semester,
 a.tanggal_awal, 
-a.tanggal_akhir  
+a.tanggal_akhir,
+(SELECT count(1) from tb_kurikulum_mk where id_semester=a.id) as is_have_mk  
 FROM tb_semester a 
 JOIN tb_kalender b ON b.id=a.id_kalender 
-JOIN tb_kurikulum c ON c.id_kalender=b.id  
 
-WHERE c.id='$id' 
+WHERE b.id='$id' 
 ORDER BY a.nomor 
 ";
+echo("<pre>$s</pre>");
 $q = mysqli_query($cn, $s)or die(mysqli_error($cn));
 
 $jumlah_semester_real = mysqli_num_rows($q);
@@ -92,91 +88,49 @@ while ($d=mysqli_fetch_assoc($q)) {
   $i++; 
   array_push($rnomor_semester,$d['no_semester']);
 
-  # ==============================================================
-  # LIST MATA KULIAH
-  # ==============================================================
-  $s2 = "SELECT 
-  a.id as id_mk,
-  a.kode as kode_mk,
-  a.nama as nama_mk,
-  a.bobot_teori,
-  a.bobot_praktik,
-  a.prasyarat,
-  b.id as id_kurikulum_mk, 
-  (SELECT count(1) from tb_kurikulum_mk WHERE id_mk=a.id) as jumlah_assign_mk 
+  $tanggal_awal = date('Y-m-d',strtotime($d['tanggal_awal']));
+  $tanggal_akhir = date('Y-m-d',strtotime($d['tanggal_akhir']));
 
-  FROM tb_mk a 
-  JOIN tb_kurikulum_mk b ON a.id=b.id_mk 
-  JOIN tb_semester c ON b.id_semester=c.id  
-  WHERE c.id='$d[id_semester]'";
-  // echo "<hr>$s2";
-  $q2 = mysqli_query($cn, $s2)or die(mysqli_error($cn));
-  $jumlah_mk = mysqli_num_rows($q2);
-  echo "<div class=debug>jumlah_mk__$d[id_semester]: <span id='jumlah_mk__$d[id_semester]'>$jumlah_mk</span></div>";
-
-  $tr = '';
-  $jumlah_teori[$d['id_semester']] = 0;
-  $jumlah_praktik[$d['id_semester']] = 0;
-  $j=0;
-  while ($d2=mysqli_fetch_assoc($q2)) {
-    $j++;
-    $jumlah_teori[$d['id_semester']] += $d2['bobot_teori'];
-    $jumlah_praktik[$d['id_semester']] += $d2['bobot_praktik'];
-
-    $hapus = $d2['jumlah_assign_mk'] > 1 ? '' : "<td class='deletable btn_aksi text-center' id='hapus__mk__$d2[id_mk]__$d[id_semester]'>H</td>";
-    $drop = "<td class='deletable btn_aksi text-center' id='drop__mk__$d2[id_mk]__$d[id_semester]'>D</td>";
-    $jadwal = "<td class='text-center gradasi-biru'><a href='?manage_jadwal&id_kurikulum_mk=$d2[id_kurikulum_mk]'>J</a></td>";
-    $tr.="
-    <tr id='tr__$d2[id_mk]'>
-      <td>$j</td>
-      <td class='editable' id='kode__mk__$d2[id_mk]'>$d2[kode_mk]</td>
-      <td class='editable' id='nama__mk__$d2[id_mk]'>$d2[nama_mk]</td>
-      <td class='editable' id='bobot_teori__mk__$d2[id_mk]'>$d2[bobot_teori]</td>
-      <td class='editable' id='bobot_praktik__mk__$d2[id_mk]'>$d2[bobot_praktik]</td>
-      <td class='editable' id='prasyarat__mk__$d2[id_mk]'>$d2[prasyarat]</td>
-      $drop  $hapus $jadwal  
-    </tr>    
-    ";
-  } //end while list MK
-
-  $total_teori +=   $jumlah_teori[$d['id_semester']];
-  $total_praktik +=   $jumlah_praktik[$d['id_semester']];
-
-
-  $tr = $tr=='' ? "<tr><td class='red miring' colspan=9>Belum ada MK pada semester ini.</td></tr>" : $tr;
-
-  $tr .= "
+  $tr = "
   <tr>
-    <td colspan=3>Total SKS</td>
-    <td>".$jumlah_teori[$d['id_semester']]."</td>
-    <td>".$jumlah_praktik[$d['id_semester']]."</td>
-    <td colspan=4>(".($jumlah_teori[$d['id_semester']]+$jumlah_praktik[$d['id_semester']])." SKS Total)</td>
-  </tr>";
+    <td>Tanggal Awal</td>
+    <td>
+      <input class='form-control' type=date value='$tanggal_awal' required>
+    </td>
+  </tr>
+  <tr>
+    <td>Tanggal Akhir</td>
+    <td>
+      <input class='form-control' type=date value='$tanggal_akhir' required>
+    </td>
+  </tr>
+  ";
+
+  $btn_edit_semester = "<a href='?master&p=semester&aksi=update&id=$d[id_semester]' class='btn btn-info btn-sm'>Edit</a> ";
+  $btn_hapus_semester = $d['is_have_mk'] ? "<span class='badge badge-info'>Mempunyai $d[is_have_mk] MK</badge>" : "<button class='btn btn-danger btn-sm btn_aksi' id='hapus__semester__$d[id_semester]'>Hapus</button>";
+
+  $wadah = (strtotime($d['tanggal_awal']) <= strtotime($today) and strtotime($d['tanggal_akhir']) >= strtotime($today)) ? 'wadah_active' : 'wadah'; 
+  $semester_aktif = $wadah=='wadah' ? '' : '(Semester Aktif)'; 
+
 
   $semesters .= "
   <div class='col-lg-6' id='semester__$d[id_semester]'>
-    <div class=wadah>
+    <div class=$wadah>
       <div class='semester-ke'>
-        Semester $d[no_semester]
+        Semester $d[no_semester] $semester_aktif <span class=debug>id: $d[id_semester]</span>
       </div>
       <table class='table tb-semester-mk'>
-        <thead>
-          <th>No</th>
-          <th>Kode</th>
-          <th>Mata Kuliah</th>
-          <th>Teori</th>
-          <th>Praktik</th>
-          <th>Prasyarat</th>
-          <th colspan=3 style='text-align:center'>Aksi</th>
-        </thead>
         
         $tr
         
       </table>
-      <div class='text-right'>
-        <a href='?assign_mk&id_kurikulum=$id&id_semester=$d[id_semester]&no_semester=$d[no_semester]&nama_kurikulum=$nama_kurikulum' class='btn btn-primary btn-sm'>Assign MK</a>
-        <button class='btn btn-primary btn-sm btn_aksi' id='tambah_dan_assign__mk__$d[id_semester]'>Tambah MK</button>
-        <button class='btn btn-danger btn-sm btn_aksi' id='hapus__semester__$d[id_semester]'>Hapus Semester</button>
+      <div class='row'>
+        <div class='col-lg-6'>
+          $btn_edit_semester
+        </div>
+        <div class='col-lg-6 text-right'>
+          $btn_hapus_semester
+        </div>
       </div>
     </div>
   </div>
@@ -189,35 +143,27 @@ for ($i=1; $i <= $jumlah_semester ; $i++) {
     $max_no_semester = $i; break;
   }
 }
-echo "<div class=debug id=max_no_semester>$max_no_semester</div>";
-
-$total_sks = $total_praktik + $total_teori;
-$ui_total_sks = "
-<div class=wadah>
-  <ul style='font-size:24px'>
-    <li>Total Teori: $total_teori SKS</li>
-    <li>Total Praktik: $total_praktik SKS</li>
-    <li class='tebal biru'>Total SKS Kurikulum: $total_sks SKS</li>
-  </ul>
+echo "<div class=debug>
+  max_no_semester:<span id=max_no_semester>$max_no_semester</span><br>
+  id_kalender:<span id=id_kalender>$id_kalender</span>
 </div>";
 
-$kurikulum = $semesters=='' ? '<div class="alert alert-danger">Belum ada data semester</div>' : "<div class='row kurikulum'>$semesters</div>$ui_total_sks";
+$kalender = $semesters=='' ? '<div class="alert alert-danger">Belum ada data semester</div>' : "<div class='row kalender'>$semesters</div>";
 
 # ==============================================================
 # TAMBAH SEMESTER
 # ==============================================================
-$btn_tambah = $jumlah_semester==$jumlah_semester_real ? '' 
+$btn_tambah = $jumlah_semester==$jumlah_semester_real 
+? "<p>Semester sudah lengkap. Saatnya Manage Kurikulum.</p><a class='btn btn-primary btn-block mb2' href='?master&p=kurikulum'>Manage Kurikulum</a>" 
 : "
-<div class=wadah>
-  <p>Jumlah semester pada Kurikulum ini adalah $jumlah_semester_real of $jumlah_semester. Anda dapat menambahkannya pada Manage Kalender dan Semester.</p>
-  <a href='?manage_kalender&id=$id_kalender' class='btn btn-primary'>Tambah Semester</a>
-</div>";
-echo $btn_tambah;
+<p>Jumlah semester pada Kalender ini adalah $jumlah_semester_real of $jumlah_semester. Anda dapat menambahkannya.</p>
+<button class='btn btn-primary btn_aksi mb2' id='tambah_semester__semester'>Tambah Semester $max_no_semester</button>
+";
 
 # ==============================================================
 # FINAL OUTPUT SEMESTERS
 # ==============================================================
-echo $kurikulum;
+echo "$kalender $btn_tambah";
 
 
 
@@ -225,6 +171,24 @@ echo $kurikulum;
 ?>
 
 <script>
+  function get_tanggal_mulai_baru(max_no_semester,date_mulai,jumlah_bulan_per_semester){
+    let selisih_bulan = (max_no_semester-1)*jumlah_bulan_per_semester;
+    let bulan_mulai = date_mulai.getMonth()+1; // mulai kurikulum
+    let sum_bulan_awal_baru = bulan_mulai + selisih_bulan;
+    let bulan_awal_baru = sum_bulan_awal_baru % 12;
+    let tambah_tahun = parseInt(sum_bulan_awal_baru / 12);
+    let tanggal_start = date_mulai.getDate();
+    let tahun_start = date_mulai.getFullYear();
+    let tahun_start_baru = tahun_start + tambah_tahun;
+    let tanggal_mulai_baru = `${tahun_start_baru}-${bulan_awal_baru}-${tanggal_start}`;
+    return tanggal_mulai_baru;
+  }
+  function get_tanggal_akhir_baru(max_no_semester,date_mulai,jumlah_bulan_per_semester){
+    let tmp = get_tanggal_mulai_baru((max_no_semester+1),date_mulai,jumlah_bulan_per_semester);
+    let d = new Date(tmp);
+    d.setDate(d.getDate()-1);
+    return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+  }
   $(function(){
     // ===============================================
     // GLOBAL AKSI AND EDITABLE HANDLER
@@ -248,10 +212,10 @@ echo $kurikulum;
         }
       }
 
-      if(aksi=='hapus' || aksi=='drop'){
-        let y = aksi=='hapus' ? confirm('Yakin untuk menghapus data ini?\n\nPERHATIAN! Data MK akan hilang dari database.') 
-        : confirm('Yakin untuk dropping data ini?\n\nDrop = melepas tanpa menghapus data');
-        if(!y) return;
+      if(aksi=='hapus'){
+        // let y = aksi=='hapus' ? confirm('Yakin untuk menghapus data ini?\n\nPERHATIAN! Data MK akan hilang dari database.') 
+        // : confirm('Yakin untuk dropping data ini?\n\nDrop = melepas tanpa menghapus data');
+        // if(!y) return;
         let link_ajax = '';
         let kolom_acuan = '';
         let acuan = '';
@@ -263,18 +227,6 @@ echo $kurikulum;
           kolom_acuan = 'id';
           acuan = id;
           link_ajax = `ajax_global/ajax_global_delete.php?tabel=${tabel}&kolom_acuan=${kolom_acuan}&acuan=${acuan}&`;
-        }else if(tabel=='mk'){
-          let tabel_semester = 'semester';
-          kolom_acuan = 'id_semester';
-          acuan = rid[3]; //id_semester
-          tabel2 = 'kurikulum_mk';
-          kolom_acuan2 = 'id_mk';
-          acuan2 = id; //id_mk
-          if(aksi=='hapus'){
-            link_ajax = `ajax_global/ajax_global_drop_and_delete.php?tabel=${tabel}&kolom_acuan=${kolom_acuan}&acuan=${acuan}&tabel2=${tabel2}&kolom_acuan2=${kolom_acuan2}&acuan2=${acuan2}&`;
-          }else if(aksi=='drop'){
-            link_ajax = `ajax_global/ajax_global_drop.php?tabel=${tabel_semester}&kolom_acuan=${kolom_acuan}&acuan=${acuan}&tabel2=${tabel2}&kolom_acuan2=${kolom_acuan2}&acuan2=${acuan2}&`;
-          }
         }else{
           alert('Belum ada ajax target untuk aksi tabel: '+tabel);
           return;
@@ -286,11 +238,8 @@ echo $kurikulum;
           url:link_ajax,
           success:function(a){
             if(a.trim()=='sukses'){
-              if(tabel=='mk'){
-                $('#tr__'+id).fadeOut();
-              }else if(tabel=='semester'){
-                $('#semester__'+id).fadeOut();
-              }
+              location.reload();
+              // $('#semester__'+id).fadeOut();
             }else{
               console.log(a);
               if(a.toLowerCase().search('cannot delete or update a parent row')>0){
@@ -303,7 +252,7 @@ echo $kurikulum;
         })
       } // end of hapus
 
-      if(aksi=='tambah'){ // untuk tambah Semester
+      if(aksi=='tambah_semester'){ // untuk tambah Semester
         // let y = confirm(`Ingin menambah ${tabel.toUpperCase()} Baru?`);
         // if(!y) return;
         
@@ -311,12 +260,38 @@ echo $kurikulum;
         let isis = null;
 
         if(tabel=='semester'){
-          let max_no_semester = $("#max_no_semester").text();
-          koloms = 'id_kurikulum,nomor';
-          isis = `'${id}','${max_no_semester}'`;
+          let id_kalender = $('#id_kalender').text();
+          let max_no_semester = parseInt($("#max_no_semester").text());
+          let nama_kalender = $("#nama_kalender").text();
+          let jumlah_bulan_per_semester = parseInt($("#jumlah_bulan_per_semester").text());
+          let keterangan = `Semester ${max_no_semester} pada ${nama_kalender}`;
+
+          // =========================================================
+          // VALIDASI TANGGAL MULAI KURIKULUM
+          // =========================================================
+          let tanggal_acuan = '2020-1-1';
+          let tanggal_mulai = $("#tanggal_mulai").text();
+          let date_acuan = new Date(tanggal_acuan);
+          let date_mulai = new Date(tanggal_mulai);
+          if(date_mulai < date_acuan){
+            alert(`Maaf, tanggal mulai invalid.\n\nTanggal Mulai Kurikulum (${tanggal_mulai}) harus lebih besar dari ${tanggal_acuan}.`);
+            return;
+          } 
+
+          // =========================================================
+          // PENENTUAN TANGGAL AWAL DAN AKHIR SEMESTER
+          // =========================================================
+          let tanggal_mulai_baru = get_tanggal_mulai_baru(max_no_semester,date_mulai,jumlah_bulan_per_semester);
+          let tanggal_akhir_baru = get_tanggal_akhir_baru(max_no_semester,date_mulai,jumlah_bulan_per_semester);
+          // console.log(tanggal_mulai,tanggal_mulai_baru); 
+          // console.log(tanggal_akhir_baru); return;
+
+          koloms = 'id_kalender,nomor,tanggal_awal,tanggal_akhir,keterangan';
+          isis = `'${id_kalender}','${max_no_semester}','${tanggal_mulai_baru}','${tanggal_akhir_baru}','${keterangan}'`;
         }
 
         let link_ajax = `ajax_global/ajax_global_insert.php?tabel=${tabel}&koloms=${koloms}&isis=${isis}`;
+        // alert(link_ajax);return;
         $.ajax({
           url:link_ajax,
           success:function(a){
@@ -332,40 +307,7 @@ echo $kurikulum;
       }      
 
 
-      if(aksi=='tambah_dan_assign'){ // untuk tambah MK baru
-        // let y = confirm(`Ingin menambah ${tabel.toUpperCase()} Baru?`);
-        // if(!y) return;
-        
-        let koloms = null;
-        let isis = null;
-
-        if(tabel=='mk'){
-          let r = '_'+Math.random();
-          let kode = 'MK'+id+ r.substring(3,8);
-          let nama = 'NEW MATA KULIAH';
-          let singkatan = 'SINGKATAN-MK';
-          koloms = 'kode,nama,singkatan,bobot_teori,bobot_praktik,is_publish';
-          isis = `'${kode}','${nama}','${singkatan}',0,0,-1`;
-        }
-
-        let tabel2 = 'kurikulum_mk'; //assign to tb_kurikulum_mk
-        let kolom2 = 'id_semester'; //foreign key column in tb_kurikulum_mk
-        let id2 = id; //id_semester
-
-        let link_ajax = `ajax_global/ajax_global_insert_and_assign.php?tabel=${tabel}&koloms=${koloms}&isis=${isis}&tabel2=${tabel2}&id2=${id2}&kolom2=${kolom2}`;
-        $.ajax({
-          url:link_ajax,
-          success:function(a){
-            if(a.trim()=='sukses'){
-              // alert('Proses tambah sukses.');
-              location.reload();
-            }else{
-              // alert('Gagal menambah data.');
-              console.log(a);
-            }
-          }
-        })        
-      }      
+    
     }) // end btn_aksi
 
     $(".editable").click(function(){

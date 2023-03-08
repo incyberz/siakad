@@ -12,11 +12,11 @@ include 'conn.php';
 # ============================================================
 # DATE AND TIMEZONE
 # ============================================================
-$tanggal_skg = date("Y-m-d");
-$saat_ini = date("Y-m-d H:i:sa");
-$jam_skg = date("H:i:sa");
-$tahun_skg = date("Y");
-$thn_skg = date("y");
+// $tanggal_skg = date("Y-m-d");
+// $saat_ini = date("Y-m-d H:i:sa");
+// $jam_skg = date("H:i:sa");
+// $tahun_skg = date("Y");
+// $thn_skg = date("y");
 $waktu = "Pagi";
 if(date("H")>=9) $waktu = "Siang";
 if(date("H")>=15) $waktu = "Sore";

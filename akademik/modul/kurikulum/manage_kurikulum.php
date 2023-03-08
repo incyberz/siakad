@@ -28,7 +28,9 @@ c.jumlah_semester,
 a.is_publish, 
 a.tanggal_penetapan, 
 a.ditetapkan_oleh,
-c.id as id_kalender 
+b.id as id_prodi, 
+c.id as id_kalender, 
+a.id as id_kurikulum 
 
 FROM tb_kurikulum a 
 JOIN tb_prodi b ON b.id=a.id_prodi 
@@ -41,15 +43,17 @@ $d = mysqli_fetch_assoc($q);
 $jumlah_semester = $d['jumlah_semester'];
 $nama_kurikulum = $d['nama_kurikulum'];
 $id_kalender = $d['id_kalender'];
+$id_prodi = $d['id_prodi'];
 
 echo "<div class=debug id=keterangan_kurikulum>$d[nama_kurikulum] Prodi $d[nama_prodi] Angkatan $d[angkatan] Jenjang $d[jenjang]</div>";
 
 $tr='';
 foreach($d as $kolom=>$isi){
   if($kolom=='is_publish') {$isi = $isi==0 ? 'belum' : 'sudah'; $isi="<span class='abu miring'>-- $isi --</span>"; }
+  $debug = substr($kolom,0,3)=='id_' ? 'debug' : '';
   $kolom_caption = str_replace('_',' ',$kolom);
   $isi = $isi=='' ? '<span class="abu miring">-- null --</span>' : $isi;
-  $tr.="<tr><td class=upper>$kolom_caption</td><td id='$kolom'>$isi</td></td>";
+  $tr.="<tr class=$debug><td class=upper>$kolom_caption</td><td id='$kolom'>$isi</td></td>";
 }
 
 
@@ -108,11 +112,13 @@ while ($d=mysqli_fetch_assoc($q)) {
   FROM tb_mk a 
   JOIN tb_kurikulum_mk b ON a.id=b.id_mk 
   JOIN tb_semester c ON b.id_semester=c.id  
-  WHERE c.id='$d[id_semester]'";
-  // echo "<hr>$s2";
+  JOIN tb_kurikulum d ON b.id_kurikulum=d.id  
+  WHERE c.id='$d[id_semester]' 
+  AND d.id_prodi=$id_prodi
+  ";
   $q2 = mysqli_query($cn, $s2)or die(mysqli_error($cn));
   $jumlah_mk = mysqli_num_rows($q2);
-  echo "<div class=debug>jumlah_mk__$d[id_semester]: <span id='jumlah_mk__$d[id_semester]'>$jumlah_mk</span></div>";
+  echo "<span class=debug>jumlah_mk__$d[id_semester]: <span id='jumlah_mk__$d[id_semester]'>$jumlah_mk</span></span> ";
 
   $tr = '';
   $jumlah_teori[$d['id_semester']] = 0;
@@ -123,9 +129,9 @@ while ($d=mysqli_fetch_assoc($q)) {
     $jumlah_teori[$d['id_semester']] += $d2['bobot_teori'];
     $jumlah_praktik[$d['id_semester']] += $d2['bobot_praktik'];
 
-    $hapus = $d2['jumlah_assign_mk'] > 1 ? '' : "<td class='deletable btn_aksi text-center' id='hapus__mk__$d2[id_mk]__$d[id_semester]'>H</td>";
-    $drop = "<td class='deletable btn_aksi text-center' id='drop__mk__$d2[id_mk]__$d[id_semester]'>D</td>";
-    $jadwal = "<td class='text-center gradasi-biru'><a href='?manage_jadwal&id_kurikulum_mk=$d2[id_kurikulum_mk]'>J</a></td>";
+    $hapus = $d2['jumlah_assign_mk'] > 1 ? '' : "<td class='deletable btn_aksi text-center' id='hapus__mk__$d2[id_mk]__$d[id_semester]'>Hapus</td>";
+    $drop = "<td class='deletable btn_aksi text-center' id='drop__mk__$d2[id_mk]__$d[id_semester]'>Drop</td>";
+    $jadwal = "<td class='text-center gradasi-biru'><a href='?manage_jadwal&id_kurikulum_mk=$d2[id_kurikulum_mk]'>Jadwal</a></td>";
     $tr.="
     <tr id='tr__$d2[id_mk]'>
       <td>$j</td>
@@ -182,7 +188,7 @@ while ($d=mysqli_fetch_assoc($q)) {
       </table>
       <div class='text-right'>
         <a href='?assign_mk&id_kurikulum=$id&id_semester=$d[id_semester]&no_semester=$d[no_semester]&nama_kurikulum=$nama_kurikulum' class='btn btn-primary btn-sm'>Assign MK</a>
-        <button class='btn btn-primary btn-sm btn_aksi' id='tambah_dan_assign__mk__$d[id_semester]'>Tambah MK</button>
+        <button class='btn btn-primary btn-sm btn_aksi' id='tambah_dan_assign__mk__$d[id_semester]__$d[no_semester]'>Tambah MK</button>
       </div>
     </div>
   </div>
@@ -207,12 +213,12 @@ $kurikulum = $semesters=='' ? '<div class="alert alert-danger">Belum ada data se
 # TAMBAH SEMESTER
 # ==============================================================
 $btn_tambah = $jumlah_semester==$jumlah_semester_real ? '' 
-: "
+: die("
 <div class=wadah>
-  <p>Jumlah semester pada Kurikulum ini adalah $jumlah_semester_real of $jumlah_semester. Anda dapat menambahkannya pada Manage Kalender dan Semester.</p>
+  <p>Jumlah semester pada Kalender ini adalah $jumlah_semester_real of $jumlah_semester. Anda dapat menambahkannya pada Manage Kalender.</p>
   <a href='?manage_kalender&id=$id_kalender' class='btn btn-primary'>Tambah Semester</a>
-</div>";
-echo $btn_tambah;
+</div>");
+// echo $btn_tambah;
 
 # ==============================================================
 # FINAL OUTPUT SEMESTERS
@@ -250,9 +256,9 @@ echo $kurikulum;
         let acuan2 = '';
 
         if(tabel=='semester'){
-          kolom_acuan = 'id';
-          acuan = id;
-          link_ajax = `ajax_global/ajax_global_delete.php?tabel=${tabel}&kolom_acuan=${kolom_acuan}&acuan=${acuan}&`;
+          // kolom_acuan = 'id';
+          // acuan = id;
+          // link_ajax = `ajax_global/ajax_global_delete.php?tabel=${tabel}&kolom_acuan=${kolom_acuan}&acuan=${acuan}&`;
         }else if(tabel=='mk'){
           let tabel_semester = 'semester';
           kolom_acuan = 'id_semester';
@@ -303,17 +309,22 @@ echo $kurikulum;
         if(tabel=='mk'){
           let r = '_'+Math.random();
           let kode = 'MK'+id+ r.substring(3,8);
-          let nama = 'NEW MATA KULIAH';
+
+          let id_prodi = $('#id_prodi').text();
+          let id_kalender = $('#id_kalender').text();
+          let id_kurikulum = $('#id_kurikulum').text();
+
+          let nama = `NEW-MK SM${rid[3]} PROD${id_prodi} KUR${id_kurikulum} KAL${id_kalender}`;
           let singkatan = 'SINGKATAN-MK';
           koloms = 'kode,nama,singkatan,bobot_teori,bobot_praktik,is_publish';
           isis = `'${kode}','${nama}','${singkatan}',0,0,-1`;
         }
 
-        let tabel2 = 'kurikulum_mk'; //assign to tb_kurikulum_mk
-        let kolom2 = 'id_semester'; //foreign key column in tb_kurikulum_mk
-        let id2 = id; //id_semester
+        let id_semester = id; //id_semester
+        let id_kurikulum = $("#id_kurikulum").text();
 
-        let link_ajax = `ajax_global/ajax_global_insert_and_assign.php?tabel=${tabel}&koloms=${koloms}&isis=${isis}&tabel2=${tabel2}&id2=${id2}&kolom2=${kolom2}`;
+        let link_ajax = `ajax_akademik/ajax_insert_and_assign_mk_to_kurikulum.php?koloms=${koloms}&isis=${isis}&id_semester=${id_semester}&id_kurikulum=${id_kurikulum}`;
+        // console.log(link_ajax); return;
         $.ajax({
           url:link_ajax,
           success:function(a){

@@ -4,6 +4,8 @@
 # ========================================================
 session_start();
 $dm = 1;
+$now = date('Y-m-d H:i:s');
+$today = date('Y-m-d');
 
 $cusername = '';
 $cnama_pegawai = "Pengunjung";

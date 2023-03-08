@@ -59,7 +59,7 @@ if($id_kurikulum_mk==''){
 
   FROM tb_kurikulum_mk a 
   JOIN tb_semester b on a.id_semester=b.id 
-  JOIN tb_kurikulum c on b.id_kurikulum=c.id 
+  JOIN tb_kurikulum c on a.id_kurikulum=c.id 
   JOIN tb_mk d on a.id_mk=d.id 
   WHERE a.id=$id_kurikulum_mk 
   ";
