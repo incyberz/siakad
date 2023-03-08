@@ -101,10 +101,10 @@ while ($d = mysqli_fetch_assoc($q)) {
     }
 
     # ===============================================
-    # SPECIAL MANAGE FOR KURIKULUM
+    # SPECIAL MANAGE FOR KALENDER / KURIKULUM
     # ===============================================
-    $btn_master_kurikulum = $page!='kurikulum' ? '' 
-    : "<a class='btn btn-primary btn-sm btn-block mb-2 upper' href='?manage_kurikulum&$param_id=$d[$param_id]'>manage</a>";
+    $btn_manage_kalender = $page=='kalender' ? "<a class='btn btn-primary btn-sm btn-block mb-2 upper' href='?manage_kalender&$param_id=$d[$param_id]'>manage</a>" : '';
+    $btn_manage_kurikulum = $page=='kurikulum' ? "<a class='btn btn-primary btn-sm btn-block mb-2 upper' href='?manage_kurikulum&$param_id=$d[$param_id]'>manage</a>" : '';
 
 
 
@@ -116,7 +116,8 @@ while ($d = mysqli_fetch_assoc($q)) {
         <td>$i</td>
         $td
         <td>
-          $btn_master_kurikulum
+          $btn_manage_kalender
+          $btn_manage_kurikulum
           <a class='btn btn-success btn-sm btn-block mb-2 upper' href='?master&p=$page&aksi=update&$param_id=$d[$param_id]'>update</a>
           <a class='btn btn-danger btn-sm btn-block mb-2 upper' href='?master&p=$page&aksi=hapus&$param_id=$d[$param_id]'>hapus</a>
         </td>

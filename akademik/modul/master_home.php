@@ -45,11 +45,11 @@ for ($i=0; $i < count($rmaster); $i++) {
 ?>
 
 <div class="master-home">
-  <?php  echo "$ui_master[pt] $ui_master[fakultas] $ui_master[jenjang] $ui_master[prodi] ";?>
+  <?php  echo "$ui_master[pt] $ui_master[fakultas] $ui_master[angkatan] $ui_master[jenjang] ";?>
 </div>
 
 <div class="master-home">
-  <?php  echo "$ui_master[angkatan] $ui_master[kalender] $ui_master[semester]";?>
+  <?php  echo " $ui_master[kalender] $ui_master[semester] $ui_master[prodi]";?>
 </div>
 
 <div class="master-home">
@@ -57,15 +57,15 @@ for ($i=0; $i < count($rmaster); $i++) {
 </div>
 
 <div class="master-home">
+  <?php  echo "$ui_master[kurikulum] $ui_master[semester] $ui_master[kurikulum_mk] ";?>
+</div>  
+
+<div class="master-home">
   <?php  echo "$ui_master[jalur] $ui_master[kelas] ";?>
 </div>
 
 <div class="master-home">
   <?php  echo "$ui_master[output_pmb] $ui_master[mhs] ";?>
-</div>
-
-<div class="master-home">
-  <?php  echo "$ui_master[kurikulum] $ui_master[semester] $ui_master[kurikulum_mk] ";?>
 </div>
 
 <div class="master-home">

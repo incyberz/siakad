@@ -153,19 +153,12 @@ while ($d=mysqli_fetch_assoc($q)) {
     <td colspan=4>(".($jumlah_teori[$d['id_semester']]+$jumlah_praktik[$d['id_semester']])." SKS Total)</td>
   </tr>";
 
-  $tanggal_awal_sty = strtotime($d['tanggal_awal']) < strtotime('2018-1-1') ? 'merah tebal' : '';
-  $tanggal_akhir_sty = strtotime($d['tanggal_akhir']) < strtotime('2018-1-1') ? 'merah tebal' : '';
-  $tanggal_awal_show = "<span class='$tanggal_awal_sty'>".date('d M Y', strtotime($d['tanggal_awal'])).'</span>';
-  $tanggal_akhir_show = "<span class='$tanggal_awal_sty'>".date('d M Y', strtotime($d['tanggal_akhir'])).'</span>';
-
-
   $semesters .= "
   <div class='col-lg-6' id='semester__$d[id_semester]'>
     <div class=wadah>
       <div class='semester-ke'>
         Semester $d[no_semester]
       </div>
-      <p>Rentang Waktu: $tanggal_awal_show s.d $tanggal_akhir_show | <a href='?manage_kalender&id=$id_kalender'>Manage</a></p>
       <table class='table tb-semester-mk'>
         <thead>
           <th>No</th>
@@ -183,13 +176,20 @@ while ($d=mysqli_fetch_assoc($q)) {
       <div class='text-right'>
         <a href='?assign_mk&id_kurikulum=$id&id_semester=$d[id_semester]&no_semester=$d[no_semester]&nama_kurikulum=$nama_kurikulum' class='btn btn-primary btn-sm'>Assign MK</a>
         <button class='btn btn-primary btn-sm btn_aksi' id='tambah_dan_assign__mk__$d[id_semester]'>Tambah MK</button>
+        <button class='btn btn-danger btn-sm btn_aksi' id='hapus__semester__$d[id_semester]'>Hapus Semester</button>
       </div>
     </div>
   </div>
   ";
 } // end while semesters
 
-
+$max_no_semester = 1;
+for ($i=1; $i <= $jumlah_semester ; $i++) { 
+  if(!in_array($i,$rnomor_semester)){
+    $max_no_semester = $i; break;
+  }
+}
+echo "<div class=debug id=max_no_semester>$max_no_semester</div>";
 
 $total_sks = $total_praktik + $total_teori;
 $ui_total_sks = "
@@ -237,6 +237,16 @@ echo $kurikulum;
       let aksi = rid[0];
       let tabel = rid[1];
       let id = rid[2];
+
+      // alert(`${aksi} ${tabel} ${id} `);return;
+
+      if(aksi=='hapus' && tabel=='semester'){
+        let jumlah_mk = $('#jumlah_mk__'+id).text();
+        if(parseInt(jumlah_mk)>0){
+          alert('Semester ini belum bisa dihapus.\n\nUntuk menghapus semester, silahkan DROP dahulu Semua Data MK pada semester ini!');
+          return;
+        }
+      }
 
       if(aksi=='hapus' || aksi=='drop'){
         let y = aksi=='hapus' ? confirm('Yakin untuk menghapus data ini?\n\nPERHATIAN! Data MK akan hilang dari database.') 
@@ -292,6 +302,35 @@ echo $kurikulum;
           }
         })
       } // end of hapus
+
+      if(aksi=='tambah'){ // untuk tambah Semester
+        // let y = confirm(`Ingin menambah ${tabel.toUpperCase()} Baru?`);
+        // if(!y) return;
+        
+        let koloms = null;
+        let isis = null;
+
+        if(tabel=='semester'){
+          let max_no_semester = $("#max_no_semester").text();
+          koloms = 'id_kurikulum,nomor';
+          isis = `'${id}','${max_no_semester}'`;
+        }
+
+        let link_ajax = `ajax_global/ajax_global_insert.php?tabel=${tabel}&koloms=${koloms}&isis=${isis}`;
+        $.ajax({
+          url:link_ajax,
+          success:function(a){
+            if(a.trim()=='sukses'){
+              // alert('Proses tambah sukses.');
+              location.reload();
+            }else{
+              alert('Gagal menambah data.');
+              console.log(a);
+            }
+          }
+        })        
+      }      
+
 
       if(aksi=='tambah_dan_assign'){ // untuk tambah MK baru
         // let y = confirm(`Ingin menambah ${tabel.toUpperCase()} Baru?`);
