@@ -103,7 +103,7 @@ if ($jumlah_records_limited>0) {
       <td class='tdcenter'>$ipk_terakhir</td>
       <td class='tdcenter'>$ket_status_mhs</td>
       <td class='tdcenter'>
-        <a href='login_as_calon.php?email=$email_mhs&nama_calon=$nama_mhs' target='_blank'><img src='img/icons/login_as.png' width='18px'></a> 
+        <a href='presensi_calon.php?email=$email_mhs&nama_calon=$nama_mhs' target='_blank'><img src='img/icons/presensi.png' width='18px'></a> 
         <a href='?resetpaswd&id_calon=$id_mhs'><img src='img/icons/set_pass_sm.png' width='22px'></a> 
         <a href='$link_email' target='_blank'><img src='img/icons/mail.png' width='20px'></a> 
         <a href='$link_wa' target='_blank'><img src='img/icons/$img_wa.png' width='20px'></a> 

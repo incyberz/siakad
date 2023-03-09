@@ -1,4 +1,4 @@
-<h1>Login As Mahasiswa</h1>
+<h1>Presensi Mahasiswa</h1>
 <style>th{text-align:left}</style>
 <?php
 $id_mhs = isset($_GET['id_mhs']) ? $_GET['id_mhs'] : '';
@@ -175,7 +175,7 @@ while ($d=mysqli_fetch_assoc($q)) {
       if($no_presensi!=$d3['pertemuan_ke']) die(div_alert('danger',"Nomor Presensi tidak berurutan (tidak sama dengan Sesi Pertemuan). | $manage_sesi<hr><small><i>no_presensi: $no_presensi !== pertemuan_ke: $d3[pertemuan_ke]</i></small>"));
 
       $id_sesi_kuliah = $d3['id_sesi_kuliah'];
-      $manage_presensi = "<a href='?manage_presensi&id_sesi_kuliah=$id_sesi_kuliah'>Manage Presensi</a>";
+      $manage_presensi = "<a href='?manage_presensi&id_jadwal=$id_jadwal&id_mhs=$id_mhs'>Manage Presensi</a>";
 
       $tanggal_sesi_show = date('d/m',strtotime($d3['tanggal_sesi']));
       $td_sesi .= "<td>$no_presensi</td>";

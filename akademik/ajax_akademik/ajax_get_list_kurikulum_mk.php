@@ -14,7 +14,8 @@ a.id,
 d.nama as nama_kurikulum,
 b.nomor as semester_ke,
 f.nama as nama_mk,
-d.id as id_kurikulum   
+d.id as id_kurikulum,
+(SELECT id from tb_jadwal where id_kurikulum_mk=a.id) as id_jadwal   
 
 FROM tb_kurikulum_mk a  
 JOIN tb_semester b on b.id=a.id_semester 
@@ -46,6 +47,7 @@ $tr = '';
 $i=0;
 while ($d = mysqli_fetch_assoc($q)) {
   $i++;
+  $goto_dpnu = $d['id_jadwal']=='' ? '' : "<a href='?dpnu&id_jadwal=$d[id_jadwal]' class='btn btn-primary btn-sm'>DPNU</a>";
   $tr .= "<tr>
     <td>$i</td>
     <td>$d[nama_mk]</td>
@@ -53,6 +55,7 @@ while ($d = mysqli_fetch_assoc($q)) {
     <td>$d[nama_kurikulum] | <a href='?manage_kurikulum&id=$d[id_kurikulum]'>Manage</a></td>
     <td>
       <a href='?manage_jadwal&id_kurikulum_mk=$d[id]' class='btn btn-info btn-sm proper'>Manage jadwal</a>
+      $goto_dpnu
     </td>
   </tr>";
 }

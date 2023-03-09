@@ -15,7 +15,7 @@
       <li class=proper><a href="?manage_sesi"><i class="icon_genius"></i>Manage Sesi</a></li>
       <li class=proper><a href="?manage_peserta"><i class="icon_genius"></i>Manage peserta</a></li>
       <li class=proper><a href="?manage_mhs"><i class="icon_genius"></i>Manage Mhs</a></li>
-      <!-- <li class=proper><a href="?login_as"><i class="icon_genius"></i>Login As</a></li> -->
+      <!-- <li class=proper><a href="?presensi"><i class="icon_genius"></i>Presensi</a></li> -->
       <li class=proper><a href="../tmp/relasi.png" target="_blank"><i class="icon_genius"></i>Relasi DB</a></li>
 
 

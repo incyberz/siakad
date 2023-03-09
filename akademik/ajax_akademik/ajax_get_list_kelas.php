@@ -31,7 +31,7 @@ while ($d = mysqli_fetch_assoc($q)) {
     <td>$d[kelas]</td>
     <td>$d[jumlah_mhs] Mhs</td>
     <td>
-      <a href='?manage_peserta&kelas=$d[kelas]' class='btn btn-info btn-sm proper'>Manage Peserta</a>
+      <a href='?manage_peserta&kelas=$d[kelas]' class='btn btn-info btn-sm proper'>Manage Peserta Mhs</a> 
     </td>
   </tr>";
 }
