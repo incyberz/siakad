@@ -12,6 +12,7 @@ $limit = 10;
 $s = "SELECT 
 a.id,
 a.nim,
+a.kelas,
 a.nama as nama_mhs 
 
 FROM tb_mhs a 
@@ -31,6 +32,7 @@ $thead = '
     <th>No</th>
     <th>NIM</th>
     <th>Nama</th>
+    <th>Kelas</th>
     <th>Aksi</th>
   </thead>
 ';
@@ -42,6 +44,7 @@ while ($d = mysqli_fetch_assoc($q)) {
     <td>$i</td>
     <td>$d[nim]</td>
     <td>$d[nama_mhs]</td>
+    <td>$d[kelas]</td>
     <td>
       Edit | <a href='?login_as&id_mhs=$d[id]'>Login As</a> | Pembayaran | KRS | KHS | Transkrip | Delete
     </td>

@@ -1,9 +1,5 @@
+<h3>List Jadwal</h3>
 <?php
-
-
-
-
-
 $default_option = '';
 include 'include/option_angkatan.php';
 include 'include/option_prodi.php';
@@ -35,7 +31,7 @@ include 'include/option_prodi.php';
       let angkatan = $("#angkatan").val();
       let keyword = $("#keyword").val();
 
-      if(keyword.length==0) return;
+      // if(keyword.length==0) return;
       let link_ajax = `ajax_akademik/ajax_get_list_jadwal.php?keyword=${keyword}&id_prodi=${id_prodi}&angkatan=${angkatan}&`;
       $("#debug1").text(link_ajax);
       $.ajax({

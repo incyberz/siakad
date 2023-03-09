@@ -12,9 +12,17 @@ $tb_sesi = "
     <input class=debug name=jumlah_sesi value='$jumlah_sesi'>
     <input class=debug name=sesi_uts value='$sesi_uts'>
     <input class=debug name=sesi_uas value='$sesi_uas'>
+    <div class='mb2 wadah'>
+      <h3 class='biru m0'>Durasi Semester 1 zzz</h3>
+      <ul>
+        <li>Tanggal Awal: 1 jan 2022 zzz</li>
+        <li>Tanggal Akhir: 30 juni 2022 zzz</li>
+      </ul>
+    </div>
     <div class='mb2'>
       <label for=tanggal_p1>Tanggal Pertemuan Pertama</label>
       <input class='form-control' type=date value='$today' required name=tanggal_p1 id=tanggal_p1>
+      <div class='kecil merah miring'>Input Tanggal Pertemuan Pertama harus berada diantara durasi semester!</div>
     </div>
     <div class='mb2'>
       <label for=pukul_p1>Pukul</label>

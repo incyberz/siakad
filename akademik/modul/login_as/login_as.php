@@ -101,7 +101,7 @@ echo "<div class=wadah>Kurikulum: <span id=nama_kurikulum>$nama_kurikulum</span>
 # ==========================================================
 $manage_kalender = "<a href='?manage_kalender&id=$id_kalender' >Manage Kalender</a>";
 $s_semester = $s_kalender." AND a.tanggal_awal <= '$today'";
-echo "<pre>$s_semester</pre>";
+// echo "<pre>$s_semester</pre>";
 $q = mysqli_query($cn,$s_semester) or die(mysqli_error($cn));
 if(mysqli_num_rows($q)==0) die("<div class='alert alert-danger'>Tidak ada Semester yang cocok pada Kalender Akademik. | $manage_kalender</div>");
 
@@ -109,6 +109,7 @@ $thead = '<thead>
   <th>Semester</th>
   <th>Mata Kuliah, Sesi, dan Presensi</th>
 </thead>';
+$thead = ''; //zzz
 $tr = '';
 $no_mk=0;
 while ($d=mysqli_fetch_assoc($q)) {
@@ -117,7 +118,15 @@ while ($d=mysqli_fetch_assoc($q)) {
   a.id as id_kurikulum_mk,
   a.id_mk,
   b.nama as nama_mk,
-  (SELECT id from tb_jadwal) as id_jadwal  
+  (SELECT id from tb_jadwal where id_kurikulum_mk=a.id) as id_jadwal,
+  (
+    SELECT d.nama  
+    from tb_dosen d 
+    join tb_jadwal e on d.id=e.id_dosen 
+    join tb_kurikulum_mk f on f.id=e.id_kurikulum_mk 
+    where e.id_kurikulum_mk=a.id) as nama_dosen 
+
+
   from tb_kurikulum_mk a 
   join tb_mk b on b.id=a.id_mk 
   where id_semester=$id_semester and id_kurikulum=$id_kurikulum  ";
@@ -126,26 +135,66 @@ while ($d=mysqli_fetch_assoc($q)) {
   $thead_mk='<thead>
     <th>No</th>
     <th>Mata Kuliah</th>
-    <th>Sesi Kuliah</th>
-    <th>Presensi</th>
+    <th>Dosen Pengampu</th>
+    <th>Sesi Kuliah dan Presensi</th>
   </thead>';
   $tr_mk='';
   while ($d2=mysqli_fetch_assoc($q2)) {
     $no_mk++;
     $id_kurikulum_mk = $d2['id_kurikulum_mk'];
+    $manage_jadwal = "<a href='?manage_jadwal&id_kurikulum_mk=$id_kurikulum_mk'>Manage Jadwal</a>";
 
     # ==========================================================
     # CEK JADWAL FOR THIS KURIKULUM-MK
     # ==========================================================
+    $id_jadwal = $d2['id_jadwal'];
+    $nama_dosen = $d2['nama_dosen'];
+    $manage_sesi = "<a href='?manage_sesi&id_jadwal=$id_jadwal'>Manage Sesi</a>";
+    if($id_jadwal=='') die(div_alert('danger',"Terdapat MK Kurikulum yang belum dijadwalkan [<code>$d2[nama_mk]</code>]. | $manage_jadwal"));
 
     # ==========================================================
     # CEK SEMESTER FOR MHS DAN KURIKULUM-MK
     # ==========================================================
-    $s3 = "SELECT * from tb_sesi_kuliah where id_kurikulum_mk=$id_kurikulum_mk";
+    $s3 = "SELECT 
+    a.id as id_sesi_kuliah,
+    a.pertemuan_ke,
+    a.tanggal_sesi,
+    (
+      SELECT 1 from tb_presensi where id_mhs=$id_mhs and id_sesi_kuliah=a.id) as telah_presensi 
+    from tb_sesi_kuliah a 
+    where a.id_jadwal=$id_jadwal
+    order by a.pertemuan_ke";
     $q3 = mysqli_query($cn,$s3) or die(mysqli_error($cn));
+
+    $td_sesi = '';
+    $td_tgl = '';
+    $td_presensi = '';
+    $no_presensi = 0;
     while ($d3=mysqli_fetch_assoc($q3)) {
-      # code...
+      $no_presensi++;
+      if($no_presensi!=$d3['pertemuan_ke']) die(div_alert('danger',"Nomor Presensi tidak berurutan (tidak sama dengan Sesi Pertemuan). | $manage_sesi<hr><small><i>no_presensi: $no_presensi !== pertemuan_ke: $d3[pertemuan_ke]</i></small>"));
+
+      $id_sesi_kuliah = $d3['id_sesi_kuliah'];
+      $manage_presensi = "<a href='?manage_presensi&id_sesi_kuliah=$id_sesi_kuliah'>Manage Presensi</a>";
+
+      $tanggal_sesi_show = date('d/m',strtotime($d3['tanggal_sesi']));
+      $td_sesi .= "<td>$no_presensi</td>";
+      $td_tgl .= "<td class='small'>$tanggal_sesi_show</td>";
+
+      $status_presensi = $d3['telah_presensi'] ? 1 : '-';
+      $gradasi_presensi = $d3['telah_presensi'] ? 'hijau' : 'merah';
+      $td_presensi .= "<td class='gradasi-$gradasi_presensi'>$status_presensi</td>";
     }
+
+    $tb_sesi = $td_sesi=='' ? div_alert('warning',"Belum ada sesi untuk MK ini. | $manage_sesi") 
+    : "
+    <table class='table-bordered text-center'>
+      <tr>$td_sesi</tr>
+      <tr>$td_tgl</tr>
+      <tr>$td_presensi</tr>
+    </table>
+    <div class='kecil m1'>Presensi: 0% | $manage_presensi</div>
+    ";
 
 
 
@@ -153,11 +202,11 @@ while ($d=mysqli_fetch_assoc($q)) {
     <tr>
       <td>$no_mk</td>
       <td>$d2[nama_mk]</td>
-      <td>Sesi</td>
-      <td>Presensi</td>
+      <td>$d2[nama_dosen]</td>
+      <td>$tb_sesi</td>
     </tr>";
   }
-  $tb_mk = $tr_mk==''?div_alert('danger',"MK pada semester ini belum ada. | $manage_kurikulum"):"<table class=table>$tr_mk</table>";
+  $tb_mk = $tr_mk==''?div_alert('danger',"MK pada semester ini belum ada. | $manage_kurikulum"):"<table class=table>$thead_mk$tr_mk</table>";
   
   $tr .= "
   <tr>
