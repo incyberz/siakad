@@ -6,7 +6,7 @@ $judul = $id_sesi_kuliah=='' ? 'Daftar Presensi dan Nilai Ujian (DPNU)' : 'Dafta
 echo "<h1 class='m0 mb2'>$judul</h1>";
 
 if($id_jadwal==''){
-  die(div_alert('info',"Silahkan tentukan dahulu Mata Kuliahnya di Menu | $manage_jadwal "));
+  die(div_alert('info',"Silahkan tentukan dahulu Mata Kuliahnya di Menu | $manage_jadwal <hr>Perhatian! Hanya MK yang sudah dijadwalkan yang mempunyai Aksi Manage DPNU."));
 }
 
 # ===============================================

@@ -47,7 +47,7 @@ $tr = '';
 $i=0;
 while ($d = mysqli_fetch_assoc($q)) {
   $i++;
-  $goto_dpnu = $d['id_jadwal']=='' ? '' : "<a href='?dpnu&id_jadwal=$d[id_jadwal]' class='btn btn-primary btn-sm'>DPNU</a>";
+  $goto_dpnu = $d['id_jadwal']=='' ? '<span class="btn btn-warning btn-sm dpnu_not_ready">DPNU</span>' : "<a href='?dpnu&id_jadwal=$d[id_jadwal]' class='btn btn-primary btn-sm'>DPNU</a>";
   $tr .= "<tr>
     <td>$i</td>
     <td>$d[nama_mk]</td>

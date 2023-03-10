@@ -1,4 +1,4 @@
-<h1 class='m0 mb2'>Manage Presensi</h1>
+<h1 class='m0 mb2'>Manage Presensi per Mhs</h1>
 <style>.btn_active{border:solid 3px blue}</style>
 <?php
 $id_jadwal = isset($_GET['id_jadwal']) ? $_GET['id_jadwal'] : '';
@@ -81,10 +81,10 @@ a.id as id_sesi_kuliah,
 a.pertemuan_ke,
 a.nama as nama_sesi,
 a.tanggal_sesi,
-a.status as status_presensi,
 b.nama as nama_dosen,
 (SELECT nama from tb_ruang where id=a.id_ruang) as nama_ruang, 
-(SELECT timestamp_masuk from tb_presensi where id_mhs=$id_mhs and id_sesi_kuliah=a.id) as tanggal_presensi 
+(SELECT timestamp_masuk from tb_presensi where id_mhs=$id_mhs and id_sesi_kuliah=a.id) as tanggal_presensi, 
+(SELECT status from tb_presensi where id_mhs=$id_mhs and id_sesi_kuliah=a.id) as status_presensi 
 
 FROM tb_sesi_kuliah a 
 JOIN tb_dosen b on b.id=a.id_dosen 
@@ -99,9 +99,10 @@ $thead = "
     <th class='proper text-left'>nama sesi</th>
     <th class='proper text-left'>tanggal sesi</th>
     <th class='proper text-left'>tanggal presensi</th>
+    <th class='proper text-left'>status</th>
     <th class='proper text-left'>dosen pengajar</th>
     <th class='proper text-left'>nama ruang</th>
-    <th class='proper text-left'>Status Presensi</th>
+    <th class='proper text-left'>Set Status Presensi</th>
   </thead>
 ";
 $tr = '';
@@ -122,12 +123,19 @@ while ($d=mysqli_fetch_assoc($q)) {
   $btn_a = "<button class='btn btn-danger btn-sm btn_status_presensi btn_status_presensi__$d[id_sesi_kuliah] $btn_active_a' id=status__a__$d[id_sesi_kuliah]>A</button>";
   $btn_null = "<button class='btn btn-danger btn-sm btn_status_presensi btn_status_presensi__$d[id_sesi_kuliah] $btn_active_null' id=status__null__$d[id_sesi_kuliah]>Null</button>";
 
+  switch ($d['status_presensi']) {
+    case 'h': $status_presensi = "Hadir"; break;
+    case 's': $status_presensi = "Sakit"; break;
+    case 'i': $status_presensi = "Izin"; break;
+    default:  $status_presensi = "Alfa"; break;
+  }
   $tr .= "
   <tr>
     <td>$d[pertemuan_ke]</td>
     <td>$d[nama_sesi]</td>
     <td>$tanggal_sesi</td>
     <td>$tanggal_presensi</td>
+    <td>$status_presensi</td>
     <td>$d[nama_dosen]</td>
     <td>$nama_ruang</td>
     <td>

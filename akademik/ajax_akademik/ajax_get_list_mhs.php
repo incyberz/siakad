@@ -46,7 +46,7 @@ while ($d = mysqli_fetch_assoc($q)) {
     <td>$d[nama_mhs]</td>
     <td>$d[kelas]</td>
     <td>
-      Edit | <a href='?presensi&id_mhs=$d[id]'>Presensi</a> | Pembayaran | KRS | KHS | Transkrip | Delete
+      Edit | <a href='?presensi_per_mhs&id_mhs=$d[id]'>Presensi</a> | Pembayaran | KRS | KHS | Transkrip | Delete
     </td>
   </tr>";
 }

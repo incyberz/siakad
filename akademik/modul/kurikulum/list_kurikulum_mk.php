@@ -52,3 +52,9 @@ include 'include/option_prodi.php';
 
   })
 </script>
+
+<script>
+  $(document).on("click",".dpnu_not_ready",function(){
+    alert('MK ini belum dijadwalkan.\n\nSilahkan klik Manage Jadwal terlebih dahulu atau Silahkan Filter MK.');
+  })
+</script>

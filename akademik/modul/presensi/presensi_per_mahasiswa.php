@@ -1,4 +1,4 @@
-<h1>Presensi Mahasiswa</h1>
+<h1>Presensi per Mahasiswa</h1>
 <style>th{text-align:left}</style>
 <?php
 $id_mhs = isset($_GET['id_mhs']) ? $_GET['id_mhs'] : '';
@@ -112,6 +112,11 @@ $thead = '<thead>
 $thead = ''; //zzz
 $tr = '';
 $no_mk=0;
+$total_presensi = 0;
+$total_hadir = 0;
+$total_sakit = 0;
+$total_izin = 0;
+$total_alfa = 0;
 while ($d=mysqli_fetch_assoc($q)) {
   $id_semester = $d['id_semester'];
   $s2 = "SELECT 
@@ -160,7 +165,9 @@ while ($d=mysqli_fetch_assoc($q)) {
     a.pertemuan_ke,
     a.tanggal_sesi,
     (
-      SELECT 1 from tb_presensi where id_mhs=$id_mhs and id_sesi_kuliah=a.id) as telah_presensi 
+      SELECT timestamp_masuk from tb_presensi where id_mhs=$id_mhs and id_sesi_kuliah=a.id) as timestamp_masuk, 
+    (
+      SELECT status from tb_presensi where id_mhs=$id_mhs and id_sesi_kuliah=a.id) as status_presensi 
     from tb_sesi_kuliah a 
     where a.id_jadwal=$id_jadwal
     order by a.pertemuan_ke";
@@ -172,18 +179,24 @@ while ($d=mysqli_fetch_assoc($q)) {
     $no_presensi = 0;
     while ($d3=mysqli_fetch_assoc($q3)) {
       $no_presensi++;
+      $total_presensi++;
       if($no_presensi!=$d3['pertemuan_ke']) die(div_alert('danger',"Nomor Presensi tidak berurutan (tidak sama dengan Sesi Pertemuan). | $manage_sesi<hr><small><i>no_presensi: $no_presensi !== pertemuan_ke: $d3[pertemuan_ke]</i></small>"));
 
       $id_sesi_kuliah = $d3['id_sesi_kuliah'];
-      $manage_presensi = "<a href='?manage_presensi&id_jadwal=$id_jadwal&id_mhs=$id_mhs'>Manage Presensi</a>";
+      $manage_presensi = "<a href='?manage_presensi_per_mhs&id_jadwal=$id_jadwal&id_mhs=$id_mhs'>Manage Presensi per Mhs</a>";
 
       $tanggal_sesi_show = date('d/m',strtotime($d3['tanggal_sesi']));
       $td_sesi .= "<td>$no_presensi</td>";
       $td_tgl .= "<td class='small'>$tanggal_sesi_show</td>";
 
-      $status_presensi = $d3['telah_presensi'] ? 1 : '-';
-      $gradasi_presensi = $d3['telah_presensi'] ? 'hijau' : 'merah';
-      $td_presensi .= "<td class='gradasi-$gradasi_presensi'>$status_presensi</td>";
+      $status_presensi = $d3['status_presensi'];
+      switch ($d3['status_presensi']) {
+        case 'h': $gradasi_presensi = 'hijau';$total_hadir++;break;
+        case 's': $gradasi_presensi = 'kuning';$total_sakit++;break;
+        case 'i': $gradasi_presensi = 'kuning';$total_izin++;break;
+        default:  $gradasi_presensi = 'merah';$total_alfa++;break;
+      }
+      $td_presensi .= "<td class='gradasi-$gradasi_presensi upper'>$status_presensi</td>";
     }
 
     $tb_sesi = $td_sesi=='' ? div_alert('warning',"Belum ada sesi untuk MK ini. | $manage_sesi") 
@@ -215,90 +228,27 @@ while ($d=mysqli_fetch_assoc($q)) {
   </tr>";
 }
 
-$tb = $tr=='' ? div_alert('danger',"Belum ada semester yang dilalui. | $manage_kalender") : "<h3>Semester yang dilalui:</h3><table class=table>$thead$tr</tr>";
+$tb = $tr=='' ? div_alert('danger',"Belum ada semester yang dilalui. | $manage_kalender") : "<h3>Semester yang dilalui:</h3><table class=table>$thead$tr</tr></table>";
 echo $tb;
 
 
 
-# ==========================================================
-# GET MK IN LAST SEMESTER
-# ==========================================================
-
-
-exit;
-$tr='';
-foreach($d as $kolom=>$isi){
-  $debug = substr($kolom,0,3)=='id_' ? 'debug' : '';
-  $kolom_caption = str_replace('_',' ',$kolom);
-  $isi = $isi=='' ? '<span class="abu miring">-- null --</span>' : $isi;
-  $tr.="<tr class=$debug><td class=upper>$kolom_caption</td><td id='$kolom'>$isi</td></td>";
-}
-
-
-echo "
-<div class='wadah'>
-  <h2>Data Akademik Mahasiswa</h2>
-  <table class=table>
-    $tr
-  </table>
-  <div class=text-right><a href='?master&p=mhs&aksi=update&id=$id_mhs'>Edit Data Mhs</a></div>
-</div>";
 
 
 
-
-
-
-# ==========================================================
-# DATA AKADEMIK MHS
-# ==========================================================
-$s = "SELECT 
-a.nama,
-a.kelas,
-a.nim,
-a.no_wa,
-a.status_mhs,   
-a.id as id_mhs,
-a.id_pmb 
-from tb_mhs a WHERE a.id=$id_mhs";
-$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-if(mysqli_num_rows($q)==0) die('Data mahasiswa tidak ditemukan.');
-$d = mysqli_fetch_assoc($q);
-
-
-$tr='';
-foreach($d as $kolom=>$isi){
-  if($kolom=='is_publish') {$isi = $isi==0 ? 'belum' : 'sudah'; $isi="<span class='abu miring'>-- $isi --</span>"; }
-  $debug = substr($kolom,0,3)=='id_' ? 'debug' : '';
-  $kolom_caption = str_replace('_',' ',$kolom);
-  $isi = $isi=='' ? '<span class="abu miring">-- null --</span>' : $isi;
-  $tr.="<tr class=$debug><td class=upper>$kolom_caption</td><td id='$kolom'>$isi</td></td>";
-}
-
-
-echo "
-<div class='wadah'>
-  <h2>Data Akademik Mahasiswa</h2>
-  <table class=table>
-    $tr
-  </table>
-  <div class=text-right><a href='?master&p=mhs&aksi=update&id=$id_mhs'>Edit Data Mhs</a></div>
-</div>";
-
-
-# ==========================================================
-# KRS
-# ==========================================================
-echo "<h2>KRS</h2>";
 
 
 ?>
-
 <div class="wadah">
-  <h3>Persyaratan KRS</h3>
-  <div class="wadah">
-    <ul>
-      <li>Pembayaran Semester 3: ... Sudah</li>
-    </ul>
+  <h3>Rekap Presensi per Mahasiswa</h3>
+  <table class="table">
+    <tr class='gradasi-biru tebal'><td>Total Presensi</td><td><?=$total_presensi?></td></tr>
+    <tr class='gradasi-hijau'><td>Total Hadir</td><td><?=$total_hadir?></td></tr>
+    <tr class='gradasi-kuning'><td>Total Sakit</td><td><?=$total_sakit?></td></tr>
+    <tr class='gradasi-kuning'><td>Total Izin</td><td><?=$total_izin?></td></tr>
+    <tr class='gradasi-merah'><td>Total Alfa</td><td><?=$total_alfa?></td></tr>
+  </table>
+  <div class="wadah bg-white blue text-center">
+    <h1 class='tebal'>Persentase Presensi: <?=round($total_hadir/$total_presensi*100,2)?>%</h1>
   </div>
 </div>

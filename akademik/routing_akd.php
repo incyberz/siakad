@@ -23,11 +23,13 @@ switch ($c[0]){
   case 'manage_peserta': $konten = 'modul/peserta/manage_peserta.php';break;
   case 'manage_mhs': $konten = 'modul/mhs/manage_mhs.php';break;
   case 'manage_presensi': $konten = 'modul/presensi/manage_presensi.php';break;
+  case 'manage_presensi_per_mhs': $konten = 'modul/presensi/manage_presensi_per_mhs.php';break;
+  case 'presensi': $konten = 'modul/presensi/presensi_per_mahasiswa.php';break;
+  case 'presensi_per_mhs': $konten = 'modul/presensi/presensi_per_mahasiswa.php';break;
   case 'dpnu': $konten = 'modul/presensi/dpnu.php';break;
  
   case 'assign_mk': $konten = 'modul/kurikulum/assign_mk.php';break;
   case 'batch_tanggal_sesi': $konten = 'modul/sesi_kuliah/batch_tanggal_sesi.php';break;
-  case 'presensi': $konten = 'modul/presensi/presensi.php';break;
 }
 
 $manage_kalender = '<a href="?manage_kalender" class="proper">manage kalender</a>';
