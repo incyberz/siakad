@@ -52,7 +52,7 @@ while ($d = mysqli_fetch_assoc($q)) {
     <td>$i</td>
     <td>$d[nama_mk]</td>
     <td>$d[semester_ke]</td>
-    <td>$d[nama_kurikulum] | <a href='?manage_kurikulum&id=$d[id_kurikulum]'>Manage</a></td>
+    <td>$d[nama_kurikulum]</td>
     <td>
       <a href='?manage_jadwal&id_kurikulum_mk=$d[id]' class='btn btn-info btn-sm proper'>Manage jadwal</a>
       $goto_dpnu

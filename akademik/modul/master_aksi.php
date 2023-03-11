@@ -110,7 +110,8 @@ for ($j=0; $j < count($Field); $j++) {
       # ===============================================
       # INPUT TANGGAL DAN TIMESTAMP
       # ===============================================
-      if($Type[$j]=='date') $input_value .= ' 00:00:00';
+      // if($Type[$j]=='date') $input_value .= ' 00:00:00';
+      // if($nama_kolom=='krs_awal') die('krs_awal, input_value:'.$input_value);
 
       $tg['d'] = date('d', strtotime($input_value));
       $tg['m'] = date('m', strtotime($input_value));
@@ -120,24 +121,27 @@ for ($j=0; $j < count($Field); $j++) {
       $tg['s'] = date('s', strtotime($input_value));
 
       $min_tg = [1,1,(date('Y')-5),0,0,0];
-      $max_tg = [31,12,(date('Y')+1),23,11,11];
+      $max_tg = [31,12,(date('Y')+1),23,11,11]; // 11 kali 5 menit/detik = 60 detik
 
       $blok_datetime = '';
       $l=0;
       foreach($tg as $x=>$etg){
         $sel_id = $nama_kolom."__$x";
         $sel_class = $nama_kolom."__trigger";
-        $selop = "<select class='form-control $sel_class' id='$sel_id'>";
+        $hideit = ($Type[$j]=='date' && ($x=='h' || $x=='i' || $x=='s')) ? 'hideit' : '';
+        // $hideit = '';
+        $selop = "<select class='form-control $sel_class $hideit' id='$sel_id'>";
         for ($k=$min_tg[$l]; $k <= $max_tg[$l] ; $k++) {
           $n = $l>3 ? $k*5 : $k; // untuk menit/detik 
           $selected = $n==$etg ? 'selected' : '';
+          // if($x=='h') echo "<p>n~etg : $n~$etg</p>";
           $selop.= "<option $selected>$n</option>";
         }
         $selop .= '</select>';
 
         $space = '<div style="margin:0 5px">-</div>';
         if($l==2)$space = '<div style="margin:0 15px 0 50px">&nbsp;</div>';
-        if($l>2)$space = '<div style="margin:0 5px">:</div>';
+        if($l>2)$space = $Type[$j]=='date' ? '' : '<div style="margin:0 5px">:</div>';
         if($l>4)$space = '';
         $blok_datetime .= "$selop$space";
         $l++;

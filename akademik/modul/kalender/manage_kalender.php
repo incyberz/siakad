@@ -190,12 +190,13 @@ echo "$kalender $btn_tambah";
     let selisih_bulan = (max_no_semester-1)*jumlah_bulan_per_semester;
     let bulan_mulai = date_mulai.getMonth()+1; // mulai kurikulum
     let sum_bulan_awal_baru = bulan_mulai + selisih_bulan;
-    let bulan_awal_baru = sum_bulan_awal_baru % 12;
-    let tambah_tahun = parseInt(sum_bulan_awal_baru / 12);
+    let bulan_awal_baru = (sum_bulan_awal_baru % 12 == 0) ? 12 : sum_bulan_awal_baru % 12;
+    let tambah_tahun = parseInt((sum_bulan_awal_baru-1) / 12);
     let tanggal_start = date_mulai.getDate();
     let tahun_start = date_mulai.getFullYear();
     let tahun_start_baru = tahun_start + tambah_tahun;
     let tanggal_mulai_baru = `${tahun_start_baru}-${bulan_awal_baru}-${tanggal_start}`;
+    // console.log('tanggal_mulai_baru:'+tanggal_mulai_baru);
     return tanggal_mulai_baru;
   }
   function get_tanggal_akhir_baru(max_no_semester,date_mulai,jumlah_bulan_per_semester){
@@ -299,7 +300,7 @@ echo "$kalender $btn_tambah";
           let tanggal_mulai_baru = get_tanggal_mulai_baru(max_no_semester,date_mulai,jumlah_bulan_per_semester);
           let tanggal_akhir_baru = get_tanggal_akhir_baru(max_no_semester,date_mulai,jumlah_bulan_per_semester);
           // console.log(tanggal_mulai,tanggal_mulai_baru); 
-          // console.log(tanggal_akhir_baru); return;
+          // console.log(tanggal_akhir_baru,max_no_semester,date_mulai,jumlah_bulan_per_semester); return;
 
           koloms = 'id_kalender,nomor,tanggal_awal,tanggal_akhir,keterangan';
           isis = `'${id_kalender}','${max_no_semester}','${tanggal_mulai_baru}','${tanggal_akhir_baru}','${keterangan}'`;

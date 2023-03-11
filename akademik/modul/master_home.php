@@ -75,3 +75,13 @@ for ($i=0; $i < count($rmaster); $i++) {
 <div class="master-home">
   <?php  echo "$ui_master[presensi] ";?>
 </div>
+
+<div class="wadah">
+  <h3>Master Data yang Belum</h3>
+  <ul>
+    <li>Master Petugas</li>
+    <li>Master Nilai</li>
+    <li>Master Biaya</li>
+    <li>Master Data Lainnya...</li>
+  </ul>
+</div>

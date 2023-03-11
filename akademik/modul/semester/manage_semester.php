@@ -1,26 +1,26 @@
-<h1>MANAGE JADWAL KULIAH</h1>
+<h1>MANAGE SEMESTER</h1>
 <?php
-if(isset($_POST['btn_set_dosen'])){
-  $s = "SELECT 1 FROM tb_jadwal WHERE id_kurikulum_mk=$_POST[id_kurikulum_mk]";
-  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  if(mysqli_num_rows($q)==0){
-    $s = "INSERT INTO tb_jadwal (id_kurikulum_mk,id_dosen,keterangan) VALUES ($_POST[id_kurikulum_mk],$_POST[id_dosen],'$_POST[keterangan]')";
-    $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-    die("<div class='alert alert-success'>Set Dosen Koordinator berhasil.<hr><a class='btn btn-primary' href='?manage_jadwal&id_kurikulum_mk=$_POST[id_kurikulum_mk]'>Lanjutkan Manage Jadwal</a></div>");
-  }else{
-    // sudah ada jadwal
-    // cek jika dosen nya sama
-    $s = "UPDATE tb_jadwal set id_dosen=$_POST[id_dosen] where id_kurikulum_mk=$_POST[id_kurikulum_mk]";
-    $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-    die("<div class='alert alert-success'>Update Dosen Koordinator berhasil.<hr><a class='btn btn-primary' href='?manage_jadwal&id_kurikulum_mk=$_POST[id_kurikulum_mk]'>Lanjutkan Manage Jadwal</a></div>");
+// if(isset($_POST['btn_set_dosen'])){
+//   $s = "SELECT 1 FROM tb_jadwal WHERE id_semester=$_POST[id_semester]";
+//   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+//   if(mysqli_num_rows($q)==0){
+//     $s = "INSERT INTO tb_jadwal (id_semester,id_dosen,keterangan) VALUES ($_POST[id_semester],$_POST[id_dosen],'$_POST[keterangan]')";
+//     $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+//     die("<div class='alert alert-success'>Set Dosen Koordinator berhasil.<hr><a class='btn btn-primary' href='?manage_jadwal&id_semester=$_POST[id_semester]'>Lanjutkan Manage Jadwal</a></div>");
+//   }else{
+//     // sudah ada jadwal
+//     // cek jika dosen nya sama
+//     $s = "UPDATE tb_jadwal set id_dosen=$_POST[id_dosen] where id_semester=$_POST[id_semester]";
+//     $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+//     die("<div class='alert alert-success'>Update Dosen Koordinator berhasil.<hr><a class='btn btn-primary' href='?manage_jadwal&id_semester=$_POST[id_semester]'>Lanjutkan Manage Jadwal</a></div>");
 
-  }
-}
+//   }
+// }
 
-$id_kurikulum_mk = isset($_GET['id_kurikulum_mk']) ? $_GET['id_kurikulum_mk'] : '';
+$id_semester = isset($_GET['id_semester']) ? $_GET['id_semester'] : '';
 
-if($id_kurikulum_mk==''){
-  include 'modul/kurikulum/list_kurikulum_mk.php';
+if($id_semester==''){
+  include 'modul/kurikulum/list_semester.php';
   exit;
 }else{
   # ==========================================================
@@ -36,18 +36,18 @@ if($id_kurikulum_mk==''){
   a.id as id_semester_mk,
   a.id_semester,
   a.id_mk,
-  (SELECT id from tb_jadwal where id_kurikulum_mk=a.id) as id_jadwal,  
-  (SELECT id_dosen from tb_jadwal where id_kurikulum_mk=a.id) as id_dosen,  
+  (SELECT id from tb_jadwal where id_semester=a.id) as id_jadwal,  
+  (SELECT id_dosen from tb_jadwal where id_semester=a.id) as id_dosen,  
   (
     SELECT k.nama from tb_jadwal j 
     JOIN tb_dosen k on k.id=j.id_dosen 
-    where j.id_kurikulum_mk=a.id) as nama_dosen  
+    where j.id_semester=a.id) as nama_dosen  
 
-  FROM tb_kurikulum_mk a 
+  FROM tb_semester a 
   JOIN tb_semester b on a.id_semester=b.id 
   JOIN tb_kurikulum c on a.id_kurikulum=c.id 
   JOIN tb_mk d on a.id_mk=d.id 
-  WHERE a.id=$id_kurikulum_mk 
+  WHERE a.id=$id_semester 
   ";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   if(mysqli_num_rows($q)==0) die('<span class=red>Data Kurikulum MK tidak ditemukan.');
@@ -154,7 +154,7 @@ if($id_kurikulum_mk==''){
 <div class="wadah gradasi-hijau">
   <form method=post>
     <input class=debug name='keterangan' value='<?=$keterangan?>'>
-    <input class=debug name='id_kurikulum_mk' value='<?=$id_kurikulum_mk?>'>
+    <input class=debug name='id_semester' value='<?=$id_semester?>'>
     <h3>Mata Kuliah</h3>
     <?=$blok_mk ?>
     <hr>

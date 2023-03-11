@@ -14,6 +14,7 @@ switch ($c[0]){
   case '':
   case 'dashboard': $konten = 'modul/dashboard/siakad_dashboard.php';break;
   case 'master': $konten = 'modul/master.php';break;
+  case 'manage': $konten = 'modul/manage.php';break;
  
   case 'manage_kalender': $konten = 'modul/kalender/manage_kalender.php';break;
   case 'manage_kurikulum': $konten = 'modul/kurikulum/manage_kurikulum.php';break;

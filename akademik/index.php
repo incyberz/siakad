@@ -3,7 +3,7 @@
 # AKADEMIK INDEX
 # ========================================================
 session_start();
-$dm = 1;
+$dm = 0;
 $now = date('Y-m-d H:i:s');
 $today = date('Y-m-d');
 $null = '<span class="miring small">--null--</span>';
@@ -63,6 +63,9 @@ include 'routing_akd.php';
   <link href="css/admin_siakad.css" rel="stylesheet">
   <link href="css/akd.css" rel="stylesheet">
   <?php include 'akd_function.php'; ?>
+  <style>
+    h3{color: darkblue}
+  </style>
 </head>
 
 <body>

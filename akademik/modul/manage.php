@@ -29,6 +29,8 @@
 
 </style>
 
+<div class="master-home">
+
 <?php
 $rmanage[0] = ['kalender','master&p=kalender'];
 $rmanage[1] = ['kurikulum','master&p=kurikulum'];
@@ -38,11 +40,13 @@ $rmanage[4] = ['sesi','manage_sesi'];
 $rmanage[5] = ['peserta','manage_peserta'];
 $rmanage[6] = ['mhs','manage_mhs'];
 
+
 for ($i=0; $i < count($rmanage); $i++) { 
   echo "
   <div class='item-master'>
-    <div><a href='?$rmanage[$i][1]'>manage<br> $rmanage[$i][0]</a></div>
+    <div><a href='?".$rmanage[$i][1]."'>manage<br> ".$rmanage[$i][0]."</a></div>
   </div>
   ";
 }
 ?>
+</div>
