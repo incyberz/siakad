@@ -1,5 +1,9 @@
-<h1>MANAGE SEMESTER</h1>
 <?php
+$id_semester = isset($_GET['id_semester']) ? $_GET['id_semester'] : '';
+$link_home = $id_semester=='' ? '' : "<a href='?manage_semester'><i class='icon_house_alt'></i></a>";
+echo "<h1>$link_home MANAGE KURIKULUM SEMESTER</h1>
+";
+
 // if(isset($_POST['btn_set_dosen'])){
 //   $s = "SELECT 1 FROM tb_jadwal WHERE id_semester=$_POST[id_semester]";
 //   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
@@ -17,152 +21,194 @@
 //   }
 // }
 
-$id_semester = isset($_GET['id_semester']) ? $_GET['id_semester'] : '';
 
 if($id_semester==''){
-  include 'modul/kurikulum/list_semester.php';
+  include 'modul/kurikulum/list_kurikulum_semester.php';
   exit;
 }else{
   # ==========================================================
-  # SELECT BLOK MK
+  # IDENTITAS SEMESTER
   # ==========================================================
   $s = "SELECT 
-  c.nama as nama_kurikulum,
-  c.basis,
-  b.nomor as semester_ke,
-  d.kode as kode_mk,
-  d.nama as nama_mk,
-  c.id as id_kurikulum,
-  a.id as id_semester_mk,
-  a.id_semester,
-  a.id_mk,
-  (SELECT id from tb_jadwal where id_semester=a.id) as id_jadwal,  
-  (SELECT id_dosen from tb_jadwal where id_semester=a.id) as id_dosen,  
-  (
-    SELECT k.nama from tb_jadwal j 
-    JOIN tb_dosen k on k.id=j.id_dosen 
-    where j.id_semester=a.id) as nama_dosen  
-
+  concat('Kurikulum ',b.jenjang,' Angkatan ',b.angkatan,' Prodi ', d.nama) as kurikulum,
+  a.nomor as semester_ke, 
+  a.tanggal_awal as batas_awal, 
+  a.tanggal_akhir as batas_akhir, 
+  a.tanggal_akhir as batas_akhir  
   FROM tb_semester a 
-  JOIN tb_semester b on a.id_semester=b.id 
-  JOIN tb_kurikulum c on a.id_kurikulum=c.id 
-  JOIN tb_mk d on a.id_mk=d.id 
-  WHERE a.id=$id_semester 
-  ";
+  JOIN tb_kalender b on a.id_kalender=b.id 
+  JOIN tb_kurikulum c on a.id_kalender=c.id 
+  JOIN tb_prodi d on c.id_prodi=d.id 
+  where a.id=$id_semester";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  if(mysqli_num_rows($q)==0) die('<span class=red>Data Kurikulum MK tidak ditemukan.');
-  $dkmk = mysqli_fetch_assoc($q);
-  $keterangan = "Jadwal $dkmk[nama_mk] / Semester $dkmk[semester_ke] / $dkmk[nama_kurikulum]";
-  $koloms_mk = [];
+  if(mysqli_num_rows($q)==0) die('<span class=red>Data SEMESTER tidak ditemukan.');
+  $d = mysqli_fetch_assoc($q);
+  $batas_awal = $d['batas_awal'];
+  $batas_akhir = $d['batas_akhir'];
+  $koloms_smt = [];
   $i=0;
-  $tr_mk = '';
-  foreach ($dkmk as $key => $value) {
+  $tr_smt = '';
+  foreach ($d as $key => $value) {
     if($key=='nama_dosen') continue;
-    $koloms_mk[$i] = str_replace('_',' ',$key);
+    $koloms_smt[$i] = str_replace('_',' ',$key);
     $debug = substr($key,0,2)=='id' ? 'debug' : 'upper';
     // echo substr($key,0,2)."<hr>";
-    $tr_mk .= "<tr class=$debug><td>$koloms_mk[$i]</td><td>$value</td></tr>";
+    $tr_smt .= "<tr class=$debug><td>$koloms_smt[$i]</td><td>$value</td></tr>";
     $i++;
   }
 
   # ==========================================================
-  # OUTPUT BLOK MK
+  # OUTPUT BLOK SEMESTER
   # ==========================================================
-  $pilih_mk_lain = "<div class='btn-link kecil'>Opsi : <a href='?manage_kurikulum&id=$dkmk[id_kurikulum]'>Pilih MK lain</a></div>";
-  $blok_mk = "<table class=table>$tr_mk</table>$pilih_mk_lain";
-
-
+  $blok_smt = "<table class=table>$tr_smt</table>";
 
 
 
   # ==========================================================
-  # BLOK DOSEN
+  # MANAGE SEMESTER
   # ==========================================================
   $s = "SELECT 
-  a.id as id_dosen,
-  a.nama as nama_dosen
-  FROM tb_dosen a 
-  WHERE a.id != '$dkmk[id_dosen]' 
-  ORDER BY a.nama
-  ";
+  a.krs_awal, 
+  a.krs_akhir, 
+  a.bayar_awal, 
+  a.bayar_akhir, 
+  a.sesi_awal, 
+  a.sesi_akhir 
+  FROM tb_semester a  
+  where a.id=$id_semester";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  $option_dosen = '';
-  while ($d=mysqli_fetch_assoc($q)) {
-    $selected = 0 ? 'selected' : '';
-    $option_dosen .= "<option class='pilihan pilihan-dosen' value=$d[id_dosen] $selected>$d[nama_dosen] ~ $d[id_dosen]</option>";
+  if(mysqli_num_rows($q)==0) die('<span class=red>Data SEMESTER tidak ditemukan.');
+  $d = mysqli_fetch_assoc($q);
+  $koloms_smt = [];
+  $i=0;
+  $tr_smt = '';
+  foreach ($d as $key => $value) {
+    if($key=='nama_dosen') continue;
+    $koloms_smt[$i] = str_replace('_',' ',$key);
+    $debug = substr($key,0,2)=='id' ? 'debug' : 'upper';
+    // echo substr($key,0,2)."<hr>";
+    $tr_smt .= "<tr class=$debug><td>$koloms_smt[$i]</td><td>
+      <input class=form-control type=date name=$key id=$key value='$value' required>
+    </td></tr>";
+    $i++;
   }
 
-  $link_opsi = "<div class='btn-link kecil ml2'>Opsi : <a class='proper' href='?master&p=dosen'>manage dosen</a></div>";
-  $p = $dkmk['nama_dosen']=='' ? "
-    <p>Silahkan pilih dosen (KOORDINATOR) untuk mata kuliah ini!</p>" : "
-    <div class='wadah bg-white'>Dosen Koordinator : <span class=proper id='nama_dosen'>$dkmk[nama_dosen]</span></div>
-    <p>Silahkan pilih kembali untuk mengubahnya.</p>
-  ";
-
-  $primary_set_dosen = $dkmk['nama_dosen']=='' ? 'primary' : 'warning';
-  $btn_set_sesi = $dkmk['nama_dosen']=='' ? '' : "
-    <div class=btn-link>
-      <a href='?manage_kelas&id_jadwal=$dkmk[id_jadwal]' class='btn btn-primary btn-block'>Set Peserta Kuliah</a>
-    </div>
-    <div class=btn-link>
-      <a href='?manage_sesi&id_jadwal=$dkmk[id_jadwal]' class='btn btn-primary btn-block'>Set Jadwal Sesi Kuliah</a>
-    </div>
-  ";
-  $btn_set_dosen = "<div class='btn-link'><button class='btn btn-$primary_set_dosen btn-block hideit' name='btn_set_dosen' id='btn_set_dosen'>Set Dosen Koordinator</button></div>";
-
-  $script = "
-    <script>
-      $(function(){
-        $('#id_dosen').change(function(){
-          let id = parseInt($(this).val());
-          console.log(id);
-          if(id){
-            $('#btn_set_dosen').fadeIn();
-          }else{
-            $('#btn_set_dosen').fadeOut();
-          }
-        })
-      })
-    </script>
-  ";
-
-  $blok_dosen = $option_dosen=='' 
-    ? "<div class='alert alert-danger'>Belum ada DATA DOSEN yang aktif (bersedia mengajar).<hr>$link_opsi</div>" 
-    : "
-    $p
-    <select class='form-control' id=id_dosen name=id_dosen>
-      <option value=0 selected>-- Pilih --</option>
-      $option_dosen
-    </select>
-    $script
-    $link_opsi
-    $btn_set_dosen
-    $btn_set_sesi
-  ";
-
-
-
+  # ==========================================================
+  # OUTPUT BLOK MANAGE SEMESTER
+  # ==========================================================
+  $blok_tgl = "<table class=table>$tr_smt</table>";
 
 }
 
+$w = date('w',strtotime($batas_awal));
+$add_days = $w<=1 ? (1-$w) : (8-$w);
+
+$tanggal_senin_pertama = date('Y-m-d',strtotime("+$add_days day",strtotime($batas_awal)));
+$batas_awal_show = date('D, d M Y',strtotime($batas_awal));
+// die("
+// batas_awal: $batas_awal<br>
+// w: $w<br>
+// add_days: $add_days<br>
+// tanggal_senin_pertama: $tanggal_senin_pertama<br>
+// batas_awal_show: $batas_awal_show<br>
+// ")
 
 
 
 
 ?>
-<style>.btn-link{margin-top:10px;} .ml2{margin-left: 10px}</style>
+<div class="wadah">
+  <h3 class='m0 mb2'>Identitas Semester</h3>
+  <?=$blok_smt ?>
+</div>
+<div class="wadah">
+  <h3 class='m0 mb2'>Seting Pembayaran dan KRS</h3>
+  <div class="form-group">
+    <div>
+      <label for="radio_senin_pertama">
+        <input type="radio" id="radio_senin_pertama" name="radio_senin_pertama" checked> 
+        <small>Awal Pembayaran mengacu ke Senin Pertama</small>
+      </label>      
+    </div>
+    <div>
+      <label for="radio_senin_pertama2">
+        <input type="radio" id="radio_senin_pertama2" name="radio_senin_pertama"> 
+        <small>Awal Pembayaran mengacu ke Batas Awal Semester</small>
+      </label>      
+    </div>
+
+    <div class="wadah">
+      <label for="senin_pertama_show">Senin Pertama <br><small><i>Hari Senin Pertama pada Batas Semester yaitu tanggal: </i></small></label>
+      <input class="form-control mb2" type="date" name="senin_pertama_show" id="senin_pertama_show" value=<?=$tanggal_senin_pertama?> disabled>
+      <input class=debuga id="senin_pertama" name="senin_pertama" value=<?=$tanggal_senin_pertama?>>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="durasi_pembayaran">Durasi Pembayaran <small><i>(hari)</i></small></label>
+    <select name="durasi_pembayaran" id="durasi_pembayaran" class="form-control">
+      <?php for ($i=1; $i <= 21 ; $i++) { 
+        $selected = $i==14 ? 'selected' : '';
+        echo "<option $selected>$i</option>";
+      } ?>
+    </select>
+  </div>
+  <div class="form-group">
+    <div>
+      <label for="jeda_krs">
+        <input type="radio" id="jeda_krs" name="jeda_krs" checked> 
+        Tanggal Awal KRS adalah sesudah Jatuh Tempo Pembayaran
+      </label>      
+    </div>
+    <div>
+      <label for="jeda_krs2">
+        <input type="radio" id="jeda_krs2" name="jeda_krs"> 
+        Tanggal Awal KRS adalah sama dengan Tanggal Awal Pembayaran
+      </label>      
+    </div>
+    <div class='flexy'>
+      <div>
+        <label for="jeda_krs3">
+          <input type="radio" id="jeda_krs3" name="jeda_krs"> 
+          Tanggal Awal KRS bergeser selama:
+        </label>      
+      </div>
+      <div>
+        <select name="durasi_pembayaran" id="durasi_pembayaran" class="form-control">
+          <?php for ($i=-14; $i <= 7 ; $i++) { 
+            $selected = $i==0 ? 'selected' : '';
+            echo "<option $selected>$i</option>";
+          } ?>
+        </select>
+      </div>
+      <div>
+        <label for="jeda_krs3">hari setelah Jatuh Tempo Pembayaran</label>
+      </div>
+
+    </div><!-- End of Flexy -->
+  </div><!-- End of Form-Group -->
+  <div class="form-group">
+    <label for="durasi_krs">Durasi KRS <small><i>(hari)</i></small></label>
+    <select name="durasi_krs" id="durasi_krs" class="form-control">
+      <?php for ($i=1; $i <= 14 ; $i++) { 
+        $selected = $i==5 ? 'selected' : '';
+        echo "<option $selected>$i</option>";
+      } ?>
+    </select>
+  </div>
+  <div class="form-group">
+    <button class="btn btn-primary btn-block">Apply Setting</button>
+    <small><i>Setelah Apply Setting Anda dapat menyimpan Aturan Tanggal pada Semester</i></small>
+  </div>
+
+</div>
 <div class="wadah gradasi-hijau">
   <form method=post>
-    <input class=debug name='keterangan' value='<?=$keterangan?>'>
     <input class=debug name='id_semester' value='<?=$id_semester?>'>
-    <h3>Mata Kuliah</h3>
-    <?=$blok_mk ?>
-    <hr>
-    <h3>Dosen Koordinator</h3>
-    <?=$blok_dosen ?>
+    <h3 class='m0 mb2'>Aturan Tanggal pada Semester</h3>
+    <?=$blok_tgl ?>
+    <button class='btn btn-primary btn-block'>Simpan Aturan Tanggal</button>
   </form>
 </div>
-
-
-
-
+<div class="wadah gradasi-hijau">
+  <h3>Ilustrasi Tanggal</h3>
+</div>

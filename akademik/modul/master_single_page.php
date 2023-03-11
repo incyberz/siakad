@@ -103,8 +103,8 @@ while ($d = mysqli_fetch_assoc($q)) {
     # ===============================================
     # SPECIAL MANAGE FOR KALENDER / KURIKULUM
     # ===============================================
-    $btn_manage_kalender = $page=='kalender' ? "<a class='btn btn-primary btn-sm btn-block mb-2 upper' href='?manage_kalender&$param_id=$d[$param_id]'>manage</a>" : '';
-    $btn_manage_kurikulum = $page=='kurikulum' ? "<a class='btn btn-primary btn-sm btn-block mb-2 upper' href='?manage_kurikulum&$param_id=$d[$param_id]'>manage</a>" : '';
+    $btn_manage_kalender = $page=='kalender' ? "<a class='btn btn-primary btn-sm btn-block mb-2 upper' href='?manage_kalender&id_kalender=$d[$param_id]'>manage</a>" : '';
+    $btn_manage_kurikulum = $page=='kurikulum' ? "<a class='btn btn-primary btn-sm btn-block mb-2 upper' href='?manage_kurikulum&id_kurikulum=$d[$param_id]'>manage</a>" : '';
 
 
 

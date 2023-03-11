@@ -81,7 +81,7 @@ WHERE a.id_kalender=$id_kalender
 // die($s_kalender);
 
 $q = mysqli_query($cn,$s_kalender) or die(mysqli_error($cn));
-if(mysqli_num_rows($q)==0) die(div_alert('danger',"Kalender Akademik untuk mahasiswa ini belum ada. | <a href='?manage_kalender&id=$id_kalender' >Manage Kalender</a>"));
+if(mysqli_num_rows($q)==0) die(div_alert('danger',"Kalender Akademik untuk mahasiswa ini belum ada. | <a href='?manage_kalender&id_kalender=$id_kalender' >Manage Kalender</a>"));
 
 # ==========================================================
 # GET KURIKULUM
@@ -92,14 +92,14 @@ if(mysqli_num_rows($q)>1) die(div_alert('danger','Jumlah kurikulum harus unik.')
 if(mysqli_num_rows($q)==0) die(div_alert('danger',"Kurikulum untuk kalender dan prodi ini belum ada. | <a href='?manage_kurikulum'>Manage Kurikulum</a>"));
 $d = mysqli_fetch_assoc($q);
 $id_kurikulum = $d['id_kurikulum'];
-$manage_kurikulum = "<a href='?manage_kurikulum&id=$id_kurikulum'>Manage Kurikulum</a>";
+$manage_kurikulum = "<a href='?manage_kurikulum&id_kurikulum=$id_kurikulum'>Manage Kurikulum</a>";
 $nama_kurikulum = $d['nama_kurikulum'];
 echo "<div class=wadah>Kurikulum: <span id=nama_kurikulum>$nama_kurikulum</span> <span class=debug id=id_kurikulum>$id_kurikulum</span> </div>";
 
 # ==========================================================
 # CEK SEMESTER FOR MHS DAN KURIKULUM-MK
 # ==========================================================
-$manage_kalender = "<a href='?manage_kalender&id=$id_kalender' >Manage Kalender</a>";
+$manage_kalender = "<a href='?manage_kalender&id_kalender=$id_kalender' >Manage Kalender</a>";
 $s_semester = $s_kalender." AND a.tanggal_awal <= '$today'";
 // echo "<pre>$s_semester</pre>";
 $q = mysqli_query($cn,$s_semester) or die(mysqli_error($cn));

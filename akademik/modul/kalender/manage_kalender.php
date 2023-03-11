@@ -9,8 +9,8 @@
 </style>
 <?php
 
-$id = isset($_GET['id']) ? $_GET['id'] : '';
-if($id<1) die('<script>location.replace("?master&p=kalender")</script>');
+$id_kalender = isset($_GET['id_kalender']) ? $_GET['id_kalender'] : '';
+if($id_kalender<1) die('<script>location.replace("?master&p=kalender")</script>');
 
 
 
@@ -29,7 +29,7 @@ a.jumlah_bulan_per_semester
 
 FROM tb_kalender a 
 JOIN tb_jenjang b ON b.jenjang=a.jenjang  
-WHERE a.id='$id'";
+WHERE a.id='$id_kalender'";
 $q = mysqli_query($cn, $s)or die(mysqli_error($cn));
 if(!mysqli_num_rows($q)) die('Data kalender tidak ditemukan.');
 $d = mysqli_fetch_assoc($q);
@@ -54,7 +54,7 @@ echo "
 <table class=table>
   $tr
 </table>
-<div class=text-right><a href='?master&p=kalender&aksi=update&id=$id'>Update Identitas Kalender</a></div>
+<div class=text-right><a href='?master&p=kalender&aksi=update&id=$id_kalender'>Update Identitas Kalender</a></div>
 </div>";
 
 
@@ -74,7 +74,7 @@ a.krs_akhir,
 FROM tb_semester a 
 JOIN tb_kalender b ON b.id=a.id_kalender 
 
-WHERE b.id='$id' 
+WHERE b.id='$id_kalender' 
 ORDER BY a.nomor 
 ";
 $q = mysqli_query($cn, $s)or die(mysqli_error($cn));

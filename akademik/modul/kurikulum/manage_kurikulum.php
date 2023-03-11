@@ -9,8 +9,8 @@
 </style>
 <?php
 
-$id = isset($_GET['id']) ? $_GET['id'] : '';
-if($id<1) die('<script>location.replace("?master&p=kurikulum")</script>');
+$id_kurikulum = isset($_GET['id_kurikulum']) ? $_GET['id_kurikulum'] : '';
+if($id_kurikulum<1) die('<script>location.replace("?master&p=kurikulum")</script>');
 
 
 
@@ -36,7 +36,7 @@ FROM tb_kurikulum a
 JOIN tb_prodi b ON b.id=a.id_prodi 
 JOIN tb_kalender c ON c.id=a.id_kalender  
 JOIN tb_jenjang d ON d.jenjang=c.jenjang  
-WHERE a.id='$id'";
+WHERE a.id='$id_kurikulum'";
 $q = mysqli_query($cn, $s)or die(mysqli_error($cn));
 if(!mysqli_num_rows($q)) die('Data kurikulum tidak ditemukan.');
 $d = mysqli_fetch_assoc($q);
@@ -63,7 +63,7 @@ echo "
 <table class=table>
   $tr
 </table>
-<div class=text-right><a href='?master&p=kurikulum&aksi=update&id=$id'>Update Identitas Kurikulum</a></div>
+<div class=text-right><a href='?master&p=kurikulum&aksi=update&id=$id_kurikulum'>Update Identitas Kurikulum</a></div>
 </div>";
 
 
@@ -81,7 +81,7 @@ FROM tb_semester a
 JOIN tb_kalender b ON b.id=a.id_kalender 
 JOIN tb_kurikulum c ON c.id_kalender=b.id  
 
-WHERE c.id='$id' 
+WHERE c.id='$id_kurikulum' 
 ORDER BY a.nomor 
 ";
 $q = mysqli_query($cn, $s)or die(mysqli_error($cn));
@@ -171,7 +171,7 @@ while ($d=mysqli_fetch_assoc($q)) {
       <div class='semester-ke'>
         Semester $d[no_semester]
       </div>
-      <p>Rentang Waktu: $tanggal_awal_show s.d $tanggal_akhir_show | <a href='?manage_kalender&id=$id_kalender'>Manage</a></p>
+      <p>Rentang Waktu: $tanggal_awal_show s.d $tanggal_akhir_show | <a href='?manage_kalender&id_kalender=$id_kalender'>Manage</a></p>
       <table class='table tb-semester-mk'>
         <thead>
           <th>No</th>
@@ -187,7 +187,7 @@ while ($d=mysqli_fetch_assoc($q)) {
         
       </table>
       <div class='text-right'>
-        <a href='?assign_mk&id_kurikulum=$id&id_semester=$d[id_semester]&no_semester=$d[no_semester]&nama_kurikulum=$nama_kurikulum' class='btn btn-primary btn-sm'>Assign MK</a>
+        <a href='?assign_mk&id_kurikulum=$id_kurikulum&id_semester=$d[id_semester]&no_semester=$d[no_semester]&nama_kurikulum=$nama_kurikulum' class='btn btn-primary btn-sm'>Assign MK</a>
         <button class='btn btn-primary btn-sm btn_aksi' id='tambah_dan_assign__mk__$d[id_semester]__$d[no_semester]'>Tambah MK</button>
       </div>
     </div>
@@ -216,7 +216,7 @@ $btn_tambah = $jumlah_semester==$jumlah_semester_real ? ''
 : die("
 <div class=wadah>
   <p>Jumlah semester pada Kalender ini adalah $jumlah_semester_real of $jumlah_semester. Anda dapat menambahkannya pada Manage Kalender.</p>
-  <a href='?manage_kalender&id=$id_kalender' class='btn btn-primary'>Tambah Semester</a>
+  <a href='?manage_kalender&id_kalender=$id_kalender' class='btn btn-primary'>Tambah Semester</a>
 </div>");
 // echo $btn_tambah;
 

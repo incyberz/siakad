@@ -68,7 +68,7 @@ if($id_kurikulum_mk==''){
   # ==========================================================
   # OUTPUT BLOK MK
   # ==========================================================
-  $pilih_mk_lain = "<div class='btn-link kecil'>Opsi : <a href='?manage_kurikulum&id=$dkmk[id_kurikulum]'>Pilih MK lain</a></div>";
+  $pilih_mk_lain = "<div class='btn-link kecil'>Opsi : <a href='?manage_kurikulum&id_kurikulum=$dkmk[id_kurikulum]'>Pilih MK lain</a></div>";
   $blok_mk = "<table class=table>$tr_mk</table>$pilih_mk_lain";
 
 
