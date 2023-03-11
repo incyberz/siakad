@@ -68,8 +68,8 @@ a.id as id_semester,
 a.nomor as no_semester,
 a.tanggal_awal, 
 a.tanggal_akhir,
-a.krs_awal, 
-a.krs_akhir,
+a.awal_krs, 
+a.akhir_krs,
 (SELECT count(1) from tb_kurikulum_mk where id_semester=a.id) as is_have_mk  
 FROM tb_semester a 
 JOIN tb_kalender b ON b.id=a.id_kalender 
@@ -91,8 +91,8 @@ while ($d=mysqli_fetch_assoc($q)) {
 
   $tanggal_awal = date('Y-m-d',strtotime($d['tanggal_awal']));
   $tanggal_akhir = date('Y-m-d',strtotime($d['tanggal_akhir']));
-  $krs_awal = date('Y-m-d',strtotime($d['krs_awal']));
-  $krs_akhir = date('Y-m-d',strtotime($d['krs_akhir']));
+  $awal_krs = date('Y-m-d',strtotime($d['awal_krs']));
+  $akhir_krs = date('Y-m-d',strtotime($d['akhir_krs']));
 
   $tr = "
   <tr>
@@ -110,13 +110,13 @@ while ($d=mysqli_fetch_assoc($q)) {
   <tr>
     <td>Tanggal KRS Awal</td>
     <td>
-      <input class='form-control' type=date value='$krs_awal' required>
+      <input class='form-control' type=date value='$awal_krs' required>
     </td>
   </tr>
   <tr>
     <td>Tanggal KRS Akhir</td>
     <td>
-      <input class='form-control' type=date value='$krs_akhir' required>
+      <input class='form-control' type=date value='$akhir_krs' required>
     </td>
   </tr>
   ";

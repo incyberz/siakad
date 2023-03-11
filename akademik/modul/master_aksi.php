@@ -111,7 +111,7 @@ for ($j=0; $j < count($Field); $j++) {
       # INPUT TANGGAL DAN TIMESTAMP
       # ===============================================
       // if($Type[$j]=='date') $input_value .= ' 00:00:00';
-      // if($nama_kolom=='krs_awal') die('krs_awal, input_value:'.$input_value);
+      // if($nama_kolom=='awal_krs') die('awal_krs, input_value:'.$input_value);
 
       $tg['d'] = date('d', strtotime($input_value));
       $tg['m'] = date('m', strtotime($input_value));

@@ -14,6 +14,7 @@ $s = "SELECT
 a.angkatan,
 a.jenjang,
 a.id as id_kalender,
+d.last_update,
 b.id as id_kurikulum,
 c.nama as nama_prodi,
 c.id as id_prodi, 
@@ -32,19 +33,21 @@ $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $thead = '
   <thead>
     <th>Angkatan</th>
-    <th>Prodi</th>
-    <th>Kalender</th>
+    <th>Kurikulum</th>
     <th>Semester</th>
+    <th>Last Update</th>
     <th>Aksi</th>
   </thead>
 ';
 $tr = '';
 while ($d = mysqli_fetch_assoc($q)) {
+  $is_manage = $d['last_update']=='' ? '--Belum--' : "$d[last_update]";
+  $merah = $d['last_update']=='' ? 'merah' : 'hijau';
   $tr .= "<tr>
     <td>$d[angkatan]</td>
-    <td>$d[nama_prodi]</td>
-    <td>Kalender $d[jenjang] Angkatan $d[angkatan]</td>
+    <td>$d[jenjang] ~ $d[angkatan] ~ $d[nama_prodi]</td>
     <td>$d[nomor_semester]</td>
+    <td class='text-center gradasi-$merah kecil miring'>$is_manage</td>
     <td>
       <a class='btn btn-primary' href='?manage_semester&id_semester=$d[id_semester]'>Manage Semester</a>
       <a class='btn btn-primary' href='?manage_kurikulum&id_kurikulum=$d[id_kurikulum]'>Manage Kurikulum MK</a>
