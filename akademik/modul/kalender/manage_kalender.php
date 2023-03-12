@@ -1,3 +1,8 @@
+<?php
+$id_kalender = isset($_GET['id_kalender']) ? $_GET['id_kalender'] : '';
+if($id_kalender<1) die('<script>location.replace("?master&p=kalender")</script>');
+include 'manage_kalender_tambah_kurikulum_process.php';
+?>
 <h1>MANAGE KALENDER</h1>
 <style>
   .ids-kalender h2{margin-top:0; color: darkblue; }
@@ -9,8 +14,6 @@
 </style>
 <?php
 
-$id_kalender = isset($_GET['id_kalender']) ? $_GET['id_kalender'] : '';
-if($id_kalender<1) die('<script>location.replace("?master&p=kalender")</script>');
 
 
 
@@ -50,7 +53,8 @@ foreach($d as $key=>$isi){
 
 echo "
 <div class='wadah ids-kalender'>
-<h2>Identitas Kalender</h2>
+<h2>Batasan Kalender</h2>
+<p>Batasan semester otomatis terbentuk mengacu pada <code>Tanggal Mulai</code> Kalender dan <code>Jumlah Bulan per Semester</code></p>
 <table class=table>
   $tr
 </table>
@@ -68,8 +72,7 @@ a.id as id_semester,
 a.nomor as no_semester,
 a.tanggal_awal, 
 a.tanggal_akhir,
-a.awal_krs, 
-a.akhir_krs,
+a.last_update,
 (SELECT count(1) from tb_kurikulum_mk where id_semester=a.id) as is_have_mk  
 FROM tb_semester a 
 JOIN tb_kalender b ON b.id=a.id_kalender 
@@ -91,37 +94,27 @@ while ($d=mysqli_fetch_assoc($q)) {
 
   $tanggal_awal = date('Y-m-d',strtotime($d['tanggal_awal']));
   $tanggal_akhir = date('Y-m-d',strtotime($d['tanggal_akhir']));
-  $awal_krs = date('Y-m-d',strtotime($d['awal_krs']));
-  $akhir_krs = date('Y-m-d',strtotime($d['akhir_krs']));
 
   $tr = "
   <tr>
-    <td>Tanggal Awal</td>
+    <td>Batas Awal</td>
     <td>
       <input class='form-control' type=date value='$tanggal_awal' disabled>
     </td>
   </tr>
   <tr>
-    <td>Tanggal Akhir</td>
+    <td>Batas Akhir</td>
     <td>
       <input class='form-control' type=date value='$tanggal_akhir' disabled>
     </td>
   </tr>
-  <tr>
-    <td>Tanggal KRS Awal</td>
-    <td>
-      <input class='form-control' type=date value='$awal_krs' required>
-    </td>
-  </tr>
-  <tr>
-    <td>Tanggal KRS Akhir</td>
-    <td>
-      <input class='form-control' type=date value='$akhir_krs' required>
-    </td>
-  </tr>
   ";
 
-  $btn_edit_semester = "<a href='?master&p=semester&aksi=update&id=$d[id_semester]' class='btn btn-info btn-sm'>Edit</a> ";
+  $lengkap = $d['last_update']=='' ? '<span class=red>-- none --</span>' : $d['last_update'];
+  $primary = $d['last_update']=='' ? 'primary' : 'success';
+  $caption = $d['last_update']=='' ? 'Penanggalan Semester' : 'Update Penanggalan';
+
+  $btn_penanggalan_semester = "<div class=mb2><a href='?manage_semester&id_semester=$d[id_semester]' class='btn btn-$primary btn-sm' >$caption</a></div> <div class='kecil miring'>Last update: $lengkap</div>";
   $btn_hapus_semester = $d['is_have_mk'] ? "<span class='badge badge-info'>Mempunyai $d[is_have_mk] MK</badge>" : "<button class='btn btn-danger btn-sm btn_aksi' id='hapus__semester__$d[id_semester]'>Hapus</button>";
 
   $wadah = (strtotime($d['tanggal_awal']) <= strtotime($today) and strtotime($d['tanggal_akhir']) >= strtotime($today)) ? 'wadah_active' : 'wadah'; 
@@ -141,7 +134,7 @@ while ($d=mysqli_fetch_assoc($q)) {
       </table>
       <div class='row'>
         <div class='col-lg-6'>
-          $btn_edit_semester
+          $btn_penanggalan_semester 
         </div>
         <div class='col-lg-6 text-right'>
           $btn_hapus_semester
@@ -166,19 +159,17 @@ echo "<div class=debug>
 $kalender = $semesters=='' ? '<div class="alert alert-danger">Belum ada data semester</div>' : "<div class='row kalender'>$semesters</div>";
 
 # ==============================================================
-# TAMBAH SEMESTER
+# TAMBAH SEMESTER OR TAMBAH KURIKULUM
 # ==============================================================
-$btn_tambah = $jumlah_semester==$jumlah_semester_real 
-? "<p>Semester sudah lengkap. Saatnya Manage Kurikulum.</p><a class='btn btn-primary btn-block mb2' href='?master&p=kurikulum'>Manage Kurikulum</a>" 
-: "
-<p>Jumlah semester pada Kalender ini adalah $jumlah_semester_real of $jumlah_semester. Anda dapat menambahkannya.</p>
-<button class='btn btn-primary btn_aksi mb2' id='tambah_semester__semester'>Tambah Semester $max_no_semester</button>
-";
-
-# ==============================================================
-# FINAL OUTPUT SEMESTERS
-# ==============================================================
-echo "$kalender $btn_tambah";
+echo $kalender;
+if($jumlah_semester==$jumlah_semester_real){
+  include 'manage_kalender_tambah_kurikulum.php';
+}else{
+  echo "
+  <p>Jumlah semester pada Kalender ini adalah $jumlah_semester_real of $jumlah_semester. Anda dapat menambahkannya.</p>
+  <button class='btn btn-primary btn_aksi mb2' id='tambah_semester__semester'>Tambah Semester $max_no_semester</button>
+  ";
+}
 
 
 
@@ -383,6 +374,7 @@ echo "$kalender $btn_tambah";
       })
 
 
-    });    
+    });
+    
   })
 </script>

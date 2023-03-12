@@ -1,3 +1,10 @@
+<?php
+$w = date('w',strtotime($batas_awal));
+$add_days = $w<=1 ? (1-$w) : (8-$w);
+
+$tanggal_senin_pertama = date('Y-m-d',strtotime("+$add_days day",strtotime($batas_awal)));
+$batas_awal_show = date('D, d M Y',strtotime($batas_awal));
+?>
 <div class="wadah">
   <form action="" method="post">
     <h3 class='m0 mb2'>Seting Pembayaran dan KRS</h3>
@@ -18,7 +25,7 @@
       <div class="wadah">
         <label for="senin_pertama_show">Senin Pertama <br><small><i>Hari Senin Pertama pada Batas Semester yaitu tanggal: </i></small></label>
         <input class="form-control mb2" type="date" name="senin_pertama_show" id="senin_pertama_show" value=<?=$tanggal_senin_pertama?> disabled>
-        <input class=debuga id="senin_pertama" name="senin_pertama" value=<?=$tanggal_senin_pertama?>>
+        <input class=debug id="senin_pertama" name="senin_pertama" value=<?=$tanggal_senin_pertama?>>
       </div>
     </div>
     <div class="form-group">
@@ -115,7 +122,7 @@
       <input type="checkbox" checked id="cek_awal_kuliah">
       <label for="cek_awal_kuliah">Automatic pada Senin Pertama setelah Minggu KRS</label>
       <input type=date id="awal_kuliah_show" class="form-control" disabled>
-      <input type=date class='debuga form-control' name="awal_kuliah" id="awal_kuliah">
+      <input type=date class='debug form-control' name="awal_kuliah" id="awal_kuliah">
     </div>
 
     <div class="form-group">
