@@ -157,11 +157,19 @@ echo "<div class=debug>
 </div>";
 
 $kalender = $semesters=='' ? '<div class="alert alert-danger">Belum ada data semester</div>' : "<div class='row kalender'>$semesters</div>";
+echo $kalender;
+
+# ==============================================================
+# LIST KURIKULUM YANG SUDAH ADA
+# ==============================================================
+include 'manage_kalender_list_kurikulum.php';
+
+
+
 
 # ==============================================================
 # TAMBAH SEMESTER OR TAMBAH KURIKULUM
 # ==============================================================
-echo $kalender;
 if($jumlah_semester==$jumlah_semester_real){
   include 'manage_kalender_tambah_kurikulum.php';
 }else{

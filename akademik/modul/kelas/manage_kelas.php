@@ -1,5 +1,5 @@
-<h1>Manage Kelas Peserta</h1>
 <?php
+$judul = '<h1>Manage Kelas Peserta</h1>';
 if(isset($_POST['btn_assign_kelas_peserta'])){
 
   $values = '';
@@ -31,28 +31,46 @@ if($id_jadwal==''){
 }
 
 echo "<span class=debug id=id_jadwal>$id_jadwal</span>";
+
 $s = "SELECT 
-a.keterangan,
+a.keterangan as jadwal,
 b.id as id_kurikulum_mk,
+b.id_semester,
+b.id_kurikulum,
 d.id as id_dosen,
-d.nama as dosen_koordinator  
+d.nama as dosen_koordinator,  
+e.nomor as nomor_semester,   
+e.id_kalender    
 
 FROM tb_jadwal a 
 JOIN tb_kurikulum_mk b on b.id=a.id_kurikulum_mk 
 JOIN tb_mk c on c.id=b.id_mk 
-JOIN tb_dosen d on d.id=a.id_dosen  
+JOIN tb_dosen d on d.id=a.id_dosen 
+JOIN tb_semester e on b.id_semester=e.id 
 WHERE a.id=$id_jadwal";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 if(mysqli_num_rows($q)==0) die('Data Jadwal tidak ditemukan.');
 $d = mysqli_fetch_assoc($q);
+$id_kurikulum = $d['id_kurikulum'];
 $id_kurikulum_mk = $d['id_kurikulum_mk'];
 $id_dosen = $d['id_dosen'];
+$id_semester = $d['id_semester'];
+$id_kalender = $d['id_kalender'];
+$nomor_semester = $d['nomor_semester'];
+
+$back_to = "Back to: 
+<a href='?manage_kalender&id_kalender=$id_kalender' class=proper>manage kalender</a> | 
+<a href='?manage_kurikulum&id_kurikulum=$id_kurikulum' class=proper>manage kurikulum</a> | 
+<a href='?manage_jadwal&id_kurikulum_mk=$id_kurikulum_mk' class=proper>manage jadwal</a> |  
+<a href='?manage_sesi&id_jadwal=$id_jadwal' class=proper>manage sesi</a> 
+";
+
 
 $koloms = [];
 $i=0;
 $tr = '';
 foreach ($d as $key => $value) {
-  if($key=='nama_dosen') continue;
+  if($key=='nomor_semester') continue;
   $koloms[$i] = str_replace('_',' ',$key);
   $debug = substr($key,0,2)=='id' ? 'debug' : 'upper';
   // echo substr($key,0,2)."<hr>";
@@ -60,7 +78,7 @@ foreach ($d as $key => $value) {
   $i++;
 }
 
-$tb_jadwal_info = "<table class=table>$tr</table>";
+$tb_jadwal_info = "<div class=mb2>$back_to</div>$judul<table class=table>$tr</table>";
 
 $default_option = '';
 include 'include/option_angkatan.php';

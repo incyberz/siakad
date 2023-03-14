@@ -6,10 +6,10 @@ if(isset($_POST['btn_buat_sesi_default'])){
   $sesi_uts = $_POST['sesi_uts'];
   $sesi_uas = $_POST['sesi_uas'];
 
-  $tanggal_p1 = "$_POST[tanggal_p1] $_POST[pukul_p1]";
+  $awal_perkuliahan = "$_POST[awal_perkuliahan] $_POST[pukul_p1]";
 
-  // $new_tgl = strtotime('+57 day',strtotime($tanggal_p1));
-  // die("$tanggal_p1 new_tgl: ".date('Y-m-d H:i:s',$new_tgl));
+  // $new_tgl = strtotime('+57 day',strtotime($awal_perkuliahan));
+  // die("$awal_perkuliahan new_tgl: ".date('Y-m-d H:i:s',$new_tgl));
   
   $values = '__';
   for ($i=1; $i <= $jumlah_sesi ; $i++) {
@@ -23,7 +23,7 @@ if(isset($_POST['btn_buat_sesi_default'])){
     // $date = strtotime("+7 day", $date);
     // echo date('M d, Y', $date);
     $selisih = ($i-1)*7;
-    $new_tgl = date('Y-m-d H:i',strtotime("+$selisih day",strtotime($tanggal_p1)));
+    $new_tgl = date('Y-m-d H:i',strtotime("+$selisih day",strtotime($awal_perkuliahan)));
 
     $nama_sesi = "NEW P$i";
     $nama_sesi = $i==$sesi_uts ? 'UTS' : $nama_sesi;

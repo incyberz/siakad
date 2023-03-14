@@ -30,6 +30,7 @@ while ($d=mysqli_fetch_assoc($q)) {
 $s = "SELECT 
 a.nama, 
 a.id,
+a.kode,
 b.id_kurikulum 
 
 from tb_mk a 
@@ -44,7 +45,7 @@ order by a.nama;
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $li = '';
 while ($d=mysqli_fetch_assoc($q)) {
-  $n = $d['id_kurikulum']==$id_kurikulum ? '' : "<li class='pilihan_mk' value=$d[id]>$d[nama] ~ $d[id]</li>";
+  $n = $d['id_kurikulum']==$id_kurikulum ? '' : "<li class='pilihan_mk' value=$d[id]>$d[nama] ~ $d[id] ~ $d[kode]</li>";
   if(!in_array($d['id'],$id_terpakai)) $li .= $n;
 }
 
@@ -53,6 +54,7 @@ while ($d=mysqli_fetch_assoc($q)) {
 # ===================================================
 $s = "SELECT 
 a.nama, 
+a.kode, 
 a.id 
 from tb_mk a 
 left join tb_kurikulum_mk b on a.id=b.id_mk 
@@ -66,7 +68,7 @@ order by a.nama;
 // die($s);
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 while ($d=mysqli_fetch_assoc($q)) {
-  $li .= "<li class='pilihan_mk' value=$d[id]>$d[nama] ~ $d[id]</li>";
+  $li .= "<li class='pilihan_mk' value=$d[id]>$d[nama] ~ $d[id] ~ $d[kode]</li>";
 }
 
 

@@ -1,8 +1,6 @@
 <?php
 $id_semester = isset($_GET['id_semester']) ? $_GET['id_semester'] : '';
-$link_home = $id_semester=='' ? '' : "<a href='?manage_semester'><i class='icon_house_alt'></i></a>";
-echo "<h1>$link_home MANAGE KURIKULUM SEMESTER</h1>
-";
+$judul = '<h1>MANAGE KURIKULUM SEMESTER</h1>';
 
 include 'manage_semester_settings_apply.php';
 
@@ -14,16 +12,14 @@ if($id_semester==''){
   # IDENTITAS SEMESTER
   # ==========================================================
   $s = "SELECT 
-  concat('Kurikulum ',b.jenjang,' Angkatan ',b.angkatan,' Prodi ', d.nama) as kurikulum,
+  concat('Kurikulum ',b.jenjang,' Angkatan ',b.angkatan) as kalender,
   a.nomor as semester_ke, 
   a.tanggal_awal as batas_awal, 
   a.tanggal_akhir as batas_akhir, 
-  a.tanggal_akhir as batas_akhir,
+  a.id_kalender, 
   a.last_update   
   FROM tb_semester a 
   JOIN tb_kalender b on a.id_kalender=b.id 
-  JOIN tb_kurikulum c on a.id_kalender=c.id 
-  JOIN tb_prodi d on c.id_prodi=d.id 
   where a.id=$id_semester";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   if(mysqli_num_rows($q)==0) die('<span class=red>Data SEMESTER tidak ditemukan.');
@@ -31,8 +27,17 @@ if($id_semester==''){
   $batas_awal = $d['batas_awal'];
   $batas_akhir = $d['batas_akhir'];
   $semester_ke = $d['semester_ke'];
-  $kurikulum = $d['kurikulum'];
+  $kalender = $d['kalender'];
+  $id_kalender = $d['id_kalender'];
   $last_update = $d['last_update'];
+
+  $back_to = "<div class=mb2>Back to : 
+  <a href='?manage_kalender&id_kalender=$id_kalender' class=proper>Manage kalender</a> | 
+  </div>
+  ";
+
+
+
   $koloms_smt = [];
   $i=0;
   $tr_smt = '';
@@ -63,6 +68,8 @@ if($id_semester==''){
 <!-- ===================================================== -->
 <!-- IDENTITAS SEMESTER -->
 <!-- ===================================================== -->
+<?=$back_to ?>
+<?=$judul ?>
 <div class="wadah">
   <h3 class='m0 mb2'>Identitas Semester</h3>
   <?=$blok_smt ?>
@@ -72,6 +79,7 @@ if($id_semester==''){
 <!-- SETINGS -->
 <!-- ===================================================== -->
 <?php include 'manage_semester_settings.php'; ?>
+<?=$back_to?>
 
 <!-- ===================================================== -->
 <!-- CUSTOM ATURAN TANGGAL -->
@@ -81,4 +89,4 @@ if($id_semester==''){
 <!-- ===================================================== -->
 <!-- KALENDER -->
 <!-- ===================================================== -->
-<?php if($last_update!='') include 'manage_semester_kalender.php'; ?>
+<?php if($last_update!='') {include 'manage_semester_kalender.php'; echo $back_to;} ?>

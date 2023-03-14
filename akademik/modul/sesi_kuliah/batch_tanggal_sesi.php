@@ -72,7 +72,7 @@ if(mysqli_num_rows($q)==0){
     </tr>"; 
   }
 
-  $tanggal_p1 = date('Y-m-d',strtotime($tanggal_sesi_p1));
+  $awal_perkuliahan = date('Y-m-d',strtotime($tanggal_sesi_p1));
   $pukul_p1 = date('H:i',strtotime($tanggal_sesi_p1));
 
   $btn_apply = "<button class='btn btn-primary' id='btn_apply_batch'>Apply Batch Tanggal</button>";
@@ -95,7 +95,7 @@ if(mysqli_num_rows($q)==0){
     <tr>
       <td>Tanggal P1</td>
       <td colspan=2>
-        <input class='form-control opsi_batch' type="date" value="<?=$tanggal_p1?>" id=tanggal_p1>
+        <input class='form-control opsi_batch' type="date" value="<?=$awal_perkuliahan?>" id=awal_perkuliahan>
       </td>
     </tr>
     <tr>
@@ -171,7 +171,7 @@ if(mysqli_num_rows($q)==0){
 <script>
   $(function(){
     $(".opsi_batch").change(function(){
-      let tanggal_p1 = $("#tanggal_p1").val();
+      let awal_perkuliahan = $("#awal_perkuliahan").val();
       let pukul_p1 = $("#pukul_p1").val();
       let recurrence = $("#recurrence").val();
       let minggu_tenang_uts = $("#minggu_tenang_uts").val();
@@ -179,7 +179,7 @@ if(mysqli_num_rows($q)==0){
       let durasi_uts = $("#durasi_uts").val();
 
       $("#debug1").text(`
-      tanggal_p1:${tanggal_p1}\n
+      awal_perkuliahan:${awal_perkuliahan}\n
       pukul_p1:${pukul_p1}\n
       recurrence:${recurrence}\n
       minggu_tenang_uts:${minggu_tenang_uts}\n

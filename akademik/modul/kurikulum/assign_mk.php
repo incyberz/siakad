@@ -96,7 +96,7 @@ $select_mk .= "</select>";
 
         let id_kurikulum = $("#id_kurikulum").val();
         $.ajax({
-          url: `ajax_akademik/get_list_mk_for_kurikulum.php?id_kurikulum=${id_kurikulum}&keyword=${t}&`,
+          url: `ajax_akademik/ajax_get_list_mk_for_kurikulum.php?id_kurikulum=${id_kurikulum}&keyword=${t}&`,
           success:function(a){
             $("#blok_list_mk").fadeIn();
             $('#blok_list_mk').html(a);

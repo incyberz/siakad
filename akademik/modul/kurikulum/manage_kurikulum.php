@@ -1,4 +1,4 @@
-<h1>MANAGE KURIKULUM</h1>
+<?php $judul = "<h1>MANAGE KURIKULUM</h1>"; ?>
 <style>
   .ids-kurikulum h2{margin-top:0; color: darkblue; }
   .kurikulum {}
@@ -6,13 +6,17 @@
   .tb-semester-mk th{text-align:left}
 
   .btn_tambah_semester {margin-bottom:10px}
+  .tb_aksi td{
+    padding:0 1px !important;
+    border: none !important;
+  }
 </style>
 <?php
 
 $id_kurikulum = isset($_GET['id_kurikulum']) ? $_GET['id_kurikulum'] : '';
 if($id_kurikulum<1) die('<script>location.replace("?master&p=kurikulum")</script>');
 
-
+include 'include/akademik_icons.php';
 
 
 # ==============================================================
@@ -28,6 +32,7 @@ c.jumlah_semester,
 a.is_publish, 
 a.tanggal_penetapan, 
 a.ditetapkan_oleh,
+c.jumlah_bulan_per_semester,
 b.id as id_prodi, 
 c.id as id_kalender, 
 a.id as id_kurikulum 
@@ -45,26 +50,31 @@ $nama_kurikulum = $d['nama_kurikulum'];
 $id_kalender = $d['id_kalender'];
 $id_prodi = $d['id_prodi'];
 
+$back_to = "<div class=mb2>Back to : 
+  <a href='?manage_kalender&id_kalender=$id_kalender' class=proper>Manage kalender</a> | 
+  <a href='?manage_multiple_jadwal&id_kurikulum=6'>Manage Multiple Jadwal</a>
+</div>
+";
+
+
 echo "<div class=debug id=keterangan_kurikulum>$d[nama_kurikulum] Prodi $d[nama_prodi] Angkatan $d[angkatan] Jenjang $d[jenjang]</div>";
 
-$tr='';
+$tr_kurikulum='';
 foreach($d as $kolom=>$isi){
-  if($kolom=='is_publish') {$isi = $isi==0 ? 'belum' : 'sudah'; $isi="<span class='abu miring'>-- $isi --</span>"; }
+  // if($kolom=='is_publish') {$isi = $isi==0 ? 'belum' : 'sudah'; $isi="<span class='abu miring'>-- $isi --</span>"; }
+  if($kolom=='is_publish' 
+  || $kolom=='nama_prodi' 
+  || $kolom=='angkatan' 
+  || $kolom=='jenjang' 
+  || $kolom=='tanggal_penetapan' 
+  || $kolom=='ditetapkan_oleh') continue;
   $debug = substr($kolom,0,3)=='id_' ? 'debug' : '';
   $kolom_caption = str_replace('_',' ',$kolom);
   $isi = $isi=='' ? '<span class="abu miring">-- null --</span>' : $isi;
-  $tr.="<tr class=$debug><td class=upper>$kolom_caption</td><td id='$kolom'>$isi</td></td>";
+  $tr_kurikulum.="<tr class=$debug><td class=upper>$kolom_caption</td><td id='$kolom'>$isi</td></td>";
 }
 
 
-echo "
-<div class='wadah ids-kurikulum'>
-<h2>Identitas Kurikulum</h2>
-<table class=table>
-  $tr
-</table>
-<div class=text-right><a href='?master&p=kurikulum&aksi=update&id=$id_kurikulum'>Update Identitas Kurikulum</a></div>
-</div>";
 
 
 
@@ -87,10 +97,14 @@ ORDER BY a.nomor
 $q = mysqli_query($cn, $s)or die(mysqli_error($cn));
 
 $jumlah_semester_real = mysqli_num_rows($q);
+
+
 $semesters = '';
 $rnomor_semester = [];
 $total_teori = 0;
 $total_praktik = 0;
+$total_mk = 0;
+$total_mk_terjadwal = 0;
 $i=0;
 while ($d=mysqli_fetch_assoc($q)) {
   $i++; 
@@ -107,7 +121,8 @@ while ($d=mysqli_fetch_assoc($q)) {
   a.bobot_praktik,
   a.prasyarat,
   b.id as id_kurikulum_mk, 
-  (SELECT count(1) from tb_kurikulum_mk WHERE id_mk=a.id) as jumlah_assign_mk 
+  (SELECT count(1) from tb_kurikulum_mk WHERE id_mk=a.id) as jumlah_assign_mk, 
+  (SELECT 1 from tb_jadwal WHERE id_kurikulum_mk=b.id) as telah_terjadwal  
 
   FROM tb_mk a 
   JOIN tb_kurikulum_mk b ON a.id=b.id_mk 
@@ -124,23 +139,38 @@ while ($d=mysqli_fetch_assoc($q)) {
   $jumlah_teori[$d['id_semester']] = 0;
   $jumlah_praktik[$d['id_semester']] = 0;
   $j=0;
-  while ($d2=mysqli_fetch_assoc($q2)) {
+  // list MK looping
+  while ($d2=mysqli_fetch_assoc($q2)) { 
     $j++;
+    $total_mk++;
+    if($d2['telah_terjadwal']) $total_mk_terjadwal++;
     $jumlah_teori[$d['id_semester']] += $d2['bobot_teori'];
     $jumlah_praktik[$d['id_semester']] += $d2['bobot_praktik'];
 
-    $hapus = $d2['jumlah_assign_mk'] > 1 ? '' : "<td class='deletable btn_aksi text-center' id='hapus__mk__$d2[id_mk]__$d[id_semester]'>Hapus</td>";
-    $drop = "<td class='deletable btn_aksi text-center' id='drop__mk__$d2[id_mk]__$d[id_semester]'>Drop</td>";
-    $jadwal = "<td class='text-center gradasi-biru'><a href='?manage_jadwal&id_kurikulum_mk=$d2[id_kurikulum_mk]'>Jadwal</a></td>";
+    $hapus = $d2['jumlah_assign_mk'] > 1 ? '' : "<span class='btn_aksi' id='hapus__mk__$d2[id_mk]__$d[id_semester]'>$img_aksi[delete]</span>";
+    $drop = "<span class='btn_aksi' id='drop__mk__$d2[id_mk]__$d[id_semester]'>$img_aksi[drop]</span>";
+
+    $img_aksi_next = $d2['telah_terjadwal'] ? $img_aksi['check'] : $img_aksi['next'] ;
+    $onclick = $d2['telah_terjadwal'] ? " onclick='return confirm(\"MK ini sudah dijadwalkan. Apakah ingin Manage Jadwal kembali?\")' " : '';
+    $merah = ($d2['bobot_teori'] + $d2['bobot_praktik'])==0 ? ' style="color:red; font-weight:bold" ' : '';
+    $jadwal = "<span><a $onclick href='?manage_jadwal&id_kurikulum_mk=$d2[id_kurikulum_mk]'>$img_aksi_next</a></span>";
     $tr.="
     <tr id='tr__$d2[id_mk]'>
       <td>$j</td>
       <td class='editable' id='kode__mk__$d2[id_mk]'>$d2[kode_mk]</td>
-      <td class='editable' id='nama__mk__$d2[id_mk]'>$d2[nama_mk]</td>
-      <td class='editable' id='bobot_teori__mk__$d2[id_mk]'>$d2[bobot_teori]</td>
-      <td class='editable' id='bobot_praktik__mk__$d2[id_mk]'>$d2[bobot_praktik]</td>
+      <td class='editable' id='nama__mk__$d2[id_mk]' $merah>$d2[nama_mk]</td>
+      <td class='editable' id='bobot_teori__mk__$d2[id_mk]' $merah>$d2[bobot_teori]</td>
+      <td class='editable' id='bobot_praktik__mk__$d2[id_mk]' $merah>$d2[bobot_praktik]</td>
       <td class='editable' id='prasyarat__mk__$d2[id_mk]'>$d2[prasyarat]</td>
-      $drop  $hapus $jadwal  
+      <td>
+        <table class=tb_aksi>
+          <tr>
+            <td>$drop</td>
+            <td>$hapus</td>
+            <td>$jadwal</td>
+          </tr>
+        </table>
+      </td> 
     </tr>    
     ";
   } //end while list MK
@@ -164,12 +194,17 @@ while ($d=mysqli_fetch_assoc($q)) {
   $tanggal_awal_show = "<span class='$tanggal_awal_sty'>".date('d M Y', strtotime($d['tanggal_awal'])).'</span>';
   $tanggal_akhir_show = "<span class='$tanggal_awal_sty'>".date('d M Y', strtotime($d['tanggal_akhir'])).'</span>';
 
+  $wadah = strtotime($d['tanggal_akhir']) < strtotime($today) ? 'wadah gradasi-kuning' : 'wadah'; 
+  $wadah = (strtotime($d['tanggal_awal']) <= strtotime($today) and strtotime($d['tanggal_akhir']) >= strtotime($today)) ? 'wadah_active' : $wadah; 
+  $semester_aktif = $wadah=='wadah_active' ? '(Semester Aktif)' : ''; 
+  $semester_lampau = $wadah=='wadah gradasi-kuning' ? '(Semester Lampau)' : ''; 
+
 
   $semesters .= "
   <div class='col-lg-6' id='semester__$d[id_semester]'>
-    <div class=wadah>
+    <div class='$wadah'>
       <div class='semester-ke'>
-        Semester $d[no_semester]
+        Semester $d[no_semester] $semester_aktif $semester_lampau
       </div>
       <p>Rentang Waktu: $tanggal_awal_show s.d $tanggal_akhir_show | <a href='?manage_kalender&id_kalender=$id_kalender'>Manage</a></p>
       <table class='table tb-semester-mk'>
@@ -179,7 +214,7 @@ while ($d=mysqli_fetch_assoc($q)) {
           <th>Mata Kuliah</th>
           <th>Teori</th>
           <th>Praktik</th>
-          <th>Prasyarat</th>
+          <th>Pra-syarat</th>
           <th colspan=3 style='text-align:center'>Aksi</th>
         </thead>
         
@@ -193,21 +228,28 @@ while ($d=mysqli_fetch_assoc($q)) {
     </div>
   </div>
   ";
+
+  if($i % 2 ==0) $semesters .= '</div><div class=row>';
 } // end while semesters
 
 
 
 $total_sks = $total_praktik + $total_teori;
-$ui_total_sks = "
-<div class=wadah>
-  <ul style='font-size:24px'>
-    <li>Total Teori: $total_teori SKS</li>
-    <li>Total Praktik: $total_praktik SKS</li>
-    <li class='tebal biru'>Total SKS Kurikulum: $total_sks SKS</li>
-  </ul>
-</div>";
 
-$kurikulum = $semesters=='' ? '<div class="alert alert-danger">Belum ada data semester</div>' : "<div class='row kurikulum'>$semesters</div>$ui_total_sks";
+$merah = $total_mk==$total_mk_terjadwal ? '' : 'merah';
+$ket = $total_mk==$total_mk_terjadwal ? '' : "<div class='merah miring '>Terdapat MK yang belum dijadwalkan dengan Dosen Pengampunya. Silahkan klik <code>Tombol Next</code> $img_aksi[next] pada tiap MK!<br><a href='?manage_multiple_jadwal&id_kurikulum=6' class='btn btn-primary'>Manage Multiple Jadwal</a></div>";
+
+$tr_rekap = "
+<tr><td class=upper>Total MK</td><td>$total_mk MK</td></tr>
+<tr><td class=upper>Total MK Terjadwal</td><td class='$merah gradasi-$merah'>$total_mk_terjadwal Jadwal dari $total_mk total$ket</td></tr>
+<tr><td class=upper>Total Teori</td><td>$total_teori SKS</td></tr>
+<tr><td class=upper>Total Praktik</td><td>$total_praktik SKS</td></tr>
+<tr class='tebal biru gradasi-kuning'><td class=upper>Total SKS</td><td>$total_sks SKS</td></tr>
+";
+
+
+
+$blok_semesters = $semesters=='' ? '<div class="alert alert-danger">Belum ada data semester</div>' : "<div class='row kurikulum'>$semesters</div>";
 
 # ==============================================================
 # TAMBAH SEMESTER
@@ -223,12 +265,52 @@ $btn_tambah = $jumlah_semester==$jumlah_semester_real ? ''
 # ==============================================================
 # FINAL OUTPUT SEMESTERS
 # ==============================================================
-echo $kurikulum;
+echo "
+$back_to
+$judul
+<div class='wadah ids-kurikulum'>
+  <h2>Identitas Kurikulum</h2>
+  <table class=table>
+    $tr_kurikulum
+    $tr_rekap
+  </table>
+  <div class=text-right>
+    <a href='?master&p=kurikulum&aksi=update&id=$id_kurikulum'>Update Identitas Kurikulum</a>
+  </div>
+</div>
+$blok_semesters
+$back_to
+";
+
 
 
 
 
 ?>
+<div style="position:fixed; top:5px; right: 5px; z-index:9999; display:none; cursor:pointer" id="blok_refresh">
+  <div class="alert alert-info" style="border-radius: 10px; border:solid 3px white">
+    <span style="display:inline-block; margin-right:15px">Anda melakukan perubahan.</span> <button class="btn btn-info btn-sm" onclick="location.reload()">Refresh</button>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <script>
   $(function(){
@@ -381,7 +463,9 @@ echo $kurikulum;
         url:link_ajax,
         success:function(a){
           if(a.trim()=='sukses'){
-            $("#"+kolom+"__"+tabel+"__"+acuan).text(isi_baru)
+            $("#"+kolom+"__"+tabel+"__"+acuan).text(isi_baru);
+            $("#blok_refresh").fadeIn();
+            
           }else{
             console.log(a);
             if(a.toLowerCase().search('cannot delete or update a parent row')>0){
@@ -398,5 +482,10 @@ echo $kurikulum;
 
 
     });    
+
+    $("#blok_refresh").click(function(){
+      $(this).fadeOut();
+    });
+
   })
 </script>

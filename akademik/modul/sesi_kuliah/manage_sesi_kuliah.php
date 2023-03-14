@@ -1,5 +1,5 @@
-<h1>Manage Sesi Kuliah</h1>
 <?php
+$judul = '<h1>Manage Sesi Kuliah</h1>';
 include 'form_buat_sesi_default_process.php';
 
 $id_jadwal = isset($_GET['id_jadwal']) ? $_GET['id_jadwal'] : '';
@@ -10,42 +10,61 @@ if($id_jadwal==''){
 }
 echo "<span class=debug id=id_jadwal>$id_jadwal</span>";
 $s = "SELECT 
-a.keterangan,
+a.keterangan as jadwal,
 b.id as id_kurikulum_mk,
+b.id_semester,
+b.id_kurikulum,
 d.id as id_dosen,
 d.nama as dosen_koordinator,  
 a.sesi_uts,  
 a.sesi_uas,  
 a.jumlah_sesi,
-a.tanggal_jadwal   
+a.tanggal_jadwal,   
+e.nomor as nomor_semester,   
+e.awal_kuliah_uts as awal_perkuliahan,   
+e.id_kalender    
 
 FROM tb_jadwal a 
 JOIN tb_kurikulum_mk b on b.id=a.id_kurikulum_mk 
 JOIN tb_mk c on c.id=b.id_mk 
-JOIN tb_dosen d on d.id=a.id_dosen  
+JOIN tb_dosen d on d.id=a.id_dosen 
+JOIN tb_semester e on b.id_semester=e.id 
 WHERE a.id=$id_jadwal";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 if(mysqli_num_rows($q)==0) die('Data Jadwal tidak ditemukan.');
 $d = mysqli_fetch_assoc($q);
+$id_kurikulum = $d['id_kurikulum'];
 $id_kurikulum_mk = $d['id_kurikulum_mk'];
 $id_dosen = $d['id_dosen'];
+$id_semester = $d['id_semester'];
+$id_kalender = $d['id_kalender'];
+$nomor_semester = $d['nomor_semester'];
+$awal_perkuliahan = $d['awal_perkuliahan'];
 $jumlah_sesi = $d['jumlah_sesi'];
 $sesi_uts = $d['sesi_uts'];
 $sesi_uas = $d['sesi_uas'];
+
+$back_to = "Back to: 
+<a href='?manage_kalender&id_kalender=$id_kalender' class=proper>manage kalender</a> | 
+<a href='?manage_kurikulum&id_kurikulum=$id_kurikulum' class=proper>manage kurikulum</a> | 
+<a href='?manage_jadwal&id_kurikulum_mk=$id_kurikulum_mk' class=proper>manage jadwal</a> | 
+<a href='?manage_kelas&id_jadwal=$id_jadwal' class=proper>manage kelas peserta</a> 
+";
 
 $koloms = [];
 $i=0;
 $tr = '';
 foreach ($d as $key => $value) {
-  if($key=='nama_dosen') continue;
+  if($key=='nomor_semester' || $key=='awal_perkuliahan') continue;
   $koloms[$i] = str_replace('_',' ',$key);
   $debug = substr($key,0,2)=='id' ? 'debug' : 'upper';
-  // echo substr($key,0,2)."<hr>";
   $tr .= "<tr class=$debug><td>$koloms[$i]</td><td id=$key>$value</td></tr>";
   $i++;
 }
 
-$tb_jadwal_info = "<table class=table>$tr</table>";
+echo "<div class=mb2>$back_to</div>$judul<table class=table>$tr</table>";
+
+
 
 # ====================================================
 # LIST SESI KULIAH
@@ -97,34 +116,5 @@ if(mysqli_num_rows($q)==0){
   <a href='?batch_tanggal_sesi&id_jadwal=$id_jadwal' class='btn btn-info'>Batch Tanggal Sesi</a>
   </div>";
 
-  $tb_sesi = "$batch<table class='table table-striped table-hover'>$thead$tr</table>";
+  echo "$batch<table class='table table-striped table-hover'>$thead$tr</table>$back_to";
 }
-
-
-
-
-
-
-
-
-
-
-?>
-<?=$tb_jadwal_info ?>
-<?=$tb_sesi ?>
-
-
-
-
-
-
-
-
-
-
-
-<script>
-  $(function(){
-   
-  })
-</script>
