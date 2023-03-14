@@ -450,8 +450,8 @@ $back_to
         //   return;
         // }
       }else if(kolom=='bobot_teori' || kolom=='bobot_praktik'){
-        if(isNaN(isi_baru) || parseInt(isi_baru)>4){
-          alert('Invalid bobot. \n\nMasukan bobot SKS antara 0 s.d 4');
+        if(isNaN(isi_baru) || parseInt(isi_baru)>6){
+          alert('Invalid bobot. \n\nMasukan bobot SKS antara 0 s.d 6');
           return;
         }
       }

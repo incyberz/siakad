@@ -3,7 +3,7 @@
 # AKADEMIK INDEX
 # ========================================================
 session_start();
-$dm = 0;
+$dm = 1;
 $now = date('Y-m-d H:i:s');
 $today = date('Y-m-d');
 $null = '<span class="miring small">--null--</span>';

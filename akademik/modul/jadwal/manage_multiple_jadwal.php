@@ -10,26 +10,21 @@
     padding:0 1px !important;
     border: none !important;
   }
+  th{text-align:left}
 </style>
 <?php
 
 $id_kurikulum = isset($_GET['id_kurikulum']) ? $_GET['id_kurikulum'] : '';
 if($id_kurikulum<1) die('<script>location.replace("?master&p=kurikulum")</script>');
+$default_option = '';
+include 'include/option_dosen.php';
 
 # ==============================================================
 # GET KURIKULUM DATA
 # ==============================================================
 $s = "SELECT 
-b.nama as nama_prodi, 
 a.nama as nama_kurikulum, 
-c.angkatan,
-d.nama as jenjang,
-a.basis, 
 c.jumlah_semester,
-a.is_publish, 
-a.tanggal_penetapan, 
-a.ditetapkan_oleh,
-c.jumlah_bulan_per_semester,
 b.id as id_prodi, 
 c.id as id_kalender, 
 a.id as id_kurikulum 
@@ -54,34 +49,18 @@ $back_to = "<div class=mb2>Back to :
 ";
 
 
-echo "<div class=debug id=keterangan_kurikulum>$d[nama_kurikulum] Prodi $d[nama_prodi] Angkatan $d[angkatan] Jenjang $d[jenjang]</div>";
 
-$tr='';
+
+$trk='';
 foreach($d as $kolom=>$isi){
   // if($kolom=='is_publish') {$isi = $isi==0 ? 'belum' : 'sudah'; $isi="<span class='abu miring'>-- $isi --</span>"; }
-  if($kolom=='is_publish' 
-  || $kolom=='nama_prodi' 
-  || $kolom=='angkatan' 
-  || $kolom=='jenjang' 
-  || $kolom=='tanggal_penetapan' 
-  || $kolom=='ditetapkan_oleh') continue;
+  if($kolom=='jumlah_semester') continue;
   $debug = substr($kolom,0,3)=='id_' ? 'debug' : '';
   $kolom_caption = str_replace('_',' ',$kolom);
   $isi = $isi=='' ? '<span class="abu miring">-- null --</span>' : $isi;
-  $tr.="<tr class=$debug><td class=upper>$kolom_caption</td><td id='$kolom'>$isi</td></td>";
+  $trk.="<tr class=$debug><td class=upper>$kolom_caption</td><td id='$kolom'>$isi</td></td>";
 }
 
-
-echo "
-$back_to
-$judul
-<div class='wadah ids-kurikulum'>
-<h2>Identitas Kurikulum</h2>
-<table class=table>
-  $tr
-</table>
-<div class=text-right><a href='?master&p=kurikulum&aksi=update&id=$id_kurikulum'>Update Identitas Kurikulum</a></div>
-</div>";
 
 
 
@@ -105,8 +84,18 @@ $q = mysqli_query($cn, $s)or die(mysqli_error($cn));
 
 $jumlah_semester_real = mysqli_num_rows($q);
 $semesters = '';
+$set_dosen = []; //unik
+
+$rid_dosen = []; // untuk hitung mk dan sks per dosen
+$rid_mk = [];
+$rnama_mk = [];
+$rsks = [];
+$rhomebase = [];
+
 $rnomor_semester = [];
 $i=0;
+$k=0;
+$total_mk=0;
 while ($d=mysqli_fetch_assoc($q)) {
   $i++; 
   array_push($rnomor_semester,$d['no_semester']);
@@ -118,9 +107,17 @@ while ($d=mysqli_fetch_assoc($q)) {
   a.id as id_mk,
   a.kode as kode_mk,
   a.nama as nama_mk,
+  a.bobot_teori,
+  a.bobot_praktik,
   b.id as id_kurikulum_mk, 
   (SELECT count(1) from tb_kurikulum_mk WHERE id_mk=a.id) as jumlah_assign_mk, 
-  (SELECT 1 from tb_jadwal WHERE id_kurikulum_mk=b.id) as telah_terjadwal  
+  (SELECT id_dosen from tb_jadwal WHERE id_kurikulum_mk=b.id) as id_dosen,
+  (SELECT d.nama from tb_jadwal c join tb_dosen d on c.id_dosen=d.id WHERE c.id_kurikulum_mk=b.id) as nama_dosen,   
+  (
+    SELECT e.nama from tb_jadwal c 
+    join tb_dosen d on c.id_dosen=d.id 
+    join tb_prodi e on d.homebase=e.id
+    WHERE c.id_kurikulum_mk=b.id) as homebase   
 
   FROM tb_mk a 
   JOIN tb_kurikulum_mk b ON a.id=b.id_mk 
@@ -130,22 +127,63 @@ while ($d=mysqli_fetch_assoc($q)) {
   AND d.id_prodi=$id_prodi
   ";
   $q2 = mysqli_query($cn, $s2)or die(mysqli_error($cn));
-  $jumlah_mk = mysqli_num_rows($q2);
-  echo "<span class=debug>jumlah_mk__$d[id_semester]: <span id='jumlah_mk__$d[id_semester]'>$jumlah_mk</span></span> ";
+  // $jumlah_mk = mysqli_num_rows($q2);
 
   $tr = '';
   $j=0;
   while ($d2=mysqli_fetch_assoc($q2)) {
     $j++;
 
+    if($d2['id_dosen']!=''){
+      $rid_dosen[$k] = $d2['id_dosen'];
+      $rid_mk[$k] = $d2['id_mk'];
+      $rnama_mk[$k] = $d2['nama_mk'];
+      $rhomebase[$k] = $d2['homebase'];
+      $rsks[$k] = $d2['bobot_teori']+$d2['bobot_praktik'];
+    }
+    $k++;
+    $total_mk++;
+
+
+    $primary = $d2['id_dosen']=='' ? 'primary' : 'info';
+    $nama_id_dosen = "$d2[nama_dosen] ~ $d2[id_dosen]";
+    if(!in_array($nama_id_dosen,$set_dosen) and strlen($nama_id_dosen)>3){
+      array_push($set_dosen,$nama_id_dosen);
+    }
+
     $tr.="
     <tr id='tr__$d2[id_mk]'>
       <td>$j</td>
-      <td class='editable' id='kode__mk__$d2[id_mk]'>$d2[kode_mk]</td>
-      <td class='editable' id='nama__mk__$d2[id_mk]'>$d2[nama_mk]</td>
-      <td>SELECT_DOSEN</td>
+      <td>$d2[kode_mk]</td>
+      <td>
+        $d2[nama_mk]
+        <span class=debug  id='$d2[id_kurikulum_mk]__$d2[id_dosen]'>$d2[id_dosen]</span> 
+      </td>
+      <td>
+        <select class='form-control select_id_dosen gradasi-merah' id='id_dosen__$d2[id_kurikulum_mk]__$d2[id_dosen]'>
+          <option value=NULL class='abu miring'>-- Pilih --</option>
+          $option_dosen
+        </select>
+      </td>
+      <td>
+        <button disabled id='btn_apply__$d2[id_kurikulum_mk]__$d2[id_dosen]' class='btn_apply btn btn-$primary btn-sm'>Apply</button>
+      </td>
     </tr>    
     ";
+
+    if($d2['id_dosen']){
+      echo "
+        <script>
+          $(function(){
+            let id_dosen = $('#$d2[id_kurikulum_mk]__$d2[id_dosen]').text();
+            $('#id_dosen__$d2[id_kurikulum_mk]__$d2[id_dosen]').val(id_dosen);
+            $('#id_dosen__$d2[id_kurikulum_mk]__$d2[id_dosen]').removeClass('gradasi-merah');
+            $('#id_dosen__$d2[id_kurikulum_mk]__$d2[id_dosen]').addClass('gradasi-hijau');
+          })
+        </script>
+      ";
+    }
+
   } //end while list MK
 
   $tr = $tr=='' ? "<tr><td class='red miring' colspan=9>Belum ada MK pada semester ini.</td></tr>" : $tr;
@@ -174,6 +212,7 @@ while ($d=mysqli_fetch_assoc($q)) {
           <th>Kode</th>
           <th>Mata Kuliah</th>
           <th>Jadwalkan dengan Dosen:</th>
+          <th>Aksi</th>
           </thead>
         
         $tr
@@ -189,7 +228,7 @@ while ($d=mysqli_fetch_assoc($q)) {
 
 
 
-$kurikulum = $semesters=='' ? '<div class="alert alert-danger">Belum ada data semester</div>' : "<div class='row kurikulum'>$semesters</div>";
+$kurikulum_semesters = $semesters=='' ? '<div class="alert alert-danger">Belum ada data semester</div>' : "<div class='row kurikulum'>$semesters</div>";
 
 # ==============================================================
 # TAMBAH SEMESTER
@@ -203,12 +242,175 @@ $btn_tambah = $jumlah_semester==$jumlah_semester_real ? ''
 // echo $btn_tambah;
 
 # ==============================================================
+# DOSEN-DOSEN
+# ==============================================================
+sort($set_dosen);
+$total_dosen = count($set_dosen);
+
+$thead_dosen = '
+<thead>
+  <th>No</th>
+  <th>Nama Dosen</th>
+  <th>Homebase</th>
+  <th>MK yang diampu</th>
+  <th>Jumlah SKS</th>
+</thead>
+';
+$tr_dosen = '';
+for ($i=0; $i < count($set_dosen); $i++) {
+  $j = $i+1; 
+  $arr = explode(' ~ ',$set_dosen[$i]);
+  $nama_dosen = $arr[0];
+  $id_dosen = $arr[1];
+
+  $li_mk='';
+  $sum_sks=0;
+  for ($m=0; $m < $total_mk; $m++) { 
+    if(isset($rid_dosen[$m])){
+      if($rid_dosen[$m]==$id_dosen){
+        $sum_sks += $rsks[$m];
+        $li_mk .= "<li>$rnama_mk[$m]</li>";
+        $homebase = $rhomebase[$m];
+      }
+    }
+  }
+
+
+  $tr_dosen.= "
+  <tr id=tr_dosen__$id_dosen>
+    <td>$j</td>
+    <td>$nama_dosen</td>
+    <td>$homebase</td>
+    <td>
+      <ol style='margin:0; padding:0 0 0 15px'>
+        $li_mk
+      </ol>
+    </td>
+    <td>$sum_sks</td>
+  </tr>
+  ";
+}
+
+$total_mk_terjadwal = count($rid_mk);
+$jumlah_sks_terjadwal = array_sum($rsks);
+$tb_dosens = "
+  <table class='table table-striped table-hover'>
+    $thead_dosen
+    $tr_dosen
+    <tr><td colspan=3 class=text-right>JUMLAH TERJADWAL</td><td>$total_mk_terjadwal MK</td><td>$jumlah_sks_terjadwal SKS</td></tr>
+  </table>
+";
+
+
+
+# ==============================================================
 # FINAL OUTPUT SEMESTERS
 # ==============================================================
-echo "$kurikulum$back_to";
+// echo "<pre>";
+// var_dump($rnama_mk);
+// echo "</pre>";
+echo "
+$back_to
+$judul
+<div class='wadah ids-kurikulum'>
+  <table class=table>
+    $trk
+    <tr><td>Total MK</td><td>$total_mk</td></tr>
+    <tr><td>Total Dosen</td><td>$total_dosen</td></tr>
+  </table>
+  <div class=text-right><a href='?master&p=kurikulum&aksi=update&id=$id_kurikulum'>Update Identitas Kurikulum</a></div>
+</div>
+$kurikulum_semesters
+$back_to
+
+<div class=wadah>
+<h3>Rekap SKS per Dosen</h3>
+$tb_dosens
+</div>
+$back_to
+";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 ?>
+<script>
+  $(function(){
+    $(".select_id_dosen").change(function(){
+      let tid = $(this).prop('id');
+      let rid = tid.split('__');
+      let id_kurikulum_mk = rid[1];
+      let id_dosen = rid[2];
+      let id_dosen_span = $('#'+id_kurikulum_mk+'__'+id_dosen).text();
+      let val = $(this).val();
+      if(id_dosen_span==val || (id_dosen_span=='' && val=='NULL')){
+        $('#btn_apply__'+id_kurikulum_mk+'__'+id_dosen).prop('disabled',true);
+      }else{
+        $('#btn_apply__'+id_kurikulum_mk+'__'+id_dosen).prop('disabled',false);
+      }
+    });
 
+    $(".btn_apply").click(function(){
+      let tid = $(this).prop('id');
+      let rid = tid.split('__');
+      let id_kurikulum_mk = rid[1];
+      let id_dosen = rid[2];
+      let id_dosen_span = $('#'+id_kurikulum_mk+'__'+id_dosen).text();
+      let new_id_dosen = $('#id_dosen__'+id_kurikulum_mk+'__'+id_dosen).val();
+
+      if(new_id_dosen=='NULL'){
+        let y = confirm('Apakah Anda ingin mengosongkan (menghapus) Jadwal untuk MK ini?');
+        if(!y){
+          $(this).val(id_dosen);
+          return;
+        }
+      }
+      
+      
+      let link_ajax = `ajax_akademik/ajax_insert_update_jadwal.php
+      ?id_kurikulum_mk=${id_kurikulum_mk}
+      &new_id_dosen=${new_id_dosen}
+      &id_dosen_span=${id_dosen_span}
+      `;
+      // console.log(id_kurikulum_mk,id_dosen,id_dosen_span,new_id_dosen,link_ajax); return;
+
+      $.ajax({
+        url:link_ajax,
+        success:function(a){
+          console.log(a);
+          if(a.trim()=='sukses'){
+
+            if(new_id_dosen=='NULL'){
+              $('#'+id_kurikulum_mk+'__'+id_dosen).text('');
+              $('#id_dosen__'+id_kurikulum_mk+'__'+id_dosen).removeClass('gradasi-hijau');
+              $('#id_dosen__'+id_kurikulum_mk+'__'+id_dosen).addClass('gradasi-merah');
+            }else{
+              $('#'+id_kurikulum_mk+'__'+id_dosen).text(new_id_dosen);
+              $('#id_dosen__'+id_kurikulum_mk+'__'+id_dosen).removeClass('gradasi-merah');
+              $('#id_dosen__'+id_kurikulum_mk+'__'+id_dosen).addClass('gradasi-hijau');
+            }
+
+            $('#'+tid).prop('disabled',true);
+
+          }else{
+            alert(a)
+          }
+        }
+      })
+    })
+  })
+</script>

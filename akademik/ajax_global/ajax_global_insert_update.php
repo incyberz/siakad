@@ -19,22 +19,10 @@ if ($table=='' OR $fields=='' OR $values=='' OR $pair_updates=='') die("Error AJ
 # ================================================
 # MAIN HANDLE
 # ================================================
-// $rfields = explode(",", $fields);
-// $rvalues = explode(",", $values);
-// if(count($rfields) != count($rvalues)) die("Jumlah kolom dan jumlah isi tidak sama. rfields:$rfields | rvalues:$rvalues");
-
-// $updates = '';
-
-// for ($i=0; $i < count($rfields); $i++) { 
-// 	$updates = '';
-// }
-
-// $updates = " id_jawab='33' ,  id_soal='4' ,  jawaban='xxx'";
-
 $s = "INSERT INTO $table ($fields) VALUES ($values)
 ON DUPLICATE KEY UPDATE $pair_updates
 ";
-$q = mysqli_query($cn,$s) or die("Error @ajax. Tidak bisa menambah data. SQL:$s. ".mysqli_error($cn));
+$q = mysqli_query($cn,$s) or die("Error @ajax. Tidak bisa insert/update data. SQL:$s. ".mysqli_error($cn));
 
 die('sukses');
 ?>
