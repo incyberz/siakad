@@ -11,6 +11,7 @@ akademik/modul/data_mk
 akademik/modul/data_tendik
 akademik/modul/konfigurasi_sistem
 akademik/modul/presensi_kuliah
+akademik/pdf/fpdf
 assets/vendor
 docs
 dosen

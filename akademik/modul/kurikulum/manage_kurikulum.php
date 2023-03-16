@@ -239,11 +239,14 @@ $total_sks = $total_praktik + $total_teori;
 $merah = $total_mk==$total_mk_terjadwal ? '' : 'merah';
 $ket = $total_mk==$total_mk_terjadwal ? '' : "<div class='merah miring '>Terdapat MK yang belum dijadwalkan dengan Dosen Pengampunya. Silahkan klik <code>Tombol Next</code> $img_aksi[next] pada tiap MK!<br><a href='?manage_multiple_jadwal&id_kurikulum=6' class='btn btn-primary'>Manage Multiple Jadwal</a></div>";
 
+$persen_teori = round($total_teori/$total_sks*100,2);
+$persen_praktik = round($total_praktik/$total_sks*100,2);
+
 $tr_rekap = "
 <tr><td class=upper>Total MK</td><td>$total_mk MK</td></tr>
 <tr><td class=upper>Total MK Terjadwal</td><td class='$merah gradasi-$merah'>$total_mk_terjadwal Jadwal dari $total_mk total$ket</td></tr>
-<tr><td class=upper>Total Teori</td><td>$total_teori SKS</td></tr>
-<tr><td class=upper>Total Praktik</td><td>$total_praktik SKS</td></tr>
+<tr><td class=upper>Total Teori</td><td>$total_teori SKS ($persen_teori%)</td></tr>
+<tr><td class=upper>Total Praktik</td><td>$total_praktik SKS ($persen_praktik%)</td></tr>
 <tr class='tebal biru gradasi-kuning'><td class=upper>Total SKS</td><td>$total_sks SKS</td></tr>
 ";
 
@@ -263,6 +266,16 @@ $btn_tambah = $jumlah_semester==$jumlah_semester_real ? ''
 // echo $btn_tambah;
 
 # ==============================================================
+# CETAK PDF
+# ==============================================================
+$disabled_pdf = $total_mk==$total_mk_terjadwal ? '' : 'disabled';
+$btn_cetak = "<button class='btn btn-primary' $disabled_pdf>$img_aksi[pdf] Cetak PDF</button>";
+$cetak_pdf = $total_mk==$total_mk_terjadwal 
+? div_alert('success',"Semua MK sudah terjadwal. Silahkan Anda boleh mencetak Kurikulum PDF.<hr>$btn_cetak") 
+: div_alert('danger',"Masih ada MK yang belum Anda jadwalkan.<hr>$btn_cetak <a href='?manage_multiple_jadwal&id_kurikulum=6' class='btn btn-primary'>Manage Multiple Jadwal</a>");
+
+
+# ==============================================================
 # FINAL OUTPUT SEMESTERS
 # ==============================================================
 echo "
@@ -279,6 +292,7 @@ $judul
   </div>
 </div>
 $blok_semesters
+$cetak_pdf
 $back_to
 ";
 

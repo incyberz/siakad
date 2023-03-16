@@ -407,7 +407,11 @@ $back_to
             $('#'+tid).prop('disabled',true);
 
           }else{
-            alert(a)
+            if(a.toLowerCase().search('cannot delete or update a parent row')>0){
+              alert('Jadwal tidak bisa dihapus karena sudah punya Sesi Kuliah.');
+            }else{
+              alert(a)
+            }
           }
         }
       })
