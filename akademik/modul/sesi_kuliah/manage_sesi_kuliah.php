@@ -5,12 +5,13 @@ include 'form_buat_sesi_default_process.php';
 $id_jadwal = isset($_GET['id_jadwal']) ? $_GET['id_jadwal'] : '';
 
 if($id_jadwal==''){
-  include 'modul/jadwal_kuliah/list_jadwal.php';
+  // include 'modul/jadwal_kuliah/list_jadwal.php';
+  include 'modul/sesi_kuliah/manage_multiple_sesi.php';
   exit;
 }
 echo "<span class=debug id=id_jadwal>$id_jadwal</span>";
 $s = "SELECT 
-a.keterangan as jadwal,
+concat('JADWAL',c.nama,' / ', h.jenjang,'-', g.nama, ' ', h.angkatan) as jadwal,
 b.id as id_kurikulum_mk,
 b.id_semester,
 b.id_kurikulum,
@@ -29,6 +30,10 @@ JOIN tb_kurikulum_mk b on b.id=a.id_kurikulum_mk
 JOIN tb_mk c on c.id=b.id_mk 
 JOIN tb_dosen d on d.id=a.id_dosen 
 JOIN tb_semester e on b.id_semester=e.id 
+JOIN tb_kurikulum f on f.id=b.id_kurikulum 
+JOIN tb_prodi g on g.id=f.id_prodi 
+JOIN tb_kalender h on h.id=f.id_kalender 
+
 WHERE a.id=$id_jadwal";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 if(mysqli_num_rows($q)==0) die('Data Jadwal tidak ditemukan.');

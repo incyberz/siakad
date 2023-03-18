@@ -22,6 +22,7 @@ switch ($c[0]){
   case 'manage_jadwal': $konten = 'modul/jadwal/manage_jadwal.php';break;
   case 'manage_multiple_jadwal': $konten = 'modul/jadwal/manage_multiple_jadwal.php';break;
   case 'manage_sesi': $konten = 'modul/sesi_kuliah/manage_sesi_kuliah.php';break;
+  case 'cek_all_sesi': $konten = 'modul/sesi_kuliah/cek_all_sesi.php';break;
   case 'manage_kelas': $konten = 'modul/kelas/manage_kelas.php';break;
   case 'manage_peserta': $konten = 'modul/peserta/manage_peserta.php';break;
   case 'manage_mhs': $konten = 'modul/mhs/manage_mhs.php';break;

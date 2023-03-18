@@ -52,8 +52,7 @@ $id_prodi = $d['id_prodi'];
 
 $back_to = "<div class=mb2>Back to : 
   <a href='?manage_kalender&id_kalender=$id_kalender' class=proper>Manage kalender</a> | 
-  <a href='?manage_multiple_jadwal&id_kurikulum=6'>Manage Multiple Jadwal</a>
-</div>
+  <a href='?manage_multiple_jadwal&id_kurikulum=$id_kurikulum'>Manage Multiple Jadwal</a>
 ";
 
 
@@ -206,7 +205,7 @@ while ($d=mysqli_fetch_assoc($q)) {
       <div class='semester-ke'>
         Semester $d[no_semester] $semester_aktif $semester_lampau
       </div>
-      <p>Rentang Waktu: $tanggal_awal_show s.d $tanggal_akhir_show | <a href='?manage_kalender&id_kalender=$id_kalender'>Manage</a></p>
+      <p>Rentang Waktu: $tanggal_awal_show s.d $tanggal_akhir_show</p>
       <table class='table tb-semester-mk'>
         <thead>
           <th>No</th>
@@ -237,10 +236,15 @@ while ($d=mysqli_fetch_assoc($q)) {
 $total_sks = $total_praktik + $total_teori;
 
 $merah = $total_mk==$total_mk_terjadwal ? '' : 'merah';
-$ket = $total_mk==$total_mk_terjadwal ? '' : "<div class='merah miring '>Terdapat MK yang belum dijadwalkan dengan Dosen Pengampunya. Silahkan klik <code>Tombol Next</code> $img_aksi[next] pada tiap MK!<br><a href='?manage_multiple_jadwal&id_kurikulum=6' class='btn btn-primary'>Manage Multiple Jadwal</a></div>";
+$ket = $total_mk==$total_mk_terjadwal ? '' : "<div class='merah miring '>Terdapat MK yang belum dijadwalkan dengan Dosen Pengampunya. Silahkan klik <code>Tombol Next</code> $img_aksi[next] pada tiap MK!<br><a href='?manage_multiple_jadwal&id_kurikulum=$id_kurikulum' class='btn btn-primary'>Manage Multiple Jadwal</a></div>";
 
-$persen_teori = round($total_teori/$total_sks*100,2);
-$persen_praktik = round($total_praktik/$total_sks*100,2);
+if($total_sks==0){
+  $persen_praktik=0;
+  $persen_teori=0;
+}else{
+  $persen_teori = round($total_teori/$total_sks*100,2);
+  $persen_praktik = round($total_praktik/$total_sks*100,2);
+}
 
 $tr_rekap = "
 <tr><td class=upper>Total MK</td><td>$total_mk MK</td></tr>
@@ -266,14 +270,44 @@ $btn_tambah = $jumlah_semester==$jumlah_semester_real ? ''
 // echo $btn_tambah;
 
 # ==============================================================
+# PENGESAHAN
+# ==============================================================
+$disabled_sah = $total_mk==$total_mk_terjadwal ? '' : 'disabled';
+$btn_sah = "<button class='btn btn-primary' $disabled_sah>$img_aksi[warning] Pengesahan Kurikulum</button>";
+$pengesahan = 0 
+? div_alert('success',"MK Sudah disahkan.") 
+: div_alert('info',"Maaf, saat ini belum ada Fitur Pengesahan Kurikulum<hr>$btn_sah");
+
+# ==============================================================
+# AKSES KE CEK ALL SESI 
+# ==============================================================
+$link_cek_all_sesi = $total_mk!=$total_mk_terjadwal ? '' : "
+<a href='?cek_all_sesi&id_kurikulum=$id_kurikulum'>Cek All Sesi</a>
+";
+$back_to = $link_cek_all_sesi==''? $back_to : "$back_to | $link_cek_all_sesi";
+
+
+# ==============================================================
 # CETAK PDF
 # ==============================================================
 $disabled_pdf = $total_mk==$total_mk_terjadwal ? '' : 'disabled';
 $btn_cetak = "<button class='btn btn-primary' $disabled_pdf>$img_aksi[pdf] Cetak PDF</button>";
-$cetak_pdf = $total_mk==$total_mk_terjadwal 
-? div_alert('success',"Semua MK sudah terjadwal. Silahkan Anda boleh mencetak Kurikulum PDF.<hr>$btn_cetak") 
-: div_alert('danger',"Masih ada MK yang belum Anda jadwalkan.<hr>$btn_cetak <a href='?manage_multiple_jadwal&id_kurikulum=6' class='btn btn-primary'>Manage Multiple Jadwal</a>");
+$form_cetak_pdf = $total_mk==$total_mk_terjadwal 
+? div_alert('success',"Semua MK sudah terjadwal. Silahkan Anda boleh mencetak Kurikulum PDF.<hr>
+<form method=post target=_blank action='pdf/kurikulum.php'>
+  <input class=debug name=id_kurikulum value=$id_kurikulum>
+  $btn_cetak
+  <span class='btn btn-secondary'>$link_cek_all_sesi</span>
+</form>  
+") 
+: div_alert('danger',"Masih ada MK yang belum Anda jadwalkan.<hr>$btn_cetak <a href='?manage_multiple_jadwal&id_kurikulum=$id_kurikulum' class='btn btn-primary'>Manage Multiple Jadwal</a>");
 
+
+
+# ==============================================================
+# CLOSING BACKTO
+# ==============================================================
+$back_to.='</div>';
 
 # ==============================================================
 # FINAL OUTPUT SEMESTERS
@@ -292,7 +326,8 @@ $judul
   </div>
 </div>
 $blok_semesters
-$cetak_pdf
+$pengesahan
+$form_cetak_pdf
 $back_to
 ";
 
@@ -437,6 +472,7 @@ $back_to
     }) // end btn_aksi
 
     $(".editable").click(function(){
+      console.log('editable call');
       let tid = $(this).prop('id');
       let rid = tid.split('__');
       let kolom = rid[0];
@@ -483,11 +519,11 @@ $back_to
           }else{
             console.log(a);
             if(a.toLowerCase().search('cannot delete or update a parent row')>0){
-              alert('Gagal menghapus data. \n\nData ini dibutuhkan untuk relasi data ke tabel lain.\n\n'+a);
+              alert('Gagal mengubah data. \n\nData ini dibutuhkan untuk relasi data ke tabel lain.\n\n'+a);
             }else if(a.toLowerCase().search('duplicate entry')>0){
               alert(`Kode ${isi_baru} telah dipakai pada data lain.\n\nSilahkan masukan kode unik lainnya.`)
             }else{
-              alert('Gagal menghapus data.');
+              alert('Gagal mengubah data.'+a);
             }
 
           }
