@@ -15,6 +15,8 @@ concat('JADWAL',c.nama,' / ', h.jenjang,'-', g.nama, ' ', h.angkatan) as jadwal,
 b.id as id_kurikulum_mk,
 b.id_semester,
 b.id_kurikulum,
+c.bobot_teori,
+c.bobot_praktik,
 d.id as id_dosen,
 d.nama as dosen_koordinator,  
 a.sesi_uts,  
@@ -48,6 +50,9 @@ $awal_perkuliahan = $d['awal_perkuliahan'];
 $jumlah_sesi = $d['jumlah_sesi'];
 $sesi_uts = $d['sesi_uts'];
 $sesi_uas = $d['sesi_uas'];
+$bobot = $d['bobot_teori']+$d['bobot_praktik'];
+
+$menit_sks = 50; //zzz
 
 $back_to = "Back to: 
 <a href='?manage_kalender&id_kalender=$id_kalender' class=proper>manage kalender</a> | 
@@ -75,13 +80,13 @@ echo "<div class=mb2>$back_to</div>$judul<table class=table>$tr</table>";
 # LIST SESI KULIAH
 # ====================================================
 $s = "SELECT 
-a.id,
+a.id as id_sesi_kuliah,
 a.pertemuan_ke,
 a.nama as nama_sesi,
 a.id_dosen, 
 a.tanggal_sesi,
 b.nama as nama_dosen,
-(SELECT r.nama from tb_ruang r where r.id=a.id_ruang) as nama_ruang  
+(SELECT count(1) from tb_assign_ruang where id_sesi_kuliah=a.id) as jumlah_ruang 
 
 from tb_sesi_kuliah a 
 join tb_dosen b on b.id=a.id_dosen 
@@ -95,23 +100,78 @@ if(mysqli_num_rows($q)==0){
   <thead>
     <th class='text-left upper'>Pertemuan ke</th>
     <th class='text-left upper'>Nama Sesi</th>
-    <th class='text-left upper'>Pengajar</th>
-    <th class='text-left upper'>Tanggal Sesi</th>
+    <th class='text-left upper'>Jam Masuk</th>
+    <th class='text-left upper'>Jam Keluar</th>
     <th class='text-left upper'>Ruang</th>
     <th class='text-left upper'>Aksi</th>
   </thead>"; 
   $tr = '';
   while ($d=mysqli_fetch_assoc($q)) {
+    // $today = '2023-3-29';// zzz debug
+    // $d['tanggal_sesi'] = '2023-3-29';// zzz debug
+    $tsesi = strtotime($d['tanggal_sesi']);
+    $ttoday = strtotime($today);
+
+    $tanggal_sesi = date('d M Y', $tsesi);
+    $jam_masuk = date('H:i', $tsesi);
+
+    $jam_keluar = date('H:i',strtotime($tsesi)+($bobot * $menit_sks * 60));
+    $hari = $nama_hari[date('w',$tsesi)];
+
+    $gradasi = $tsesi<$ttoday ? 'kuning' : '';
+    $lampau = $tsesi<$ttoday ? '<span class="kecil miring">(sesi lampau)</span>' : '';
+    $gradasi = strtotime(date('Y-m-d',$tsesi))==$ttoday ? 'hijau biru' : $gradasi;
+    $gradasi = strtoupper($d['nama_sesi'])=='UTS' ? 'pink' : $gradasi;
+    $gradasi = strtoupper($d['nama_sesi'])=='UAS' ? 'pink' : $gradasi;
+    
+    # ===========================================================
+    # PENCARIAN MINGGU AKTIF
+    # ===========================================================
+    $ttoday = strtotime($today);
+    $w = date('w',$ttoday);
+    $add_days = $w==0 ? 0 : -$w;
+    $ahad_skg = date('Y-m-d',strtotime("$add_days day",$ttoday));
+    $ahad_depan = date('Y-m-d',strtotime("7 day",strtotime($ahad_skg)));
+
+    $selisih_detik = strtotime($tanggal_sesi) - $ttoday;
+    $selisih_menit = intval($selisih_detik/60);
+    $selisih_jam = intval($selisih_menit/60);
+    $selisih_hari = intval($selisih_jam/24);
+
+    $x_hari_lagi = $selisih_hari>0 ? "<span class='kecil miring'>($selisih_hari hari lagi)</span>" : '';
+
+
+    $tr_active = ($tsesi>=strtotime($ahad_skg) and $tsesi<strtotime($ahad_depan)) ? 'tr_active' : '';
+    $minggu_aktif = $tr_active=='tr_active' ? '<span class="kecil miring biru">(minggu aktif)</span>':'';
+    $sesi_mgg_ini = $tr_active=='tr_active' ? "<span class=red>($selisih_hari hari lagi)</span>":$x_hari_lagi;
+    $sesi_hari_ini = strtotime(date('Y-m-d',$tsesi))==$ttoday ? '<span class="miring merah">(sesi hari ini)</span>' : $sesi_mgg_ini;
+
+    $jumlah_ruang = $d['jumlah_ruang']==0 ? '<span class="kecil miring">--none--</span>' : "$d[jumlah_ruang] ruang";
+
+    $today2 = date('Y-m-d');
+
     $tr .= "
-    <tr>
-      <td class='upper'>$d[pertemuan_ke]</td>
-      <td class='upper'>$d[nama_sesi]</td>
-      <td class='upper'>$d[nama_dosen]</td>
-      <td class='upper'>$d[tanggal_sesi]</td>
-      <td class='upper'>$d[nama_ruang]</td>
-      <td>
-        <a href='?master&p=sesi_kuliah&aksi=update&id=$d[id]' class='btn btn-info btn-sm' target='_blank'>edit</a>
-        <a href='?master&p=sesi_kuliah&aksi=hapus&id=$d[id]' class='btn btn-danger btn-sm' target='_blank'>hapus</a>
+    <tr class='$tr_active'>
+      <td class='upper gradasi-$gradasi'>
+        $d[pertemuan_ke] 
+        <br>$lampau$sesi_hari_ini 
+        <br>$minggu_aktif
+      </td>
+      <td class='upper gradasi-$gradasi'>
+        <a href='?master&p=sesi_kuliah&aksi=update&id=$d[id_sesi_kuliah]' class='tebal' target='_blank'>$d[nama_sesi]</a>
+        <br><i>Pengajar</i>: <a href='?master&p=dosen&id=$d[id_dosen]' target=_blank>$d[nama_dosen]</a>
+        <br>$bobot SKS x 50 menit
+        
+      </td>
+      <td class='upper gradasi-$gradasi'>
+        $hari<br>$tanggal_sesi
+        <br>$jam_masuk
+      </td>
+      <td class='upper gradasi-$gradasi'>$jam_keluar</td>
+      <td class='upper gradasi-$gradasi'>$jumlah_ruang</td>
+      <td class='upper gradasi-$gradasi'>
+        <a href='?assign_ruang&id_sesi_kuliah=$d[id_sesi_kuliah]' class='btn btn-info btn-sm' target='_blank'>assign ruang</a>
+        <a href='?master&p=sesi_kuliah&aksi=hapus&id=$d[id_sesi_kuliah]' class='btn btn-danger btn-sm' target='_blank'>hapus</a>
       </td>
     </tr>"; 
   }

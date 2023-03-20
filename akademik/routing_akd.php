@@ -31,6 +31,7 @@ switch ($c[0]){
   case 'presensi': $konten = 'modul/presensi/presensi_per_mahasiswa.php';break;
   case 'presensi_per_mhs': $konten = 'modul/presensi/presensi_per_mahasiswa.php';break;
   case 'dpnu': $konten = 'modul/presensi/dpnu.php';break;
+  case 'assign_ruang': $konten = 'modul/ruang/assign_ruang.php';break;
  
   case 'assign_mk': $konten = 'modul/kurikulum/assign_mk.php';break;
   case 'batch_tanggal_sesi': $konten = 'modul/sesi_kuliah/batch_tanggal_sesi.php';break;
