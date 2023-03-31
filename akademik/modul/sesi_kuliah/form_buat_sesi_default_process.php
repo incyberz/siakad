@@ -5,6 +5,7 @@ if(isset($_POST['btn_buat_sesi_default'])){
   $jumlah_sesi = $_POST['jumlah_sesi'];
   $sesi_uts = $_POST['sesi_uts'];
   $sesi_uas = $_POST['sesi_uas'];
+  $bobot = $_POST['bobot'];
 
   $awal_perkuliahan = "$_POST[awal_perkuliahan] $_POST[pukul_p1]";
 
@@ -24,6 +25,7 @@ if(isset($_POST['btn_buat_sesi_default'])){
     // echo date('M d, Y', $date);
     $selisih = ($i-1)*7;
     $new_tgl = date('Y-m-d H:i',strtotime("+$selisih day",strtotime($awal_perkuliahan)));
+    $stop_sesi = date('Y-m-d H:i',strtotime($new_tgl)+$bobot*$menit_sks*60);
 
     $nama_sesi = "NEW P$i";
     $nama_sesi = $i==$sesi_uts ? 'UTS' : $nama_sesi;
@@ -34,7 +36,8 @@ if(isset($_POST['btn_buat_sesi_default'])){
     $i,
     $id_dosen,
     '$nama_sesi',
-    '$new_tgl'
+    '$new_tgl',
+    '$stop_sesi'
     )";
   }
   $values = str_replace('__,','',$values);
@@ -44,7 +47,8 @@ if(isset($_POST['btn_buat_sesi_default'])){
     pertemuan_ke,
     id_dosen,
     nama,
-    tanggal_sesi
+    tanggal_sesi,
+    stop_sesi
     ) VALUES $values";
     // die($s);
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));

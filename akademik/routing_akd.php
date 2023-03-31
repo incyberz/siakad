@@ -34,7 +34,6 @@ switch ($c[0]){
   case 'assign_ruang': $konten = 'modul/ruang/assign_ruang.php';break;
  
   case 'assign_mk': $konten = 'modul/kurikulum/assign_mk.php';break;
-  case 'batch_tanggal_sesi': $konten = 'modul/sesi_kuliah/batch_tanggal_sesi.php';break;
 }
 
 $manage_kalender = '<a href="?manage_kalender" class="proper">manage kalender</a>';

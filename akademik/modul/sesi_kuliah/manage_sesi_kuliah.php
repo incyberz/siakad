@@ -52,13 +52,13 @@ $sesi_uts = $d['sesi_uts'];
 $sesi_uas = $d['sesi_uas'];
 $bobot = $d['bobot_teori']+$d['bobot_praktik'];
 
-$menit_sks = 50; //zzz
 
 $back_to = "Back to: 
 <a href='?manage_kalender&id_kalender=$id_kalender' class=proper>manage kalender</a> | 
 <a href='?manage_kurikulum&id_kurikulum=$id_kurikulum' class=proper>manage kurikulum</a> | 
 <a href='?manage_jadwal&id_kurikulum_mk=$id_kurikulum_mk' class=proper>manage jadwal</a> | 
-<a href='?manage_kelas&id_jadwal=$id_jadwal' class=proper>manage kelas peserta</a> 
+<a href='?manage_kelas&id_jadwal=$id_jadwal' class=proper>manage kelas peserta</a> | 
+<a href='?cek_all_sesi&id_kurikulum=$id_kurikulum' class=proper>cek all sesi kurikulum</a>  
 ";
 
 $koloms = [];
@@ -85,6 +85,7 @@ a.pertemuan_ke,
 a.nama as nama_sesi,
 a.id_dosen, 
 a.tanggal_sesi,
+a.stop_sesi,
 b.nama as nama_dosen,
 (SELECT count(1) from tb_assign_ruang where id_sesi_kuliah=a.id) as jumlah_ruang 
 
@@ -115,7 +116,7 @@ if(mysqli_num_rows($q)==0){
     $tanggal_sesi = date('d M Y', $tsesi);
     $jam_masuk = date('H:i', $tsesi);
 
-    $jam_keluar = date('H:i',strtotime($tsesi)+($bobot * $menit_sks * 60));
+    $jam_keluar = date('H:i',strtotime($d['stop_sesi']));
     $hari = $nama_hari[date('w',$tsesi)];
 
     $gradasi = $tsesi<$ttoday ? 'kuning' : '';
@@ -146,7 +147,18 @@ if(mysqli_num_rows($q)==0){
     $sesi_mgg_ini = $tr_active=='tr_active' ? "<span class=red>($selisih_hari hari lagi)</span>":$x_hari_lagi;
     $sesi_hari_ini = strtotime(date('Y-m-d',$tsesi))==$ttoday ? '<span class="miring merah">(sesi hari ini)</span>' : $sesi_mgg_ini;
 
-    $jumlah_ruang = $d['jumlah_ruang']==0 ? '<span class="kecil miring">--none--</span>' : "$d[jumlah_ruang] ruang";
+    $list_ruang = '<span class="red kecil miring">--none--</span>';
+    if($d['jumlah_ruang']>0){
+      $s2 = "SELECT b.nama as nama_ruang from tb_assign_ruang a 
+      join tb_ruang b on a.id_ruang=b.id 
+      where a.id_sesi_kuliah=$d[id_sesi_kuliah]";
+      $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
+      $list_ruang = '<ol style="padding-left:15px;">';
+      while ($d2=mysqli_fetch_assoc($q2)) {
+        $list_ruang.= "<li>$d2[nama_ruang]</li>";
+      }
+      $list_ruang .= '</ol>';
+    }
 
     $today2 = date('Y-m-d');
 
@@ -167,19 +179,21 @@ if(mysqli_num_rows($q)==0){
         $hari<br>$tanggal_sesi
         <br>$jam_masuk
       </td>
-      <td class='upper gradasi-$gradasi'>$jam_keluar</td>
-      <td class='upper gradasi-$gradasi'>$jumlah_ruang</td>
+      <td class='upper gradasi-$gradasi'>
+        $hari<br>$tanggal_sesi
+        <br>$jam_keluar
+      </td>
+      <td class='upper gradasi-$gradasi'>$list_ruang</td>
       <td class='upper gradasi-$gradasi'>
         <a href='?assign_ruang&id_sesi_kuliah=$d[id_sesi_kuliah]' class='btn btn-info btn-sm'>assign ruang</a>
-        <a href='?master&p=sesi_kuliah&aksi=hapus&id=$d[id_sesi_kuliah]' class='btn btn-danger btn-sm' target='_blank'>hapus</a>
       </td>
     </tr>"; 
   }
 
-  $batch = "<div class=wadah>
-  <p>Untuk setting tanggal sesi dari P1 s.d P$jumlah_sesi secara terurut per minggu silahkan lakukan Batch Tanggal Sesi</p>
-  <a href='?batch_tanggal_sesi&id_jadwal=$id_jadwal' class='btn btn-info'>Batch Tanggal Sesi</a>
+  $hapus_all_sesi = "<div class='wadah gradasi-kuning'>
+  <p>Untuk setting ulang tanggal sesi dari P1 s.d P$jumlah_sesi secara terurut per minggu silahkan lakukan <code>Hapus All Sesi</code> lalu Buat Ulang Sesi Default. <span class=red>Perhatian! Proses ini akan mengembalikan Nama-nama Sesi menjadi Default (NEW PXX)</span></p>
+  <a href='?hapus_all_sesi&id_jadwal=$id_jadwal' class='btn btn-danger'>Hapus All Sesi</a>
   </div>";
 
-  echo "$batch<table class='table table-striped table-hover'>$thead$tr</table>$back_to";
+  echo "<table class='table table-striped table-hover'>$thead$tr</table>$hapus_all_sesi$back_to";
 }

@@ -31,13 +31,18 @@ $s = "SELECT
 a.nama, 
 a.id,
 a.kode,
-b.id_kurikulum 
+b.id_kurikulum,
+d.jenjang,
+e.nama as nama_prodi  
 
 from tb_mk a 
 join tb_kurikulum_mk b on a.id=b.id_mk 
+join tb_kurikulum c on c.id=b.id_kurikulum 
+join tb_kalender d on d.id=c.id_kalender 
+join tb_prodi e on e.id=c.id_prodi  
 
 WHERE b.id_kurikulum != $id_kurikulum  
-AND a.nama like '%$keyword%'
+AND ( a.nama like '%$keyword%' OR a.kode like '%$keyword%' )
 order by a.nama;
 
 ";
@@ -45,7 +50,7 @@ order by a.nama;
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $li = '';
 while ($d=mysqli_fetch_assoc($q)) {
-  $n = $d['id_kurikulum']==$id_kurikulum ? '' : "<li class='pilihan_mk' value=$d[id]>$d[nama] ~ $d[id] ~ $d[kode]</li>";
+  $n = $d['id_kurikulum']==$id_kurikulum ? '' : "<li class='pilihan_mk' value=$d[id]>$d[nama] ~ $d[id] ~ $d[kode] ~ $d[jenjang] ~ $d[nama_prodi]</li>";
   if(!in_array($d['id'],$id_terpakai)) $li .= $n;
 }
 
@@ -57,10 +62,11 @@ a.nama,
 a.kode, 
 a.id 
 from tb_mk a 
+
 left join tb_kurikulum_mk b on a.id=b.id_mk 
 
 WHERE b.id is null 
-AND a.nama like '%$keyword%'
+AND ( a.nama like '%$keyword%' OR a.kode like '%$keyword%' )
 order by a.nama;
 
 

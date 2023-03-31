@@ -1,27 +1,57 @@
 <?php
 $today = date('Y-m-d');
 $now = date('H:i');
+$awal_perkuliahan_show = date('d M Y',strtotime($awal_perkuliahan));
 
 $form = "
   <hr>
   <form method=post>
+    <h4>Buat Sesi Perkuliahan Default</h4>
     <input class=debug name=id_jadwal value='$id_jadwal'>
     <input class=debug name=id_dosen value='$id_dosen'>
     <input class=debug name=jumlah_sesi value='$jumlah_sesi'>
     <input class=debug name=sesi_uts value='$sesi_uts'>
     <input class=debug name=sesi_uas value='$sesi_uas'>
+    <input class=debug name=bobot value='$bobot'>
     <div class='mb2'>
-      <label for=awal_perkuliahan>Awal Perkuliahan</label>
+      <label for=awal_perkuliahan>Tanggal Sesi Pertama</label>
       <input class='form-control' type=date value='$awal_perkuliahan' required name=awal_perkuliahan id=awal_perkuliahan>
       <div class='miring'>
-        <p>Awal Perkuliahan mengacu pada <a href='?manage_semester&id_semester=$id_semester' target=_blank>Seting Tanggal Semester</a>.</p>
+        <p>Sesi Pertama harus mengacu pada Awal Perkuliahan ($awal_perkuliahan_show) | <a href='?manage_semester&id_semester=$id_semester' target=_blank>Lihat Seting Tanggal Semester</a>.</p>
       </div>
     </div>
     <div class='mb2'>
       <label for=pukul_p1>Pukul</label>
       <input class='form-control' type=time value='08:00' required name=pukul_p1 id=pukul_p1>
-      <div class='merah miring'>Silahkan tentukan Jam Perkuliahan!</div>
+      <div class=' miring'>Silahkan tentukan Jam Perkuliahan!</div>
     </div>
+
+    <div class='mb2'>
+      <label>Minggu tenang UTS</label>
+      <select class='form-control opsi_batch' id=minggu_tenang_uts>
+        <option selected>0</option>
+        <option>1</option>
+        <option>2</option>
+      </select>
+    </div>
+    <div class='mb2'>
+      <label>Durasi UTS (minggu)</label>
+      <select class='form-control opsi_batch' id=durasi_uts>
+        <option>0</option>
+        <option selected>1</option>
+        <option>2</option>
+      </select>
+    </div>
+    <div class='mb2'>
+      <label>Minggu tenang UAS</label>
+      <select class='form-control opsi_batch' id=minggu_tenang_uas>
+        <option selected>0</option>
+        <option>1</option>
+        <option>2</option>
+      </select>
+    </div>
+    
+    
     <button class='btn btn-primary' name=btn_buat_sesi_default>Buat $d[jumlah_sesi] Sesi Kuliah Default</button>
   </form>
 
