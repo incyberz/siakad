@@ -1,6 +1,5 @@
 <div class="wadah gradasi-hijau">
   <h3 class='m0 mb2'>Kalender Semester <?=$semester_ke?></h3>
-  <p><?=$kurikulum?></p>
   <?php
   $selisih = (strtotime($batas_akhir)-strtotime($batas_awal)) / (60*60*24);
 

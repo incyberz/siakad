@@ -144,7 +144,7 @@ while ($d=mysqli_fetch_assoc($q)) {
 
     $img_aksi_next = $d2['jumlah_sesi'] ? $img_aksi['check'] : $img_aksi['next'] ;
     $red_bold = $d2['jumlah_sesi'] ? '' : 'red bold' ;
-    $link_manage_sesi = "<span><a href='?manage_sesi&id_jadwal=$d2[id_jadwal]'>$img_aksi_next</a></span>";
+    $link_manage_sesi = "<span><a href='?manage_sesi&id_jadwal=$d2[id_jadwal]' target=_blank>$img_aksi_next</a></span>";
 
 
     $tr.="

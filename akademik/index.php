@@ -3,7 +3,7 @@
 # AKADEMIK INDEX
 # ========================================================
 session_start();
-$dm = 0;
+$dm = 1;
 
 include "../config.php";
 $now = date('Y-m-d H:i:s');

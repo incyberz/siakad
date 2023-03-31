@@ -170,7 +170,7 @@ if(mysqli_num_rows($q)==0){
       <td class='upper gradasi-$gradasi'>$jam_keluar</td>
       <td class='upper gradasi-$gradasi'>$jumlah_ruang</td>
       <td class='upper gradasi-$gradasi'>
-        <a href='?assign_ruang&id_sesi_kuliah=$d[id_sesi_kuliah]' class='btn btn-info btn-sm' target='_blank'>assign ruang</a>
+        <a href='?assign_ruang&id_sesi_kuliah=$d[id_sesi_kuliah]' class='btn btn-info btn-sm'>assign ruang</a>
         <a href='?master&p=sesi_kuliah&aksi=hapus&id=$d[id_sesi_kuliah]' class='btn btn-danger btn-sm' target='_blank'>hapus</a>
       </td>
     </tr>"; 
