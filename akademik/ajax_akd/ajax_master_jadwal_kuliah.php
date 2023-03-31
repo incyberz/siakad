@@ -123,7 +123,7 @@ if ($jumlah_records_limited>0) {
     if($jenjang=="E")$nama_jenjang="S1";
 
 
-    $ss = "SELECT 1 from tb_sesi_kuliah where id_jadwal_kuliah='$id_jadwal_kuliah'";
+    $ss = "SELECT 1 FROM tb_sesi_kuliah WHERE id_jadwal_kuliah='$id_jadwal_kuliah'";
     $qq = mysqli_query($cn,$ss) or die("Tidak bisa mengakses data sesi dg id_jadwal_kuliah: $id_jadwal_kuliah");
     $jumlah_sesi = mysqli_num_rows($qq);
 

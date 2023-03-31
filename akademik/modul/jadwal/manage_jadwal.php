@@ -14,7 +14,7 @@ if(isset($_POST['btn_set_dosen'])){
   }else{
     // sudah ada jadwal
     // cek jika dosen nya sama
-    $s = "UPDATE tb_jadwal set id_dosen=$_POST[id_dosen] where id_kurikulum_mk=$_POST[id_kurikulum_mk]";
+    $s = "UPDATE tb_jadwal set id_dosen=$_POST[id_dosen] WHERE id_kurikulum_mk=$_POST[id_kurikulum_mk]";
     $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
     die("<div class='alert alert-success'>Update Dosen Koordinator berhasil.<hr><a class='btn btn-primary' href='?manage_jadwal&id_kurikulum_mk=$_POST[id_kurikulum_mk]'>Lanjutkan Manage Jadwal</a></div>");
 
@@ -41,12 +41,12 @@ if($id_kurikulum_mk==''){
   a.id as id_semester_mk,
   a.id_semester,
   a.id_mk,
-  (SELECT id from tb_jadwal where id_kurikulum_mk=a.id) as id_jadwal,  
-  (SELECT id_dosen from tb_jadwal where id_kurikulum_mk=a.id) as id_dosen,  
+  (SELECT id FROM tb_jadwal WHERE id_kurikulum_mk=a.id) as id_jadwal,  
+  (SELECT id_dosen FROM tb_jadwal WHERE id_kurikulum_mk=a.id) as id_dosen,  
   (
-    SELECT k.nama from tb_jadwal j 
+    SELECT k.nama FROM tb_jadwal j 
     JOIN tb_dosen k on k.id=j.id_dosen 
-    where j.id_kurikulum_mk=a.id) as nama_dosen  
+    WHERE j.id_kurikulum_mk=a.id) as nama_dosen  
 
   FROM tb_kurikulum_mk a 
   JOIN tb_semester b on a.id_semester=b.id 

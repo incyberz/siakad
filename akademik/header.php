@@ -4,7 +4,7 @@
 # ========================================================
 $s = "SELECT 
 a.* 
-from tb_event a  
+FROM tb_event a  
 where a.status_event = 0";
 $q = mysqli_query($cn,$s);
 $jumlah_notif = mysqli_num_rows($q);

@@ -82,9 +82,9 @@ a.pertemuan_ke,
 a.nama as nama_sesi,
 a.tanggal_sesi,
 b.nama as nama_dosen,
-(SELECT nama from tb_ruang where id=a.id_ruang) as nama_ruang, 
-(SELECT timestamp_masuk from tb_presensi where id_mhs=$id_mhs and id_sesi_kuliah=a.id) as tanggal_presensi, 
-(SELECT status from tb_presensi where id_mhs=$id_mhs and id_sesi_kuliah=a.id) as status_presensi 
+(SELECT nama FROM tb_ruang WHERE id=a.id_ruang) as nama_ruang, 
+(SELECT timestamp_masuk FROM tb_presensi WHERE id_mhs=$id_mhs and id_sesi_kuliah=a.id) as tanggal_presensi, 
+(SELECT status FROM tb_presensi WHERE id_mhs=$id_mhs and id_sesi_kuliah=a.id) as status_presensi 
 
 FROM tb_sesi_kuliah a 
 JOIN tb_dosen b on b.id=a.id_dosen 

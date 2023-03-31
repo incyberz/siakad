@@ -6,7 +6,7 @@ a.nama as nama_sesi,
 a.tanggal_sesi,
 a.status as status_presensi,
 b.nama as nama_dosen,
-(SELECT nama from tb_ruang where id=a.id_ruang) as nama_ruang 
+(SELECT nama FROM tb_ruang WHERE id=a.id_ruang) as nama_ruang 
 
 FROM tb_sesi_kuliah a 
 JOIN tb_dosen b on b.id=a.id_dosen 

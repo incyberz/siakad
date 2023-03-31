@@ -10,10 +10,10 @@ $id_jadwal = isset($_GET['id_jadwal']) ? $_GET['id_jadwal'] : die(erid('id_jadwa
 # GET KELAS IN THIS JADWAL
 # ===================================================
 $sql_where_jadwal = $id_jadwal=='' ? '1' : "d.id = $id_jadwal";
-$s = "SELECT a.kelas from tb_kelas a 
-join tb_kelas_peserta b on a.kelas=b.kelas 
-join tb_kurikulum_mk c on c.id=b.id_kurikulum_mk 
-join tb_jadwal d on d.id_kurikulum_mk=c.id 
+$s = "SELECT a.kelas FROM tb_kelas a 
+JOIN tb_kelas_peserta b on a.kelas=b.kelas 
+JOIN tb_kurikulum_mk c on c.id=b.id_kurikulum_mk 
+JOIN tb_jadwal d on d.id_kurikulum_mk=c.id 
 where a.angkatan=$angkatan and a.id_prodi=$id_prodi and $sql_where_jadwal";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $assigned_classes = [];
@@ -28,7 +28,7 @@ while ($d=mysqli_fetch_assoc($q)) {
 # ===================================================
 # GET KELAS IN THIS JADWAL
 # ===================================================
-$s = "SELECT a.kelas from tb_kelas a 
+$s = "SELECT a.kelas FROM tb_kelas a 
 where a.angkatan=$angkatan and a.id_prodi=$id_prodi";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $ceks = '';

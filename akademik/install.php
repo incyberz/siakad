@@ -3,7 +3,7 @@ include 'include/rmaster.php';
 
 $s = 'SELECT ';
 for ($i=0; $i < count($rmaster); $i++) { 
-  $s.= "(SELECT count(1) from tb_$rmaster[$i]) as jumlah_$rmaster[$i],";
+  $s.= "(SELECT count(1) FROM tb_$rmaster[$i]) as jumlah_$rmaster[$i],";
 }
 $s.='1';
 
@@ -28,7 +28,7 @@ $rpublish = [
 
 $s = 'SELECT ';
 for ($i=0; $i < count($rpublish); $i++) { 
-  $s.= "(SELECT count(1) from tb_$rpublish[$i] where is_publish=1) as publish_$rpublish[$i],";
+  $s.= "(SELECT count(1) FROM tb_$rpublish[$i] WHERE is_publish=1) as publish_$rpublish[$i],";
 }
 $s.='1';
 

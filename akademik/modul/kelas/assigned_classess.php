@@ -3,12 +3,12 @@ $s = "SELECT
 a.kelas,
 e.nama as nama_dosen,  
 b.id as id_kelas_peserta,
-(SELECT count(1) from tb_mhs where kelas=a.kelas) as jumlah_mhs    
-from tb_kelas a 
-join tb_kelas_peserta b on a.kelas=b.kelas 
-join tb_kurikulum_mk c on c.id=b.id_kurikulum_mk 
-join tb_jadwal d on d.id_kurikulum_mk=c.id 
-join tb_dosen e on e.id=b.id_dosen 
+(SELECT count(1) FROM tb_mhs WHERE kelas=a.kelas) as jumlah_mhs    
+FROM tb_kelas a 
+JOIN tb_kelas_peserta b on a.kelas=b.kelas 
+JOIN tb_kurikulum_mk c on c.id=b.id_kurikulum_mk 
+JOIN tb_jadwal d on d.id_kurikulum_mk=c.id 
+JOIN tb_dosen e on e.id=b.id_dosen 
 where d.id=$id_jadwal";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 

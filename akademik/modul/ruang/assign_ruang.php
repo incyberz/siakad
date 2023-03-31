@@ -17,12 +17,12 @@ if(isset($_POST['btn_assign'])){
     }
   }else{
     // delete dahulu semua seting assign room
-    $s = "DELETE FROM tb_assign_ruang where id_sesi_kuliah=$_POST[id_sesi_kuliah]";
+    $s = "DELETE FROM tb_assign_ruang WHERE id_sesi_kuliah=$_POST[id_sesi_kuliah]";
     $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
     
     // terapkan pada semua pertemuan
     $id_jadwal = $_POST['id_jadwal'];
-    $s = "SELECT id FROM tb_sesi_kuliah where id_jadwal=$id_jadwal";
+    $s = "SELECT id FROM tb_sesi_kuliah WHERE id_jadwal=$id_jadwal";
     $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
     while ($d=mysqli_fetch_assoc($q)) {
       $id_sesi_kuliah = $d['id'];
@@ -50,7 +50,7 @@ if(isset($_POST['btn_assign'])){
 }
 
 if(isset($_POST['btn_drop'])){
-  $s = "DELETE FROM tb_assign_ruang where id_sesi_kuliah=$_POST[id_sesi_kuliah]";
+  $s = "DELETE FROM tb_assign_ruang WHERE id_sesi_kuliah=$_POST[id_sesi_kuliah]";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   echo "<div class='alert alert-info'>Assign Ruang berhasil di drop. Silahkan pilih kembali ruangan!</div>";
 }
@@ -70,7 +70,7 @@ $id_sesi_kuliah = isset($_GET['id_sesi_kuliah']) ? $_GET['id_sesi_kuliah'] : die
 
 
 
-$s = "SELECT * from tb_assign_ruang a 
+$s = "SELECT * FROM tb_assign_ruang a 
 where a.id=$id_sesi_kuliah";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $d=mysqli_fetch_assoc($q);
@@ -93,15 +93,15 @@ f.nama as nama_kurikulum,
 g.id as id_mk,
 g.nama as nama_mk,
 (g.bobot_teori + g.bobot_praktik) as bobot,
-(SELECT count(1) from tb_assign_ruang where id_sesi_kuliah=a.id) as jumlah_ruang 
+(SELECT count(1) FROM tb_assign_ruang WHERE id_sesi_kuliah=a.id) as jumlah_ruang 
 
-from tb_sesi_kuliah a 
-join tb_dosen b on b.id=a.id_dosen 
-join tb_jadwal c on c.id=a.id_jadwal 
-join tb_kurikulum_mk d on d.id=c.id_kurikulum_mk 
-join tb_semester e on e.id=d.id_semester 
-join tb_kurikulum f on f.id=d.id_kurikulum 
-join tb_mk g on g.id=d.id_mk 
+FROM tb_sesi_kuliah a 
+JOIN tb_dosen b on b.id=a.id_dosen 
+JOIN tb_jadwal c on c.id=a.id_jadwal 
+JOIN tb_kurikulum_mk d on d.id=c.id_kurikulum_mk 
+JOIN tb_semester e on e.id=d.id_semester 
+JOIN tb_kurikulum f on f.id=d.id_kurikulum 
+JOIN tb_mk g on g.id=d.id_mk 
 where a.id=$id_sesi_kuliah";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $d=mysqli_fetch_assoc($q);
@@ -126,8 +126,8 @@ $back_to = "Back to: <a href='?manage_sesi&id_jadwal=$id_jadwal'>Manage Sesi</a>
 
 $kotaks = '';
 $s = "SELECT b.*  
-from tb_assign_ruang a 
-join tb_ruang b on a.id_ruang=b.id 
+FROM tb_assign_ruang a 
+JOIN tb_ruang b on a.id_ruang=b.id 
 where id_sesi_kuliah=$id_sesi_kuliah";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 if(mysqli_num_rows($q)){
@@ -164,7 +164,7 @@ if(mysqli_num_rows($q)){
   $kotaks='';
   $s = "SELECT a.*,
   (
-    SELECT concat(b.nama,' MK ',e.nama,'|',b.tanggal_sesi,'|',e.bobot_teori,'|',e.bobot_praktik) from tb_assign_ruang t 
+    SELECT concat(b.nama,' MK ',e.nama,'|',b.tanggal_sesi,'|',e.bobot_teori,'|',e.bobot_praktik) FROM tb_assign_ruang t 
     JOIN tb_sesi_kuliah b on b.id=t.id_sesi_kuliah 
     JOIN tb_jadwal c on c.id=b.id_jadwal 
     JOIN tb_kurikulum_mk d on d.id=c.id_kurikulum_mk 
@@ -174,7 +174,7 @@ if(mysqli_num_rows($q)){
     AND t.id_ruang=a.id  
     LIMIT 1) as terpakai_oleh   
   
-  from tb_ruang a";
+  FROM tb_ruang a";
   echo '<pre>'; var_dump($s); echo '</pre>'; 
   // exit;
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
@@ -220,13 +220,13 @@ if(mysqli_num_rows($q)){
       <td>
         <div>
           <label>
-            <input type=radio name=terapkan_pada value=p_ini checked> 
+            <input type=radio name=terapkan_pada value=p_ini > 
             Pertemuan ini saja
           </label>
         </div>
         <div>
           <label style='color:darkred'>
-            <input type=radio name=terapkan_pada value=p_all> 
+            <input type=radio name=terapkan_pada value=p_all checked> 
             Semua Pertemuan
             <div class='kecil miring'>Perhatian! Aturan ini akan me-replace aturan assign-ruang pada semua pertemuan</div>
           </label>

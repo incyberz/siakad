@@ -15,7 +15,7 @@ if ($id_sesi_kuliah=='' || $status_presensi=='') die("Error @ajax. Salah satu in
 # ================================================
 # INSERT IF NOT EXIST
 # ================================================
-$s = "SELECT 1 from tb_presensi where id_mhs=$id_mhs and id_sesi_kuliah=$id_sesi_kuliah ";
+$s = "SELECT 1 FROM tb_presensi WHERE id_mhs=$id_mhs and id_sesi_kuliah=$id_sesi_kuliah ";
 $q = mysqli_query($cn,$s) or die("Error @ajax. Tidak bisa cek exist presensi. ".mysqli_error($cn));
 if(mysqli_num_rows($q)>1) die('Tidak boleh double data presensi');
 if(mysqli_num_rows($q)==0){

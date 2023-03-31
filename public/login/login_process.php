@@ -30,9 +30,9 @@
           $password = filter_var($_POST['password']);
 
           $s = "SELECT a.admin_level,a.nama_pegawai,b.jenis_user 
-          from tb_pegawai a 
-          join tb_admin_level b ON a.admin_level=b.admin_level 
-          where a.username='$username' and a.password = '$password'";
+          FROM tb_pegawai a 
+          JOIN tb_admin_level b ON a.admin_level=b.admin_level 
+          WHERE a.username='$username' and a.password = '$password'";
           $q = mysqli_query($cn,$s) or die("Tidak dapat mengakses data login #1");
 
           if(mysqli_num_rows($q)==1){

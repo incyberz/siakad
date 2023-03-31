@@ -20,7 +20,7 @@ if($id_semester==''){
   a.last_update   
   FROM tb_semester a 
   JOIN tb_kalender b on a.id_kalender=b.id 
-  where a.id=$id_semester";
+  WHERE a.id=$id_semester";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   if(mysqli_num_rows($q)==0) die('<span class=red>Data SEMESTER tidak ditemukan.');
   $d = mysqli_fetch_assoc($q);

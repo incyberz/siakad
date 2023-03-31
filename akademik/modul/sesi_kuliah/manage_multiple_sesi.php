@@ -110,13 +110,13 @@ while ($d=mysqli_fetch_assoc($q)) {
   a.bobot_teori,
   a.bobot_praktik,
   b.id as id_kurikulum_mk, 
-  (SELECT count(1) from tb_kurikulum_mk WHERE id_mk=a.id) as jumlah_assign_mk, 
-  (SELECT id_dosen from tb_jadwal WHERE id_kurikulum_mk=b.id) as id_dosen,
-  (SELECT d.nama from tb_jadwal c join tb_dosen d on c.id_dosen=d.id WHERE c.id_kurikulum_mk=b.id) as nama_dosen,   
+  (SELECT count(1) FROM tb_kurikulum_mk WHERE id_mk=a.id) as jumlah_assign_mk, 
+  (SELECT id_dosen FROM tb_jadwal WHERE id_kurikulum_mk=b.id) as id_dosen,
+  (SELECT d.nama FROM tb_jadwal c JOIN tb_dosen d on c.id_dosen=d.id WHERE c.id_kurikulum_mk=b.id) as nama_dosen,   
   (
-    SELECT e.nama from tb_jadwal c 
-    join tb_dosen d on c.id_dosen=d.id 
-    join tb_prodi e on d.homebase=e.id
+    SELECT e.nama FROM tb_jadwal c 
+    JOIN tb_dosen d on c.id_dosen=d.id 
+    JOIN tb_prodi e on d.homebase=e.id
     WHERE c.id_kurikulum_mk=b.id) as homebase   
 
   FROM tb_mk a 

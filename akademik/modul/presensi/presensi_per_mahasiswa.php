@@ -21,7 +21,7 @@ c.id as id_prodi,
 c.nama as prodi,
 c.jenjang,
 d.nama as nama_jenjang,
-(SELECT id from tb_kalender where angkatan=b.angkatan and jenjang=c.jenjang) as id_kalender
+(SELECT id FROM tb_kalender WHERE angkatan=b.angkatan and jenjang=c.jenjang) as id_kalender
 
 FROM tb_mhs a 
 JOIN tb_kelas b on a.kelas=b.kelas 
@@ -86,7 +86,7 @@ if(mysqli_num_rows($q)==0) die(div_alert('danger',"Kalender Akademik untuk mahas
 # ==========================================================
 # GET KURIKULUM
 # ==========================================================
-$s = "SELECT id as id_kurikulum,nama as nama_kurikulum from tb_kurikulum where id_kalender = $id_kalender and id_prodi = $id_prodi ";
+$s = "SELECT id as id_kurikulum,nama as nama_kurikulum FROM tb_kurikulum WHERE id_kalender = $id_kalender and id_prodi = $id_prodi ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 if(mysqli_num_rows($q)>1) die(div_alert('danger','Jumlah kurikulum harus unik.'));
 if(mysqli_num_rows($q)==0) die(div_alert('danger',"Kurikulum untuk kalender dan prodi ini belum ada. | <a href='?manage_kurikulum'>Manage Kurikulum</a>"));
@@ -123,18 +123,18 @@ while ($d=mysqli_fetch_assoc($q)) {
   a.id as id_kurikulum_mk,
   a.id_mk,
   b.nama as nama_mk,
-  (SELECT id from tb_jadwal where id_kurikulum_mk=a.id) as id_jadwal,
+  (SELECT id FROM tb_jadwal WHERE id_kurikulum_mk=a.id) as id_jadwal,
   (
     SELECT d.nama  
-    from tb_dosen d 
-    join tb_jadwal e on d.id=e.id_dosen 
-    join tb_kurikulum_mk f on f.id=e.id_kurikulum_mk 
-    where e.id_kurikulum_mk=a.id) as nama_dosen 
+    FROM tb_dosen d 
+    JOIN tb_jadwal e on d.id=e.id_dosen 
+    JOIN tb_kurikulum_mk f on f.id=e.id_kurikulum_mk 
+    WHERE e.id_kurikulum_mk=a.id) as nama_dosen 
 
 
-  from tb_kurikulum_mk a 
-  join tb_mk b on b.id=a.id_mk 
-  where id_semester=$id_semester and id_kurikulum=$id_kurikulum  ";
+  FROM tb_kurikulum_mk a 
+  JOIN tb_mk b on b.id=a.id_mk 
+  WHERE id_semester=$id_semester and id_kurikulum=$id_kurikulum  ";
   $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
   $jumlah_mk = mysqli_num_rows($q2);
   $thead_mk='<thead>
@@ -165,11 +165,11 @@ while ($d=mysqli_fetch_assoc($q)) {
     a.pertemuan_ke,
     a.tanggal_sesi,
     (
-      SELECT timestamp_masuk from tb_presensi where id_mhs=$id_mhs and id_sesi_kuliah=a.id) as timestamp_masuk, 
+      SELECT timestamp_masuk FROM tb_presensi WHERE id_mhs=$id_mhs and id_sesi_kuliah=a.id) as timestamp_masuk, 
     (
-      SELECT status from tb_presensi where id_mhs=$id_mhs and id_sesi_kuliah=a.id) as status_presensi 
-    from tb_sesi_kuliah a 
-    where a.id_jadwal=$id_jadwal
+      SELECT status FROM tb_presensi WHERE id_mhs=$id_mhs and id_sesi_kuliah=a.id) as status_presensi 
+    FROM tb_sesi_kuliah a 
+    WHERE a.id_jadwal=$id_jadwal
     order by a.pertemuan_ke";
     $q3 = mysqli_query($cn,$s3) or die(mysqli_error($cn));
 

@@ -41,13 +41,13 @@ $param_id = $page=='jenjang' ? 'jenjang' : 'id';
 $param_id = $page=='angkatan' ? 'angkatan' : $param_id;
 $param_id = $page=='kelas' ? 'kelas' : $param_id;
 
-$s = "SELECT * from tb_$page";
+$s = "SELECT * FROM tb_$page";
 
 # ==============================================================
 # CUSTOM PRIMARY / FOREIGN KEY
 # ==============================================================
 $kolom_acuan = $page=='jenjang' ? 'jenjang' : 'id';
-$s = !isset($_GET[$kolom_acuan]) ? $s : "SELECT * from tb_$page where $kolom_acuan='$_GET[$kolom_acuan]'";
+$s = !isset($_GET[$kolom_acuan]) ? $s : "SELECT * FROM tb_$page WHERE $kolom_acuan='$_GET[$kolom_acuan]'";
 
 # ==============================================================
 # QUERY FILTERING

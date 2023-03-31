@@ -26,7 +26,7 @@ a.id_konsentrasi,
 b.id_prodi,
 b.jenjang 
 
-from tb_mk a 
+FROM tb_mk a 
 JOIN tb_prodi b ON a.id_prodi=b.id_prodi 
 WHERE a.id_kurikulum=$id_kurikulum_add 
 AND $sql_semester 
@@ -49,7 +49,7 @@ while ($d=mysqli_fetch_assoc($q)) {
 	$jenjang = $d['jenjang'];
 
 	if($id_konsentrasi!=""){
-		$ss = "SELECT singkatan_konsentrasi from tb_konsentrasi WHERE id_konsentrasi=$id_konsentrasi";
+		$ss = "SELECT singkatan_konsentrasi FROM tb_konsentrasi WHERE id_konsentrasi=$id_konsentrasi";
 		$qq = mysqli_query($cn,$ss) or die("Error @AJAX. Tidak dapat mengakses data Konsentrasi Prodi. ".mysqli_error($cn));
 		$dd = mysqli_fetch_assoc($qq);
 		$singkatan_konsentrasi = $dd['singkatan_konsentrasi']." ~ ";

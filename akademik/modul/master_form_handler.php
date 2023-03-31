@@ -6,7 +6,7 @@ if(isset($_POST['btn_update']) || isset($_POST['btn_hapus']) || isset($_POST['bt
   $aksi = 'unknown';
   if(isset($_POST['btn_hapus'])){
     $aksi = 'hapus';
-    $s = "DELETE from tb_$tabel WHERE $kolom_acuan = '$id'";
+    $s = "DELETE FROM tb_$tabel WHERE $kolom_acuan = '$id'";
   }elseif(isset($_POST['btn_tambah']) || isset($_POST['btn_update'])){
     $aksi = isset($_POST['btn_tambah']) ? 'tambah' : 'update';
 

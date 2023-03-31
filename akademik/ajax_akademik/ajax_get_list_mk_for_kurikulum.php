@@ -9,8 +9,8 @@ $keyword = isset($_GET['keyword']) ? $_GET['keyword'] : die(erid('keyword'));
 # MK DI KURIKULUM INI
 # ===================================================
 $s = "SELECT a.id 
-from tb_mk a 
-join tb_kurikulum_mk b on a.id=b.id_mk 
+FROM tb_mk a 
+JOIN tb_kurikulum_mk b on a.id=b.id_mk 
 WHERE b.id_kurikulum = $id_kurikulum  
 ";
 // die($s);
@@ -35,11 +35,11 @@ b.id_kurikulum,
 d.jenjang,
 e.nama as nama_prodi  
 
-from tb_mk a 
-join tb_kurikulum_mk b on a.id=b.id_mk 
-join tb_kurikulum c on c.id=b.id_kurikulum 
-join tb_kalender d on d.id=c.id_kalender 
-join tb_prodi e on e.id=c.id_prodi  
+FROM tb_mk a 
+JOIN tb_kurikulum_mk b on a.id=b.id_mk 
+JOIN tb_kurikulum c on c.id=b.id_kurikulum 
+JOIN tb_kalender d on d.id=c.id_kalender 
+JOIN tb_prodi e on e.id=c.id_prodi  
 
 WHERE b.id_kurikulum != $id_kurikulum  
 AND ( a.nama like '%$keyword%' OR a.kode like '%$keyword%' )
@@ -61,9 +61,9 @@ $s = "SELECT
 a.nama, 
 a.kode, 
 a.id 
-from tb_mk a 
+FROM tb_mk a 
 
-left join tb_kurikulum_mk b on a.id=b.id_mk 
+left JOIN tb_kurikulum_mk b on a.id=b.id_mk 
 
 WHERE b.id is null 
 AND ( a.nama like '%$keyword%' OR a.kode like '%$keyword%' )

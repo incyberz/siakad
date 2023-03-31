@@ -120,8 +120,8 @@ while ($d=mysqli_fetch_assoc($q)) {
   a.bobot_praktik,
   a.prasyarat,
   b.id as id_kurikulum_mk, 
-  (SELECT count(1) from tb_kurikulum_mk WHERE id_mk=a.id) as jumlah_assign_mk, 
-  (SELECT 1 from tb_jadwal WHERE id_kurikulum_mk=b.id) as telah_terjadwal  
+  (SELECT count(1) FROM tb_kurikulum_mk WHERE id_mk=a.id) as jumlah_assign_mk, 
+  (SELECT 1 FROM tb_jadwal WHERE id_kurikulum_mk=b.id) as telah_terjadwal  
 
   FROM tb_mk a 
   JOIN tb_kurikulum_mk b ON a.id=b.id_mk 

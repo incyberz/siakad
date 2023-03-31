@@ -4,7 +4,7 @@
 $keyword = $_GET['keyword'];
 
 include "../config.php";
-$s = "SELECT * FROM tb_dosen where nama_dosen like '%$keyword%' or nidn like '%$keyword%' order by nama_dosen";
+$s = "SELECT * FROM tb_dosen WHERE nama_dosen like '%$keyword%' or nidn like '%$keyword%' order by nama_dosen";
 $q = mysqli_query($cn, $s) or die("Tidak bisa mengakses data dosen. ".mysqli_error($cn));
 if(mysqli_num_rows($q)==0){
   echo "<div class='col-lg-3 col-md-6 d-flex align-items-stretch'>Data tidak ditemukan.</div>";

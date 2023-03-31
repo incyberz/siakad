@@ -119,8 +119,8 @@ while ($d=mysqli_fetch_assoc($q)) {
   a.kode as kode_mk,
   a.nama as nama_mk,
   b.id as id_kurikulum_mk, 
-  (SELECT id from tb_jadwal where id_kurikulum_mk=b.id) as id_jadwal,  
-  (SELECT count(1) from tb_sesi_kuliah c 
+  (SELECT id FROM tb_jadwal WHERE id_kurikulum_mk=b.id) as id_jadwal,  
+  (SELECT count(1) FROM tb_sesi_kuliah c 
   JOIN tb_jadwal d on c.id_jadwal=d.id  
   WHERE d.id_kurikulum_mk=b.id) as jumlah_sesi  
 

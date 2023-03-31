@@ -20,7 +20,7 @@ while ($d=mysqli_fetch_assoc($q)) {
   $i++;
 }
 
-$s = "SELECT a.id_dosen,a.nama_dosen,b.singkatan_prodi FROM tb_dosen a join tb_prodi b on a.id_prodi=b.id_prodi ORDER BY b.singkatan_prodi, a.nama_dosen";
+$s = "SELECT a.id_dosen,a.nama_dosen,b.singkatan_prodi FROM tb_dosen a JOIN tb_prodi b on a.id_prodi=b.id_prodi ORDER BY b.singkatan_prodi, a.nama_dosen";
 $q = mysqli_query($cn,$s) or die("db_vars: tidak dapat mengakses data dosen");
 $i=0;
 $html_options_nama_dosen = '';

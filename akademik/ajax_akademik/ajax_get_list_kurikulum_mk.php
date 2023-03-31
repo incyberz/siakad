@@ -15,7 +15,7 @@ d.nama as nama_kurikulum,
 b.nomor as semester_ke,
 f.nama as nama_mk,
 d.id as id_kurikulum,
-(SELECT id from tb_jadwal where id_kurikulum_mk=a.id) as id_jadwal   
+(SELECT id FROM tb_jadwal WHERE id_kurikulum_mk=a.id) as id_jadwal   
 
 FROM tb_kurikulum_mk a  
 JOIN tb_semester b on b.id=a.id_semester 

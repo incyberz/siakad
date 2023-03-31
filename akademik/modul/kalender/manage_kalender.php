@@ -73,7 +73,7 @@ a.nomor as no_semester,
 a.tanggal_awal, 
 a.tanggal_akhir,
 a.last_update,
-(SELECT count(1) from tb_kurikulum_mk where id_semester=a.id) as is_have_mk  
+(SELECT count(1) FROM tb_kurikulum_mk WHERE id_semester=a.id) as is_have_mk  
 FROM tb_semester a 
 JOIN tb_kalender b ON b.id=a.id_kalender 
 

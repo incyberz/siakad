@@ -12,7 +12,7 @@ include "../../config.php";
 # =================================================
 
 
-$s = "SELECT a.id_bk,b.nama_bk from tb_bk_dosen a 
+$s = "SELECT a.id_bk,b.nama_bk FROM tb_bk_dosen a 
 JOIN tb_bk b ON a.id_bk=b.id_bk 
 where a.id_dosen=$id_dosen";
 $q = mysqli_query($cn,$s) or die("Error @AJAX. Tidak dapat mengakses data keahlian dosen. ".mysqli_error($cn));

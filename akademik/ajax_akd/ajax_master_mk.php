@@ -114,7 +114,7 @@ if ($jumlah_records_limited>0) {
     $id_bk = $d['id_bk'];
     $nama_bk_link="... | <a href='#' style='color:red'>Set</a>";
     if($id_bk!=""){
-      $ss = "SELECT nama_bk from tb_bk where id_bk=$id_bk";
+      $ss = "SELECT nama_bk FROM tb_bk WHERE id_bk=$id_bk";
       $qq = mysqli_query($cn,$ss) or die("Tidak dapat mengakses data bidang keahlian, id: $id_bk zzzSQL: $ss");
       $dd = mysqli_fetch_assoc($qq);
       $nama_bk = $dd['nama_bk'];
@@ -126,7 +126,7 @@ if ($jumlah_records_limited>0) {
     $id_konsentrasi = $d['id_konsentrasi'];
     $nama_konsentrasi_link="... | <a href='#' style='color:red'>Set</a>";
     if($id_konsentrasi!=""){
-      $ss = "SELECT nama_konsentrasi from tb_konsentrasi where id_konsentrasi=$id_konsentrasi";
+      $ss = "SELECT nama_konsentrasi FROM tb_konsentrasi WHERE id_konsentrasi=$id_konsentrasi";
       $qq = mysqli_query($cn,$ss) or die("Tidak dapat mengakses data konsentrasi prodi, id: $id_konsentrasi zzzSQL: $ss".mysqli_error($cn));
       $dd = mysqli_fetch_assoc($qq);
       $nama_konsentrasi = $dd['nama_konsentrasi'];

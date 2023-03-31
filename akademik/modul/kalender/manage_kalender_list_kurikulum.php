@@ -4,7 +4,7 @@ $s = "SELECT
 id_prodi, 
 id as id_kurikulum, 
 nama as nama_kurikulum 
-from tb_kurikulum where id_kalender=$id_kalender ";
+FROM tb_kurikulum WHERE id_kalender=$id_kalender ";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $arr_id_prodi = [];
 $i=0;

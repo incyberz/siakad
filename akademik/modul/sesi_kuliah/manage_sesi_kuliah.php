@@ -87,20 +87,27 @@ a.id_dosen,
 a.tanggal_sesi,
 a.stop_sesi,
 b.nama as nama_dosen,
-(SELECT count(1) from tb_assign_ruang where id_sesi_kuliah=a.id) as jumlah_ruang 
+(SELECT count(1) FROM tb_assign_ruang WHERE id_sesi_kuliah=a.id) as jumlah_ruang 
 
-from tb_sesi_kuliah a 
-join tb_dosen b on b.id=a.id_dosen 
+FROM tb_sesi_kuliah a 
+JOIN tb_dosen b on b.id=a.id_dosen 
 where a.id_jadwal=$id_jadwal order by a.pertemuan_ke";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 if(mysqli_num_rows($q)==0){
   include 'form_buat_sesi_default.php';
 }else{
 
+  $kelas_peserta = '<span class="miring red">--NULL--</span>';
+  $s = "SELECT * FROM tb_kelas_peserta a 
+  JOIN tb_dosen b on b.id=a.id_dosen 
+  WHERE a.id_jadwal=$id_jadwal order by a.pertemuan_ke";
+  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));  
+
   $thead = "
   <thead>
     <th class='text-left upper'>Pertemuan ke</th>
     <th class='text-left upper'>Nama Sesi</th>
+    <th class='text-left upper'>Kelas Peserta</th>
     <th class='text-left upper'>Jam Masuk</th>
     <th class='text-left upper'>Jam Keluar</th>
     <th class='text-left upper'>Ruang</th>
@@ -149,9 +156,9 @@ if(mysqli_num_rows($q)==0){
 
     $list_ruang = '<span class="red kecil miring">--none--</span>';
     if($d['jumlah_ruang']>0){
-      $s2 = "SELECT b.nama as nama_ruang from tb_assign_ruang a 
-      join tb_ruang b on a.id_ruang=b.id 
-      where a.id_sesi_kuliah=$d[id_sesi_kuliah]";
+      $s2 = "SELECT b.nama as nama_ruang FROM tb_assign_ruang a 
+      JOIN tb_ruang b on a.id_ruang=b.id 
+      WHERE a.id_sesi_kuliah=$d[id_sesi_kuliah]";
       $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
       $list_ruang = '<ol style="padding-left:15px;">';
       while ($d2=mysqli_fetch_assoc($q2)) {
@@ -174,6 +181,9 @@ if(mysqli_num_rows($q)==0){
         <br><i>Pengajar</i>: <a href='?master&p=dosen&id=$d[id_dosen]' target=_blank>$d[nama_dosen]</a>
         <br>$bobot SKS x 50 menit
         
+      </td>
+      <td class='upper gradasi-$gradasi'>
+        $kelas_peserta
       </td>
       <td class='upper gradasi-$gradasi'>
         $hari<br>$tanggal_sesi

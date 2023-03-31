@@ -19,7 +19,7 @@ if(trim($fitur_sistem)=='') $sql_fitur_admin = " 1 ";
 
 include "../../config.php";
 
-$s = "SELECT * from tb_admin_level where admin_level>0 order by admin_level";
+$s = "SELECT * FROM tb_admin_level WHERE admin_level>0 order by admin_level";
 $q = mysqli_query($cn,$s) or die("Tidak dapat mengakses data admin_level.".mysqli_error($cn));
 $i=0;
 while ($d=mysqli_fetch_array($q)) {
@@ -32,7 +32,7 @@ while ($d=mysqli_fetch_array($q)) {
 
 // die(var_dump($radmin_level));
 
-$s = "SELECT * from tb_fitur_sistem where $sql_modul_admin 
+$s = "SELECT * FROM tb_fitur_sistem WHERE $sql_modul_admin 
 and $sql_fitur_admin 
 order by modul_sistem, fitur_sistem";
 $q = mysqli_query($cn,$s) or die("Tidak dapat mengakses data fitur sistem.".mysqli_error($cn));
