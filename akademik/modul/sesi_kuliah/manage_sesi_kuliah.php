@@ -1,6 +1,7 @@
 <?php
 $judul = '<h1>Manage Sesi Kuliah</h1>';
 include 'form_buat_sesi_default_process.php';
+include 'form_hapus_all_sesi_process.php';
 
 $id_jadwal = isset($_GET['id_jadwal']) ? $_GET['id_jadwal'] : '';
 
@@ -65,15 +66,53 @@ $koloms = [];
 $i=0;
 $tr = '';
 foreach ($d as $key => $value) {
-  if($key=='nomor_semester' || $key=='awal_perkuliahan') continue;
+  if($key=='nomor_semester' 
+  || $key=='awal_perkuliahan'
+  || $key=='bobot_teori'
+  || $key=='bobot_praktik'
+  || $key=='sesi_uts'
+  || $key=='sesi_uas'
+  || $key=='jumlah_sesi'
+  || $key=='tanggal_jadwal'
+  ) continue;
   $koloms[$i] = str_replace('_',' ',$key);
   $debug = substr($key,0,2)=='id' ? 'debug' : 'upper';
   $tr .= "<tr class=$debug><td>$koloms[$i]</td><td id=$key>$value</td></tr>";
   $i++;
 }
 
-echo "<div class=mb2>$back_to</div>$judul<table class=table>$tr</table>";
 
+
+
+# ====================================================
+# KELAS PESERTA
+# ====================================================
+$s2 = "SELECT * FROM tb_kelas_peserta a 
+JOIN tb_kurikulum_mk b on b.id=a.id_kurikulum_mk  
+JOIN tb_jadwal c on b.id=c.id_kurikulum_mk  
+WHERE c.id=$id_jadwal ";
+$q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
+if(mysqli_num_rows($q2)==0){
+  $kelas_peserta = '<span class="miring red">--NULL--</span>';
+}else{
+  $kelas_peserta = '<ol style="padding-left:15px">';
+  while ($d2=mysqli_fetch_assoc($q2)) {
+    $kelas_peserta.= "<li>$d2[kelas]</li>";
+  }
+  $kelas_peserta .= '</ol>';
+}
+
+
+echo "
+<div class=mb2>$back_to</div>
+$judul
+<table class=table>
+  $tr
+  <tr>
+    <td>KELAS PESERTA</td>
+    <td>$kelas_peserta</td>
+  </tr>
+</table>";
 
 
 # ====================================================
@@ -97,17 +136,11 @@ if(mysqli_num_rows($q)==0){
   include 'form_buat_sesi_default.php';
 }else{
 
-  $kelas_peserta = '<span class="miring red">--NULL--</span>';
-  $s = "SELECT * FROM tb_kelas_peserta a 
-  JOIN tb_dosen b on b.id=a.id_dosen 
-  WHERE a.id_jadwal=$id_jadwal order by a.pertemuan_ke";
-  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));  
 
   $thead = "
   <thead>
     <th class='text-left upper'>Pertemuan ke</th>
     <th class='text-left upper'>Nama Sesi</th>
-    <th class='text-left upper'>Kelas Peserta</th>
     <th class='text-left upper'>Jam Masuk</th>
     <th class='text-left upper'>Jam Keluar</th>
     <th class='text-left upper'>Ruang</th>
@@ -183,9 +216,6 @@ if(mysqli_num_rows($q)==0){
         
       </td>
       <td class='upper gradasi-$gradasi'>
-        $kelas_peserta
-      </td>
-      <td class='upper gradasi-$gradasi'>
         $hari<br>$tanggal_sesi
         <br>$jam_masuk
       </td>
@@ -200,10 +230,33 @@ if(mysqli_num_rows($q)==0){
     </tr>"; 
   }
 
-  $hapus_all_sesi = "<div class='wadah gradasi-kuning'>
-  <p>Untuk setting ulang tanggal sesi dari P1 s.d P$jumlah_sesi secara terurut per minggu silahkan lakukan <code>Hapus All Sesi</code> lalu Buat Ulang Sesi Default. <span class=red>Perhatian! Proses ini akan mengembalikan Nama-nama Sesi menjadi Default (NEW PXX)</span></p>
-  <a href='?hapus_all_sesi&id_jadwal=$id_jadwal' class='btn btn-danger'>Hapus All Sesi</a>
-  </div>";
+  $hapus_all_sesi = "
+  <form method=post>
+    <input type=debuga name=id_jadwal value=$id_jadwal>
+    <div class='wadah gradasi-kuning'>
+      <p>
+        Untuk setting ulang tanggal sesi dari P1 s.d P$jumlah_sesi secara terurut per minggu silahkan lakukan <code>Hapus All Sesi</code> lalu Buat Ulang Sesi Default. <span class=red>Perhatian! Proses ini akan mengembalikan Nama-nama Sesi menjadi Default (NEW PXX)</span>
+      </p>
+      <div class='alert alert-danger'>
+        <div class='mb2'>
+          <input type=checkbox id=check_hapus_all_sesi> 
+          <label for=check_hapus_all_sesi> Saya yakin untuk menghapus semua sesi pada MK ini.</label>
+        </div>
+        <button href='?hapus_all_sesi&id_jadwal=$id_jadwal' class='btn btn-danger' id=btn_hapus_all_sesi name=btn_hapus_all_sesi disabled>Hapus All Sesi</button>
+      </div>
+    </div>
+  </form>
+  ";
 
   echo "<table class='table table-striped table-hover'>$thead$tr</table>$hapus_all_sesi$back_to";
 }
+
+?>
+<script>
+  $(function(){
+    $('#check_hapus_all_sesi').click(function(){
+      let checked = $(this).prop('checked');
+      $('#btn_hapus_all_sesi').prop('disabled',!checked);
+    })
+  })
+</script>

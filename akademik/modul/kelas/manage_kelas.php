@@ -33,7 +33,7 @@ if($id_jadwal==''){
 echo "<span class=debug id=id_jadwal>$id_jadwal</span>";
 
 $s = "SELECT 
-a.keterangan as jadwal,
+CONCAT('JADWAL MK ',c.nama) as jadwal,
 b.id as id_kurikulum_mk,
 b.id_semester,
 b.id_kurikulum,
