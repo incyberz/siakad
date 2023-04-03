@@ -126,7 +126,9 @@ a.id_dosen,
 a.tanggal_sesi,
 a.stop_sesi,
 b.nama as nama_dosen,
-(SELECT count(1) FROM tb_assign_ruang WHERE id_sesi_kuliah=a.id) as jumlah_ruang 
+(SELECT count(1) FROM tb_assign_ruang WHERE id_sesi_kuliah=a.id) as jumlah_ruang, 
+(SELECT count(1) FROM tb_presensi_dosen WHERE id_sesi_kuliah=a.id) as jumlah_presensi_dosen, 
+(SELECT count(1) FROM tb_presensi WHERE id_sesi_kuliah=a.id) as jumlah_presensi_mhs 
 
 FROM tb_sesi_kuliah a 
 JOIN tb_dosen b on b.id=a.id_dosen 
@@ -143,13 +145,14 @@ if(mysqli_num_rows($q)==0){
     <th class='text-left upper'>Nama Sesi</th>
     <th class='text-left upper'>Jam Masuk</th>
     <th class='text-left upper'>Jam Keluar</th>
+    <th class='text-left upper'>Presensi</th>
     <th class='text-left upper'>Ruang</th>
     <th class='text-left upper'>Aksi</th>
   </thead>"; 
   $tr = '';
+  $total_presensi_dosen =0;
+  $total_presensi_mhs =0;
   while ($d=mysqli_fetch_assoc($q)) {
-    // $today = '2023-3-29';// zzz debug
-    // $d['tanggal_sesi'] = '2023-3-29';// zzz debug
     $tsesi = strtotime($d['tanggal_sesi']);
     $ttoday = strtotime($today);
 
@@ -202,6 +205,17 @@ if(mysqli_num_rows($q)==0){
 
     $today2 = date('Y-m-d');
 
+    # ========================================================
+    # PRESENSI DOSEN DAN MAHASISWA
+    # ========================================================
+    $presensi_dosen_show = $d['jumlah_presensi_dosen'] ? 'Sudah' : '<span class="red miring">Belum</span>';
+    $jumlah_presensi_mhs = $d['jumlah_presensi_mhs'];
+    $total_presensi_dosen += $d['jumlah_presensi_dosen'];
+    $total_presensi_mhs += $d['jumlah_presensi_mhs'];
+
+    # ========================================================
+    # FINAL TR OUTPUT
+    # ========================================================
     $tr .= "
     <tr class='$tr_active'>
       <td class='upper gradasi-$gradasi'>
@@ -223,6 +237,10 @@ if(mysqli_num_rows($q)==0){
         $hari<br>$tanggal_sesi
         <br>$jam_keluar
       </td>
+      <td class='upper gradasi-$gradasi kecil'>
+        Dosen: $presensi_dosen_show
+        <br>Mhs: $jumlah_presensi_mhs mhs
+      </td>
       <td class='upper gradasi-$gradasi'>$list_ruang</td>
       <td class='upper gradasi-$gradasi'>
         <a href='?assign_ruang&id_sesi_kuliah=$d[id_sesi_kuliah]' class='btn btn-info btn-sm'>assign ruang</a>
@@ -230,11 +248,24 @@ if(mysqli_num_rows($q)==0){
     </tr>"; 
   }
 
-  $hapus_all_sesi = "
+  // $total_presensi_dosen = 1; //debug
+  $total_presensi = $total_presensi_dosen+$total_presensi_mhs;
+
+  $hapus_all_sesi = $total_presensi ? "
+  <div class=wadah>
+    <div class='alert alert-info tebal'>Sudah ada presensi. Anda tidak dapat lagi menghapus sesi kuliah pada MK ini.</div>
+    <ul>
+      <li>Presensi dosen: $total_presensi_dosen</li>
+      <li>Presensi mhs: $total_presensi_mhs</li>
+    </ul>
+    <p class=miring><code>Untuk menghapus semua sesi Anda hapus menghapus semua presensi terlebih dahulu.</code></p>
+  </div>
+  " : "
   <form method=post>
     <input type=debuga name=id_jadwal value=$id_jadwal>
     <div class='wadah gradasi-kuning'>
       <p>
+        <div class='alert alert-info tebal'>Presensi masih kosong. Anda masih dapat menghapus semua sesi.</div>
         Untuk setting ulang tanggal sesi dari P1 s.d P$jumlah_sesi secara terurut per minggu silahkan lakukan <code>Hapus All Sesi</code> lalu Buat Ulang Sesi Default. <span class=red>Perhatian! Proses ini akan mengembalikan Nama-nama Sesi menjadi Default (NEW PXX)</span>
       </p>
       <div class='alert alert-danger'>
