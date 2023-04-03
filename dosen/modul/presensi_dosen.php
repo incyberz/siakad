@@ -1,5 +1,10 @@
 <?php
-$judul = "JADWAL DOSEN";
+$judul = "PRESENSI DOSEN";
+$id_sesi_kuliah = isset($_GET['id_sesi_kuliah']) ? $_GET['id_sesi_kuliah'] : die(erid('id_sesi_kuliah'));
+if($id_sesi_kuliah=='') die(erid('id_sesi_kuliah::empty'));
+$back_to = "<div class='mb-2 mt-2'>Back to: 
+<a href='?jadwal_dosen'>Jadwal Dosen</a>
+</div>";
 
 $s = "SELECT 
 d.nama as nama_mk,
@@ -22,27 +27,18 @@ join tb_kurikulum_mk c on c.id=b.id_kurikulum_mk
 join tb_mk d on d.id=c.id_mk 
 join tb_dosen e on e.id=a.id_dosen  
 where a.id_dosen=$id_dosen 
+and a.id=$id_sesi_kuliah 
 order by a.tanggal_sesi 
 limit 20
 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-$thead='
-  <thead>
-    <th>No</th>
-    <th>TANGGAL</th>
-    <th>MATA KULIAH / SESI</th>
-    <th>STATUS</th>
-    <th>PRESENSI</th>
-  </thead>
-';
-$tr='';
+
 $jadwal_hari_ini='';
-$jadwal_besok='';
-$i=0;
 while ($d=mysqli_fetch_assoc($q)) {
+  $nama_sesi = $d['nama_sesi'];
   $status_sesi = ($d['status_sesi']=='' || $d['status_sesi']==0) ? "<div class='miring kecil red'>--Belum-Terlaksana-</div>" : $d['status_sesi'];
   $tanggal_sesi = date('Y-m-d', strtotime($d['tanggal_sesi']));
-  $eta = strtotime($d['tanggal_sesi'])-strtotime('now');
+  $eta = strtotime($d['tanggal_sesi'])-strtotime('now')-15*60; //15 menit sebelum kuliah dimulai
   $eta_day = strtotime($tanggal_sesi)-strtotime('today');
   $eta_hari = intval($eta_day/(60*60*24));
   $eta_jam = ($eta/(60*60)) % 24;
@@ -55,12 +51,11 @@ while ($d=mysqli_fetch_assoc($q)) {
   $sedang_berlangsung = ((strtotime($d['stop_sesi'])-strtotime('now'))>0 and $eta<0) ? 1 : 0;
 
   $eta_jam_show = $eta_jam==0 ? "$eta_menit menit lagi" : "$eta_jam jam $eta_menit menit lagi";
-  $eta_jam_show = $sedang_berlangsung ? "<span class='biru tebal'>Sedang berlangsung</span>" : $eta_jam_show;
+  $eta_jam_show = $sedang_berlangsung ? "<span class='biru tebal'>Sesi Sedang berlangsung</span>" : $eta_jam_show;
   $eta_jam_show = ($sedang_berlangsung==0 and $eta<0) ? "<span class='abu miring'>telah berlalu</span>" : $eta_jam_show;
   $warna_eta_jam = ($eta>0) ? 'red' : 'abu';
 
-  $gradasi = $eta_hari==0 ? 'hijau' : '';
-  $eta_show = $eta_hari==0 ? '<span class="biru tebal">hari ini</span> :: '."<span class='$warna_eta_jam tebal'>$eta_jam_show</span>" : "$eta_hari hari lagi";
+  $eta_show = "<span class='$warna_eta_jam tebal'>$eta_jam_show</span>";
 
   # ========================================================
   # KELAS PESERTA
@@ -118,91 +113,48 @@ while ($d=mysqli_fetch_assoc($q)) {
   $wadah = $sedang_berlangsung ? 'wadah_active' : 'wadah';
   $tanggal_besok = date('Y-m-d',strtotime('tomorrow'));
   $hari_besok = $nama_hari[date('w',strtotime($tanggal_besok))].', '.date('d-M-Y',strtotime($tanggal_besok));
-  if($eta_hari==0 || $eta_hari==1){
-
-    $btn_presensi_dosen = $eta_hari==0 ? "<a href='?presensi_dosen&id_sesi_kuliah=$d[id_sesi_kuliah]' class='btn btn-primary btn-block'>Isi Presensi Dosen</a>" : '';
-
-    $jadwal = "
+  if($eta_hari==0){
+    $jadwal_hari_ini .= "
     <div class='$wadah bg-white'>
       <h4 class='tebal biru'>$d[nama_mk]</h4>
-      <h5 class='miring biru'>$d[nama_sesi]</h5>
-      <div>$pukul_show</div>
-      <div>$eta_show</div>
+      <h5>$pukul_show</h5>
       <div>$tipe_sesi | $list_ruang</div>
       <div class=mb2>$jumlah_kelas_show | $list_kelas</div>
-      $btn_presensi_dosen
     </div>
     ";
-
-    if($eta_hari==0) $jadwal_hari_ini.=$jadwal;
-    if($eta_hari==1) $jadwal_besok.=$jadwal;
-
+  }else{
+    die("ETA days invalid.");
   }
 
 
-  # ========================================================
-  # PRESENSI DOSEN DAN MAHASISWA
-  # ========================================================
-  $presensi_dosen_show = $d['jumlah_presensi_dosen'] ? 'Sudah' : '<span class="red miring">Belum</span>';
-  $jumlah_presensi_mhs = $d['jumlah_presensi_mhs'];
-
-
-  $i++;
-  $tr .= "
-  <tr class='gradasi-$gradasi'>
-    <td>
-      $i<br>
-
-    </td>
-    <td>
-      <div>$tanggal_sesi_show</div>
-      <div>$pukul_show</div>
-      <div class='kecil miring'>
-        $eta_show
-      </div>
-    </td>
-    <td>
-      $d[nama_mk]
-      <div class='miring kecil'>$d[nama_sesi]</div>
-    </td>
-    <td>$status_sesi</td>
-    <td class='kecil'>
-      Dosen: $presensi_dosen_show
-      <br>Mhs: $jumlah_presensi_mhs mhs
-    </td>
-  </tr>
-  ";
 }
 
-$tb = $tr=='' ? "<div class='alert alert-danger'>Belum ada Data Kegiatan Mengajar.</div>" : "<table class=table>$thead$tr</table>";
-$jadwal_besok = $jadwal_besok=='' ? '<div class="alert alert-info">Belum ada jadwal untuk besok.</div>' : $jadwal_besok;
 
+$disabled = $eta>0 ? 'disabled' : '';
+$start_presensi = $eta>0 ? 'Start Presensi dalam: '.$eta_show : $eta_show;
+$petunjuk = $eta>0 ? "Silahkan isi isian diatas sebagai Draft. Anda dapat melakukan submit 15 menit sebelum perkuliahan dimulai. Minimal 50 karakter." : "Silahkan isi isian diatas minimal 50 karakter.";
 
-
-
-
-?>
-<h1><?=$judul?></h1>
-<p>Selamat Datang <?=$nama_dosen?></p>
-<div class="row">
-  <div class="col-lg-6">
-    <div class="wadah gradasi-hijau">
-      <h3>Jadwal Hari ini</h3>
-      <p><?=$hari_ini?></p>
-      <?=$jadwal_hari_ini?>
-    </div>
-  </div>
+echo "
+$back_to
+<h1>$judul</h1>
+<p>Selamat Datang $nama_dosen</p>
+<div class='wadah gradasi-hijau'>
+  <p>Hari ini $hari_ini</p>
+  $jadwal_hari_ini
   
-  <div class="col-lg-6">
-    <div class="wadah gradasi-">
-      <h3>Jadwal Besok</h3>
-      <p><?=$hari_besok?></p>
-      <?=$jadwal_besok?>
+  <form method=post>
+    <div class='form-group'>
+      <label for='materi'>Materi apa yang akan diajarkan pada sesi: <span class='tebal biru upper'>$nama_sesi</span>?</label>
+      <textarea name='materi' id='materi' minlength=50 required class='form-control'></textarea>
+      <small><i>$petunjuk</i></small>
+      <div class=mt-3>$start_presensi</div>
     </div>
-  </div>
-  
+    <div class='form-group'>
+      <button class='btn btn-primary btn-block' $disabled>Submit Presensi</button>
+    </div>
+  </form>
 </div>
+$back_to
+";
 
-<hr>
-<h4>Seluruh Jadwal</h4>
-<?=$tb?>
+
