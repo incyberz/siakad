@@ -1,6 +1,24 @@
 <?php
 $judul = "JADWAL DOSEN";
 
+
+# ===========================================================
+# PENCARIAN MINGGU AKTIF
+# ===========================================================
+$ttoday = strtotime($today);
+$w = date('w',$ttoday);
+$add_days = $w==0 ? 0 : -$w;
+$ahad_skg = date('Y-m-d',strtotime("$add_days day",$ttoday));
+$ahad_depan = date('Y-m-d',strtotime("7 day",strtotime($ahad_skg)));
+
+$senin_skg = date('Y-m-d',strtotime("1 day",strtotime($ahad_skg)));
+$sabtu_skg = date('Y-m-d',strtotime("6 day",strtotime($ahad_skg)));
+
+$minggu_skg_show = date('d-M-Y',strtotime($senin_skg)).' s.d '.date('d-M-Y',strtotime($sabtu_skg));
+
+# ===========================================================
+# SELECT JADWAL PADA MINGGU AKTIF
+# ===========================================================
 $s = "SELECT 
 d.nama as nama_mk,
 a.id as id_sesi_kuliah, 
@@ -23,20 +41,14 @@ join tb_kurikulum_mk c on c.id=b.id_kurikulum_mk
 join tb_mk d on d.id=c.id_mk 
 join tb_dosen e on e.id=a.id_dosen  
 where a.id_dosen=$id_dosen 
+AND a.tanggal_sesi >= '$ahad_skg' 
+AND a.tanggal_sesi < '$ahad_depan' 
 order by a.tanggal_sesi 
-limit 20
 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-$thead='
-  <thead>
-    <th>No</th>
-    <th>TANGGAL</th>
-    <th>MATA KULIAH / SESI</th>
-    <th>STATUS</th>
-    <th>PRESENSI</th>
-  </thead>
-';
-$tr='';
+
+
+$jadwal_minggu_ini='';
 $jadwal_hari_ini='';
 $jadwal_besok='';
 $i=0;
@@ -63,13 +75,18 @@ while ($d=mysqli_fetch_assoc($q)) {
   $gradasi = $eta_hari==0 ? 'hijau' : '';
   $eta_show = $eta_hari==0 ? '<span class="biru tebal">hari ini</span> :: '."<span class='$warna_eta_jam tebal'>$eta_jam_show</span>" : "$eta_hari hari lagi";
 
+
+
+
   # ========================================================
-  # KELAS PESERTA
+  # KELAS PESERTA DAN JUMLAH PESERTA MAHASISWA
   # ========================================================
   if($d['jumlah_kelas_peserta']){
     $jumlah_kelas_show = "<span class='tebal'>$d[jumlah_kelas_peserta] kelas</span>";
-    $s2 = "SELECT kelas from tb_kelas_peserta 
-    where id_kurikulum_mk=$d[id_kurikulum_mk]";
+    $s2 = "SELECT 
+    a.kelas 
+    from tb_kelas_peserta a 
+    where a.id_kurikulum_mk=$d[id_kurikulum_mk]";
     $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
     $list_kelas = '__';
     while ($d2=mysqli_fetch_assoc($q2)) {
@@ -119,65 +136,47 @@ while ($d=mysqli_fetch_assoc($q)) {
   $wadah = $sedang_berlangsung ? 'wadah_active' : 'wadah';
   $tanggal_besok = date('Y-m-d',strtotime('tomorrow'));
   $hari_besok = $nama_hari[date('w',strtotime($tanggal_besok))].', '.date('d-M-Y',strtotime($tanggal_besok));
-  if($eta_hari==0 || $eta_hari==1){
 
-    $btn_presensi_dosen = $eta_hari==0 ? "<a href='?presensi_dosen&id_sesi_kuliah=$d[id_sesi_kuliah]' class='btn btn-primary btn-block'>Isi Presensi Dosen</a>" : '';
-
-    $blok_presensi = ($d['jumlah_presensi_dosen'] and $btn_presensi_dosen!='') ? div_alert('info text-center',"Anda Sudah Presensi pada $d[tanggal_presensi]") : $btn_presensi_dosen;
-
-    $jadwal = "
-    <div class='$wadah bg-white'>
-      <h4 class='tebal biru'>$d[nama_mk]</h4>
-      <h5 class='miring biru'>$d[nama_sesi]</h5>
-      <div>$pukul_show</div>
-      <div>$eta_show</div>
-      <div>$tipe_sesi | $list_ruang</div>
-      <div class=mb2>$jumlah_kelas_show | $list_kelas</div>
-      $blok_presensi
-    </div>
-    ";
-
-    if($eta_hari==0) $jadwal_hari_ini.=$jadwal;
-    if($eta_hari==1) $jadwal_besok.=$jadwal;
-
-  }
-
-
+  $btn_presensi_dosen = $eta_hari<=0 ? "<a href='?presensi_dosen&id_sesi_kuliah=$d[id_sesi_kuliah]' class='btn btn-primary btn-block'>Isi Presensi Dosen</a>" : '';
+  
   # ========================================================
   # PRESENSI DOSEN DAN MAHASISWA
   # ========================================================
-  $presensi_dosen_show = $d['jumlah_presensi_dosen'] ? 'Sudah' : '<span class="red miring">Belum</span>';
   $jumlah_presensi_mhs = $d['jumlah_presensi_mhs'];
 
+  $info_sudah_presensi = $d['tanggal_presensi']=='' 
+  ? div_alert('danger text-center',"Anda Telat Presensi. Segera lapor ke Petugas Akademik!") 
+  : div_alert('info text-center',"Anda Sudah Presensi pada $d[tanggal_presensi]");
+  
+  $blok_presensi = ($d['jumlah_presensi_dosen']==0 and $eta_hari==0) ? $btn_presensi_dosen : $info_sudah_presensi;
+  $blok_presensi = $eta_hari>0 ? '' : $blok_presensi;
+  $blok_presensi_mhs = $eta_hari>0 ? '' : "<div>Presensi Mhs: $jumlah_presensi_mhs of $jumlah_peserta_mhs Mhs</div>";
 
-  $i++;
-  $tr .= "
-  <tr class='gradasi-$gradasi'>
-    <td>
-      $i<br>
+  $biru = $eta_hari==0 ? 'biru' : 'abu';
+  $biru = $eta_hari==1 ? 'darkred' : $biru;
 
-    </td>
-    <td>
-      <div>$tanggal_sesi_show</div>
-      <div>$pukul_show</div>
-      <div class='kecil miring'>
-        $eta_show
-      </div>
-    </td>
-    <td>
-      $d[nama_mk]
-      <div class='miring kecil'>$d[nama_sesi]</div>
-    </td>
-    <td>$status_sesi</td>
-    <td class='kecil'>
-      Dosen: $presensi_dosen_show
-      <br>Mhs: $jumlah_presensi_mhs mhs
-    </td>
-  </tr>
+  $jadwal = "
+  <div class='$wadah bg-white'>
+    <h4 class='tebal $biru'>$d[nama_mk]</h4>
+    <h5 class='miring $biru'>$d[nama_sesi]</h5>
+    <div>$pukul_show</div>
+    <div>$eta_show</div>
+    <div>$tipe_sesi | $list_ruang</div>
+    <div class=mb2>$jumlah_kelas_show | $list_kelas</div>
+    $blok_presensi
+    $blok_presensi_mhs
+  </div>
   ";
+
+  $jadwal_minggu_ini.=$jadwal;
+  if($eta_hari==0) $jadwal_hari_ini.=$jadwal;
+  if($eta_hari==1) $jadwal_besok.=$jadwal;
+
+
+
+
 }
 
-$tb = $tr=='' ? "<div class='alert alert-danger'>Belum ada Data Kegiatan Mengajar.</div>" : "<table class=table>$thead$tr</table>";
 $jadwal_besok = $jadwal_besok=='' ? '<div class="alert alert-info">Belum ada jadwal untuk besok.</div>' : $jadwal_besok;
 
 
@@ -196,15 +195,19 @@ $jadwal_besok = $jadwal_besok=='' ? '<div class="alert alert-info">Belum ada jad
   </div>
   
   <div class="col-lg-6">
-    <div class="wadah gradasi-">
+    <div class="wadah gradasi-kuning">
       <h3>Jadwal Besok</h3>
       <p><?=$hari_besok?></p>
       <?=$jadwal_besok?>
     </div>
   </div>
   
+  <div class="col-lg-12">
+    <div class="wadah ">
+      <h3>Jadwal Minggu ini</h3>
+      <p><?=$minggu_skg_show?></p>
+      <?=$jadwal_minggu_ini?>
+    </div>
+  </div>
+  
 </div>
-
-<hr>
-<h4>Seluruh Jadwal</h4>
-<?=$tb?>

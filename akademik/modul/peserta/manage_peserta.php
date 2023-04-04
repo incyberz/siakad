@@ -124,8 +124,7 @@ $s = "";
         if(!y) return;
       }
 
-      let kelas_sent = aksi=='drop' ? '' : kelas;
-      let link_ajax = `ajax_akademik/ajax_set_kelas_mhs.php?id_mhs=${id_mhs}&kelas=${kelas_sent}&`;
+      let link_ajax = `ajax_akademik/ajax_set_kelas_mhs.php?id_mhs=${id_mhs}&kelas=${kelas}&aksi=${aksi}&`;
       // alert(link_ajax); return;
       $.ajax({
         url: link_ajax,

@@ -5,23 +5,22 @@ include 'session_security.php';
 $keyword = isset($_GET['keyword']) ? $_GET['keyword'] : die(erid('keyword'));
 $kelas = isset($_GET['kelas']) ? $_GET['kelas'] : die(erid('kelas'));
 $punya_kelas = isset($_GET['punya_kelas']) ? $_GET['punya_kelas'] : die(erid('punya_kelas'));
+// $angkatan = isset($_GET['angkatan']) ? $_GET['angkatan'] : die(erid('angkatan'));
+
+$angkatan = 2020;
 
 # ===================================================
 # LIST JADWAL
 # ===================================================
-$kelas_is_null = $punya_kelas ? 'kelas is not null' : 'kelas is null';
-
-$limit = 10;
+$limit = 50;
 $s = "SELECT 
 a.id,
 a.nim,
 a.nama as nama_mhs,
-a.kelas 
+(SELECT kelas from tb_kelas_angkatan where angkatan=$angkatan and id_mhs=a.id) as kelas  
 
 FROM tb_mhs a 
 WHERE (a.nim like '%$keyword%' OR a.nama like '%$keyword%') 
-AND (kelas != '$kelas' OR kelas is null) 
-AND $kelas_is_null 
 
 ORDER BY a.nama    
 ";
@@ -44,13 +43,15 @@ $thead = '
 $tr = '';
 $i=0;
 while ($d = mysqli_fetch_assoc($q)) {
+  if($d['kelas']==$kelas) continue;
+  if(!$punya_kelas and $d['kelas']!='') continue;
   $i++;
   $bg_merah = $d['kelas']=='' ? '' : 'bg-merah'; 
   $tr_sty = $d['kelas']=='' ? '' : 'style="background:linear-gradient(#fee,#fcc)"'; 
   $btn_assign = $d['kelas']=='' 
   ? "<button class='btn btn-primary btn-sm btn_aksi' id='assign__$d[id]'>Assign</button>"
   : "<button class='btn btn-danger btn-sm btn_aksi' id='move__$d[id]'>Move</button>";
-  $kelas = $d['kelas']==''?'<span class="abu miring">-- null --</span>':$d['kelas'];
+  $kelas = $d['kelas']==''?'<span class="abu miring">null</span>':$d['kelas'];
   $tr .= "<tr $tr_sty class='$bg_merah' id='tr__$d[id]'>
     <td>$i</td>
     <td>$d[nim]</td>

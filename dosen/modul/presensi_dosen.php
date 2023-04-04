@@ -5,7 +5,7 @@ if(isset($_POST['btn_submit_presensi'])){
   (id_sesi_kuliah,id_dosen) VALUES 
   ($_POST[id_sesi_kuliah],$_POST[id_dosen])";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  echo div_alert('success',"Terimakasih Anda sudah mengisi Presensi.<hr><a class='btn btn-primary' href='?jadwal_dosen'>Kembali ke Jadwal</a>");
+  echo div_alert('success',"Terimakasih Anda sudah mengisi Presensi.<hr><a class='btn btn-primary' href='?jadwal_mingguan'>Kembali ke Jadwal</a>");
   exit;
 }
 
@@ -18,12 +18,12 @@ if($id_sesi_kuliah=='') die(erid('id_sesi_kuliah::empty'));
 $s = "SELECT 1 from tb_presensi_dosen where id_sesi_kuliah=$id_sesi_kuliah and id_dosen=$id_dosen";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 if(mysqli_num_rows($q)>0){
-  echo '<script>location.replace("?jadwal_dosen")</script>';
+  echo '<script>location.replace("?jadwal_mingguan")</script>';
   exit;
 }
 
 $back_to = "<div class='mb-2 mt-2' style='position:sticky;top:29px;z-index:998;padding:5px;border:solid 1px #ccc;background:white;font-size:small'>Back to: 
-  <a href='?jadwal_dosen'>Jadwal Dosen</a>
+  <a href='?jadwal_mingguan'>Jadwal Dosen</a>
 </div>";
 
 
@@ -74,7 +74,7 @@ while ($d=mysqli_fetch_assoc($q)) {
 
   $eta_jam_show = $eta_jam==0 ? "$eta_menit menit lagi" : "$eta_jam jam $eta_menit menit lagi";
   $eta_jam_show = $sedang_berlangsung ? "<span class='biru tebal'>Sesi Sedang berlangsung</span>" : $eta_jam_show;
-  $eta_jam_show = ($sedang_berlangsung==0 and $eta<0) ? "<span class='abu miring'>telah berlalu</span>" : $eta_jam_show;
+  $eta_jam_show = ($sedang_berlangsung==0 and $eta<0) ? "<span class='abu miring'>sesi telah berlalu</span>" : $eta_jam_show;
   $warna_eta_jam = ($eta>0) ? 'red' : 'abu';
 
   $eta_show = "<span class='$warna_eta_jam tebal'>$eta_jam_show</span>";

@@ -20,7 +20,7 @@ if (!strpos($a, "&")) $a.="&";
 $b = explode("?", $a);
 $c = explode("&", $b[1]);
 $parameter = $c[0];
-$parameter = $parameter=='' ? 'jadwal_dosen' : $parameter;
+$parameter = $parameter=='' ? 'jadwal_mingguan' : $parameter;
 
 
 
@@ -194,7 +194,7 @@ $homebase_prodi = $d_dosen['nama_prodi'];
     <p class=mt-2>Selamat Datang <?=$nama_dosen?> | <a href="?logout" onclick="return confirm('Yakin untuk Logout?')">Logout</a></p>
     <div style="position:sticky; top:0;padding:5px;border:solid 1px #ccc;background:linear-gradient(#fafffa,#efe);font-size:small; z-index:999;margin-bottom:15px">
       <a href="?">Jadwal</a> | 
-      <a href="?mk_saya">MK Saya</a> | 
+      <a href="?mk_saya">MK Saya</a>  
     </div>
     <?php include "modul/$parameter.php"; ?>
   </div>

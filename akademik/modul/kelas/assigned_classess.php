@@ -3,7 +3,7 @@ $s = "SELECT
 a.kelas,
 e.nama as nama_dosen,  
 b.id as id_kelas_peserta,
-(SELECT count(1) FROM tb_mhs WHERE kelas=a.kelas) as jumlah_mhs    
+(SELECT count(1) FROM tb_kelas_angkatan WHERE kelas=a.kelas) as jumlah_mhs    
 FROM tb_kelas a 
 JOIN tb_kelas_peserta b on a.kelas=b.kelas 
 JOIN tb_kurikulum_mk c on c.id=b.id_kurikulum_mk 

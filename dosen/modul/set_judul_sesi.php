@@ -13,7 +13,7 @@ if($id_jadwal=='') die(erid('id_jadwal::empty'));
 
 
 $back_to = "<div class='mb-2 mt-2' style='position:sticky;top:29px;z-index:998;padding:5px;border:solid 1px #ccc;background:white;font-size:small'>Back to: 
-  <a href='?jadwal_dosen'>Jadwal Dosen</a>
+  <a href='?jadwal_mingguan'>Jadwal Dosen</a>
 </div>";
 
 
@@ -89,7 +89,7 @@ if(mysqli_num_rows($q)==0){
 
   $thead = "
   <thead>
-    <th class='text-left upper'>Pertemuan ke</th>
+    <th class='text-left upper'>sesi ke</th>
     <th class='text-left upper'>Nama Sesi</th>
     <th class='text-left upper'>Tim Teaching</th>
   </thead>"; 

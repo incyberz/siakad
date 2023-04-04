@@ -3,14 +3,15 @@
 <?php
 
 $s = "SELECT 
-a.id,
-a.nim,
-a.nama as nama_mhs,
+b.id,
+b.nim,
+b.nama as nama_mhs,
 a.kelas 
 
-FROM tb_mhs a 
+FROM tb_kelas_angkatan a 
+JOIN tb_mhs b on b.id=a.id_mhs 
 WHERE a.kelas='$kelas'
-ORDER BY a.nama    
+ORDER BY b.nama    
 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $jumlah_row = mysqli_num_rows($q);
