@@ -185,7 +185,7 @@ $jadwal_besok = $jadwal_besok=='' ? '<div class="alert alert-info">Belum ada jad
 
 
 ?>
-<h1><?=$judul?></h1>
+<!-- <h1><?=$judul?></h1> -->
 <div class="row">
   <div class="col-lg-6">
     <div class="wadah gradasi-hijau">

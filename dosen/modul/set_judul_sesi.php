@@ -1,12 +1,10 @@
 <?php
 $judul = "SET JUDUL SESI";
 $sub_judul = "<p>Untuk mengubah nama-nama sesi silahkan klik pada Cell Nama Sesi !</p>";
-if(isset($_POST['btn_submit_presensi'])){
-  // $s = "INSERT INTO tb_presensi_dosen 
-  // (id_jadwal,id_dosen) VALUES 
-  // ($_POST[id_jadwal],$_POST[id_dosen])";
-  // $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  // echo div_alert('success',"Terimakasih Anda sudah mengisi Presensi.<hr><a class='btn btn-primary' href='?jadwal_dosen'>Kembali ke Jadwal</a>");
+if(isset($_POST['btn_approve'])){
+  $s = "UPDATE tb_jadwal set tanggal_approve_sesi=current_timestamp WHERE id=$_POST[id_jadwal] and  id_dosen=$_POST[id_dosen]";
+  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  echo div_alert('success',"Terimakasih atas Approval Nama-nama Sesi Mata Kuliah Anda.<hr><a class='btn btn-primary' href='?mk_saya'>Kembali ke MK Saya</a>");
   exit;
 }
 
@@ -35,6 +33,7 @@ a.sesi_uts,
 a.sesi_uas,  
 a.jumlah_sesi,
 a.tanggal_jadwal,   
+a.tanggal_approve_sesi,   
 e.nomor as nomor_semester,   
 e.awal_kuliah_uts as awal_perkuliahan,   
 e.id_kalender    
@@ -63,6 +62,7 @@ $jumlah_sesi = $d['jumlah_sesi'];
 $sesi_uts = $d['sesi_uts'];
 $sesi_uas = $d['sesi_uas'];
 $jadwal = $d['jadwal'];
+$tanggal_approve_sesi = $d['tanggal_approve_sesi'];
 $bobot = $d['bobot_teori']+$d['bobot_praktik'];
 
 # ====================================================
@@ -96,6 +96,7 @@ if(mysqli_num_rows($q)==0){
   $tr = '';
   $total_presensi_dosen =0;
   $total_presensi_mhs =0;
+  $is_red = 0;
   while ($d=mysqli_fetch_assoc($q)) {
     
     # ========================================================
@@ -104,6 +105,7 @@ if(mysqli_num_rows($q)==0){
     $editable = ($d['pertemuan_ke']==$sesi_uts || $d['pertemuan_ke']==$sesi_uas) ? '' : 'editable';
     $nama_sesi = strtoupper($d['nama_sesi']);
     $red = strpos("salt$nama_sesi",'NEW P') ? 'red' : '';
+    $is_red = $red=='red' ? 1 : $is_red;
     $tr .= "
     <tr class=''>
       <td class='upper'>
@@ -118,6 +120,9 @@ if(mysqli_num_rows($q)==0){
 
   // $total_presensi_dosen = 1; //debug
   $total_presensi = $total_presensi_dosen+$total_presensi_mhs;
+  $disabled = $is_red ? 'disabled' : '';
+  $hideit = $is_red ? '' : 'hideit';
+  $tanggal_approve_sesi_show = $tanggal_approve_sesi==''?'':div_alert('success','Anda pernah approve pada tanggal: '.date('d-F-Y H:i:s',strtotime($tanggal_approve_sesi)).' Silahkan Anda boleh re-approve kembali.');
 
   echo "
   <h3>$judul</h3>
@@ -126,10 +131,29 @@ if(mysqli_num_rows($q)==0){
   <table class='table table-striped table-hover'>
     $thead
     $tr
-  </table>";
+  </table>
+
+  <div class='wadah'>
+    <form method='post'>
+      <input class=debuga name=id_jadwal value=$id_jadwal>
+      <input class=debuga name=id_dosen value=$id_dosen>
+      <h4>Persetujuan Nama-nama Sesi</h4>
+      $tanggal_approve_sesi_show
+      <div class='alert alert-danger $hideit'>
+        Masih ada Default Name untuk Sesi Kuliah. Silahkan ubah sesuai RPS Anda! Kemudian Refresh!
+      </div>
+      <input type='checkbox' id=cek $disabled>
+      <label for='cek'>Dengan ini saya menyatakan bahwa Nama-nama Sesi pada MK saya sudah benar.</label>
+      <button class='btn btn-primary btn-block' name=btn_approve $disabled>Approve Nama-nama Sesi Kuliah</button>
+    </form>
+  </div>
+  ";
+
 } // end if jika sesi sudah ada
 
 ?>
+
+
 <script>
   $(function(){
     $(".editable").click(function(){

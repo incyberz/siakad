@@ -1,8 +1,8 @@
 <?php
 session_start();
-$link_edit = '';
 include "../config.php";
 include "../../insho_styles.php";
+$folder_rps = "../uploads/rps";
 
 $id_dosen = '';
  if(isset($_GET['id_dosen'])) $id_dosen = $_GET['id_dosen'];
@@ -191,11 +191,10 @@ $homebase_prodi = $d_dosen['nama_prodi'];
 
 <body>
   <div class="container">
-    <p class=mt-2>Selamat Datang <?=$nama_dosen?></p>
+    <p class=mt-2>Selamat Datang <?=$nama_dosen?> | <a href="?logout" onclick="return confirm('Yakin untuk Logout?')">Logout</a></p>
     <div style="position:sticky; top:0;padding:5px;border:solid 1px #ccc;background:linear-gradient(#fafffa,#efe);font-size:small; z-index:999;margin-bottom:15px">
       <a href="?">Jadwal</a> | 
       <a href="?mk_saya">MK Saya</a> | 
-      <a href="?logout">Logout</a> | 
     </div>
     <?php include "modul/$parameter.php"; ?>
   </div>
@@ -203,6 +202,6 @@ $homebase_prodi = $d_dosen['nama_prodi'];
 </html>
 
 <?php
-echo '<pre>';
-var_dump($d_dosen);
-echo '</pre>';
+// echo '<pre>';
+// var_dump($d_dosen);
+// echo '</pre>';

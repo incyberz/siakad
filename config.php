@@ -153,4 +153,8 @@ function terbilang($nilai) {
 function div_alert($a,$b){
   return "<div class='alert alert-$a'>$b</div>";
 }
+
+function nr(){
+  return '<div class="alert alert-info">Maaf, fitur ini masih dalam tahap pengembangan. | <a href="javascript:history.go(-1)">Kembali</a></div>';
+}
 ?>
