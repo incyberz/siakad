@@ -191,12 +191,18 @@ $homebase_prodi = $d_dosen['nama_prodi'];
 
 <body>
   <div class="container">
+    <p class=mt-2>Selamat Datang <?=$nama_dosen?></p>
+    <div style="position:sticky; top:0;padding:5px;border:solid 1px #ccc;background:linear-gradient(#fafffa,#efe);font-size:small; z-index:999;margin-bottom:15px">
+      <a href="?">Jadwal</a> | 
+      <a href="?mk_saya">MK Saya</a> | 
+      <a href="?logout">Logout</a> | 
+    </div>
     <?php include "modul/$parameter.php"; ?>
   </div>
 </body>
 </html>
 
 <?php
-// echo '<pre>';
-// var_dump($d_dosen);
-// echo '</pre>';
+echo '<pre>';
+var_dump($d_dosen);
+echo '</pre>';

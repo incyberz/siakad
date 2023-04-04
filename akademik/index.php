@@ -7,9 +7,6 @@ $dm = 0;
 $menit_sks = 50;
 
 include "../config.php";
-$now = date('Y-m-d H:i:s');
-$today = date('Y-m-d');
-$null = '<span class="miring small">--null--</span>';
 
 
 # ========================================================

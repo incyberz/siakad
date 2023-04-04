@@ -13,6 +13,7 @@ c.id as id_kurikulum_mk,
 (SELECT count(1) from tb_kelas_peserta where id_kurikulum_mk=c.id) as jumlah_kelas_peserta,
 (SELECT nama from tb_status_sesi where id=a.id) as status_sesi,
 (SELECT count(1) FROM tb_presensi_dosen WHERE id_sesi_kuliah=a.id) as jumlah_presensi_dosen, 
+(SELECT timestamp_masuk FROM tb_presensi_dosen WHERE id_sesi_kuliah=a.id) as tanggal_presensi, 
 (SELECT count(1) FROM tb_presensi WHERE id_sesi_kuliah=a.id) as jumlah_presensi_mhs 
 
 
@@ -122,6 +123,8 @@ while ($d=mysqli_fetch_assoc($q)) {
 
     $btn_presensi_dosen = $eta_hari==0 ? "<a href='?presensi_dosen&id_sesi_kuliah=$d[id_sesi_kuliah]' class='btn btn-primary btn-block'>Isi Presensi Dosen</a>" : '';
 
+    $blok_presensi = ($d['jumlah_presensi_dosen'] and $btn_presensi_dosen!='') ? div_alert('info text-center',"Anda Sudah Presensi pada $d[tanggal_presensi]") : $btn_presensi_dosen;
+
     $jadwal = "
     <div class='$wadah bg-white'>
       <h4 class='tebal biru'>$d[nama_mk]</h4>
@@ -130,7 +133,7 @@ while ($d=mysqli_fetch_assoc($q)) {
       <div>$eta_show</div>
       <div>$tipe_sesi | $list_ruang</div>
       <div class=mb2>$jumlah_kelas_show | $list_kelas</div>
-      $btn_presensi_dosen
+      $blok_presensi
     </div>
     ";
 
@@ -183,7 +186,6 @@ $jadwal_besok = $jadwal_besok=='' ? '<div class="alert alert-info">Belum ada jad
 
 ?>
 <h1><?=$judul?></h1>
-<p>Selamat Datang <?=$nama_dosen?></p>
 <div class="row">
   <div class="col-lg-6">
     <div class="wadah gradasi-hijau">

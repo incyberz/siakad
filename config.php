@@ -26,6 +26,9 @@ $nama_hari = ['Ahad','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
 $nama_bulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
 $hari_ini = $nama_hari[date('w')].', '.date('d').' '.$nama_bulan[intval(date('m'))-1].' '.date('Y');
 
+$now = date('Y-m-d H:i:s');
+$today = date('Y-m-d');
+$null = '<span class="miring small">--null--</span>';
 
 
 # ============================================================
@@ -58,31 +61,6 @@ $img_wa = "<img src='assets/img/icons/wa.png' width=20px class='img_zoom' />";
 # ============================================================
 # PUBLIC FUNCTIONS
 # ============================================================
-function artikan_kode($nama_kode,$nilai){
-  switch (strtolower($nama_kode)) {
-    case 'status_menikah':
-      if($nilai==1) return "Belum Menikah";
-      if($nilai==2) return "Menikah";
-      if($nilai==3) return "Janda/Duda";
-      break;
-    case 'jk':
-      if(strtoupper($nilai)=="L") return "Laki-laki";
-      if(strtoupper($nilai)=="P") return "Perempuan";
-      break;
-    case 'agama':
-      if($nilai==1) return "Islam";
-      if($nilai==2) return "Katolik";
-      if($nilai==3) return "Protestan";
-      if($nilai==4) return "Hindu";
-      if($nilai==5) return "Budha";
-      if($nilai==6) return "Konghucu";
-      if($nilai==7) return "Lainnya";
-      break;
-    case 'warga_negara':
-      if($nilai==1) return "WNI";
-      if($nilai==2) return "WNA";
-  }
-}
 
 function go($a){
   $b = strtolower(str_replace(' ','_',$a));
@@ -172,5 +150,7 @@ function terbilang($nilai) {
   return $hasil;
 }
 
-
+function div_alert($a,$b){
+  return "<div class='alert alert-$a'>$b</div>";
+}
 ?>

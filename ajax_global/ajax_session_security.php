@@ -13,6 +13,6 @@
 // $cnama_operator = $_SESSION['cnama_operator'];
 // $cjenis_user = $_SESSION['cjenis_user'];
 
-include "../../config.php";
+include "../config.php";
 
 ?>

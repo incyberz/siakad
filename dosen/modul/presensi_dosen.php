@@ -1,10 +1,32 @@
 <?php
 $judul = "PRESENSI DOSEN";
+if(isset($_POST['btn_submit_presensi'])){
+  $s = "INSERT INTO tb_presensi_dosen 
+  (id_sesi_kuliah,id_dosen) VALUES 
+  ($_POST[id_sesi_kuliah],$_POST[id_dosen])";
+  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  echo div_alert('success',"Terimakasih Anda sudah mengisi Presensi.<hr><a class='btn btn-primary' href='?jadwal_dosen'>Kembali ke Jadwal</a>");
+  exit;
+}
+
 $id_sesi_kuliah = isset($_GET['id_sesi_kuliah']) ? $_GET['id_sesi_kuliah'] : die(erid('id_sesi_kuliah'));
 if($id_sesi_kuliah=='') die(erid('id_sesi_kuliah::empty'));
-$back_to = "<div class='mb-2 mt-2'>Back to: 
-<a href='?jadwal_dosen'>Jadwal Dosen</a>
+
+# =========================================
+# VALIDASI DOUBLE PRESENSI
+# =========================================
+$s = "SELECT 1 from tb_presensi_dosen where id_sesi_kuliah=$id_sesi_kuliah and id_dosen=$id_dosen";
+$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+if(mysqli_num_rows($q)>0){
+  echo '<script>location.replace("?jadwal_dosen")</script>';
+  exit;
+}
+
+$back_to = "<div class='mb-2 mt-2' style='position:sticky;top:29px;z-index:998;padding:5px;border:solid 1px #ccc;background:white;font-size:small'>Back to: 
+  <a href='?jadwal_dosen'>Jadwal Dosen</a>
 </div>";
+
+
 
 $s = "SELECT 
 d.nama as nama_mk,
@@ -129,10 +151,10 @@ while ($d=mysqli_fetch_assoc($q)) {
 
 }
 
-
+$minlength = 5; //zzz
 $disabled = $eta>0 ? 'disabled' : '';
 $start_presensi = $eta>0 ? 'Start Presensi dalam: '.$eta_show : $eta_show;
-$petunjuk = $eta>0 ? "Silahkan isi isian diatas sebagai Draft. Anda dapat melakukan submit 15 menit sebelum perkuliahan dimulai. Minimal 50 karakter." : "Silahkan isi isian diatas minimal 50 karakter.";
+$petunjuk = $eta>0 ? "Silahkan isi isian diatas sebagai Draft. Anda dapat melakukan submit 15 menit sebelum perkuliahan dimulai. Minimal $minlength karakter." : "Silahkan isi isian diatas minimal $minlength karakter.";
 
 echo "
 $back_to
@@ -143,18 +165,19 @@ $back_to
   $jadwal_hari_ini
   
   <form method=post>
+    <input class=debuga name=id_sesi_kuliah value=$id_sesi_kuliah>
+    <input class=debuga name=id_dosen value=$id_dosen>
     <div class='form-group'>
       <label for='materi'>Materi apa yang akan diajarkan pada sesi: <span class='tebal biru upper'>$nama_sesi</span>?</label>
-      <textarea name='materi' id='materi' minlength=50 required class='form-control'></textarea>
+      <textarea name='materi' id='materi' minlength=$minlength required class='form-control'></textarea>
       <small><i>$petunjuk</i></small>
       <div class=mt-3>$start_presensi</div>
     </div>
     <div class='form-group'>
-      <button class='btn btn-primary btn-block' $disabled>Submit Presensi</button>
+      <button class='btn btn-primary btn-block' $disabled name=btn_submit_presensi>Submit Presensi</button>
     </div>
   </form>
 </div>
-$back_to
 ";
 
 
