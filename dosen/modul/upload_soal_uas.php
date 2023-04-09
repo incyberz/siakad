@@ -135,7 +135,7 @@ $tb_mk = "
 
 $form_upload = "
 <form method=post enctype='multipart/form-data'>
-  <input class=debuga name=id_jadwal value=$id_jadwal >
+  <input class=debug name=id_jadwal value=$id_jadwal >
   <input type=file class=form-control name=file__$id_jadwal accept='.pdf' required>
   <button class='btn btn-primary btn-block mt-2' name=btn_upload>Upload</button>
 </form>

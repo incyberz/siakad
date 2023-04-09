@@ -262,7 +262,7 @@ if(mysqli_num_rows($q)==0){
   </div>
   " : "
   <form method=post>
-    <input type=debuga name=id_jadwal value=$id_jadwal>
+    <input type=debug name=id_jadwal value=$id_jadwal>
     <div class='wadah gradasi-kuning'>
       <p>
         <div class='alert alert-info tebal'>Presensi masih kosong. Anda masih dapat menghapus semua sesi.</div>

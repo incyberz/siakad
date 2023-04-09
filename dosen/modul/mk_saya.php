@@ -36,12 +36,17 @@ while ($d=mysqli_fetch_assoc($q)) {
   $danger_rps = file_exists("../uploads/rps/$d[id_jadwal].pdf") ?'success':'danger';
   $danger_soal_uts = file_exists("../uploads/soal_uts/$d[id_jadwal].docx") ?'success':'danger';
   $danger_soal_uas = file_exists("../uploads/soal_uas/$d[id_jadwal].docx") ?'success':'danger';
+  $danger_nilai_uts = 0 ?'success':'danger';
+  $danger_nilai_uas = 0 ?'success':'danger';
 
   $links = "
   <a href='?set_judul_sesi&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_sesi mb1 btn-sm btn-block'>Set Judul Sesi</a>
   <a href='?upload_rps&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_rps mb1 btn-sm btn-block'>Upload RPS</a>
   <a href='?upload_soal_uts&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_soal_uts mb1 btn-sm btn-block'>Upload Soal UTS</a>
-  <a href='?upload_soal_uts&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_soal_uas mb1 btn-sm btn-block'>Upload Soal UAS</a>  ";
+  <a href='?upload_soal_uts&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_soal_uas mb1 btn-sm btn-block'>Upload Soal UAS</a>  
+  <a href='?input_nilai_uts&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_nilai_uts mb1 btn-sm btn-block'>Input Nilai UTS</a>  
+  <a href='?input_nilai_uas&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_nilai_uas mb1 btn-sm btn-block'>Input Nilai UAS</a>  
+  ";
 
   $i++;
   # ========================================
@@ -54,6 +59,8 @@ while ($d=mysqli_fetch_assoc($q)) {
     <div class='col-lg-4'>
       <div class='darkblue tebal'>$d[nama_mk]</div>
       <div class='kecil miring'>Status: $status_jadwal</div>
+      <div class='kecil'><b>5 kelas</b> | TI-2030-KIP-P9 (12), TI-2030-KIP-P9 (20), TI-2030-KIP-P9 (3)</div>
+      <div class='kecil'><b>45 Mhs</b></div>
     </div>
     <div class='col-lg-4'>
       $d[jenjang]-$d[nama_prodi] $d[angkatan]

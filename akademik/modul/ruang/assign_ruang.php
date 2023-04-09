@@ -210,7 +210,7 @@ if(mysqli_num_rows($q)){
         </div>
         <div class='wadah' style='margin-top:15px'>
           Tipe Sesi: <span class='tebal biru' id=tipe_sesi>-- Silahkan Ceklis Ruangan --</span> 
-          <input class=debuga id=id_tipe_sesi name=id_tipe_sesi >
+          <input class=debug id=id_tipe_sesi name=id_tipe_sesi >
         </div>
       </td>
     </tr>

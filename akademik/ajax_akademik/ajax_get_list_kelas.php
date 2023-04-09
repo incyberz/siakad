@@ -12,7 +12,7 @@ $keyword = isset($_GET['keyword']) ? $_GET['keyword'] : die(erid('keyword'));
 $s = "SELECT 
 a.kelas,
 b.nama as nama_jalur,
-(SELECT count(1) FROM tb_mhs WHERE kelas=a.kelas ) as jumlah_mhs    
+(SELECT count(1) FROM tb_kelas_angkatan WHERE kelas=a.kelas ) as jumlah_mhs    
 FROM tb_kelas a 
 JOIN tb_jalur b on a.id_jalur = b.id 
 WHERE a.id_prodi = $id_prodi 

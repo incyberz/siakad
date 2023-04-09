@@ -5,9 +5,6 @@ include 'session_security.php';
 $keyword = isset($_GET['keyword']) ? $_GET['keyword'] : die(erid('keyword'));
 $kelas = isset($_GET['kelas']) ? $_GET['kelas'] : die(erid('kelas'));
 $punya_kelas = isset($_GET['punya_kelas']) ? $_GET['punya_kelas'] : die(erid('punya_kelas'));
-// $angkatan = isset($_GET['angkatan']) ? $_GET['angkatan'] : die(erid('angkatan'));
-
-$angkatan = 2020;
 
 # ===================================================
 # LIST JADWAL
@@ -17,7 +14,7 @@ $s = "SELECT
 a.id,
 a.nim,
 a.nama as nama_mhs,
-(SELECT kelas from tb_kelas_angkatan where angkatan=$angkatan and id_mhs=a.id) as kelas  
+(SELECT kelas from tb_kelas_angkatan where id_mhs=a.id) as kelas  
 
 FROM tb_mhs a 
 WHERE (a.nim like '%$keyword%' OR a.nama like '%$keyword%') 

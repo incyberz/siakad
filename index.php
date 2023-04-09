@@ -3,7 +3,7 @@
 # SIAKAD PUBLIC INDEX
 # ========================================================
 session_start();
-$dm = 1;
+$dm = 0;
 $now = date('Y-m-d H:i:s');
 $today = date('Y-m-d');
 

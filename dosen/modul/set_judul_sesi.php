@@ -135,8 +135,8 @@ if(mysqli_num_rows($q)==0){
 
   <div class='wadah'>
     <form method='post'>
-      <input class=debuga name=id_jadwal value=$id_jadwal>
-      <input class=debuga name=id_dosen value=$id_dosen>
+      <input class=debug name=id_jadwal value=$id_jadwal>
+      <input class=debug name=id_dosen value=$id_dosen>
       <h4>Persetujuan Nama-nama Sesi</h4>
       $tanggal_approve_sesi_show
       <div class='alert alert-danger $hideit'>

@@ -1,6 +1,7 @@
 <?php
 
-$judul = "UPLOAD RPS (RENCANA PEMBELAJARAN SEMESTER)";
+$judul = "INPUT NILAI UTS";
+die(nr());
 $sub_judul = "Silahkan Upload RPS dengan ekstensi PDF max 1MB.";
 if(isset($_POST['btn_upload'])){
 
