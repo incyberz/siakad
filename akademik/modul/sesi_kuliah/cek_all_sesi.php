@@ -52,7 +52,8 @@ $id_prodi = $d['id_prodi'];
 
 $back_to = "<div class=mb2>Back to : 
   <a href='?manage_kalender&id_kalender=$id_kalender' class=proper>Manage kalender</a> | 
-  <a href='?manage_multiple_jadwal&id_kurikulum=$id_kurikulum'>Manage Multiple Jadwal</a>
+  <a href='?manage_kurikulum&id_kurikulum=$id_kurikulum' class=proper>Manage kurikulum</a> | 
+  <a href='?manage_jadwal_dosen&id_kurikulum=$id_kurikulum'>Manage Jadwal Dosen</a>
 ";
 
 

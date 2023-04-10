@@ -8,6 +8,7 @@ c.nama as nama_mk,
 e.jenjang,
 e.angkatan,
 f.nama as nama_prodi,
+(SELECT count(1) from tb_kelas_peserta where id_kurikulum_mk=b.id) as jumlah_kelas_peserta,
 (SELECT nama from tb_status_jadwal WHERE id=a.id_status_jadwal) as status_jadwal   
 
 FROM tb_jadwal a 
@@ -39,14 +40,43 @@ while ($d=mysqli_fetch_assoc($q)) {
   $danger_nilai_uts = 0 ?'success':'danger';
   $danger_nilai_uas = 0 ?'success':'danger';
 
-  $links = "
-  <a href='?set_judul_sesi&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_sesi mb1 btn-sm btn-block'>Set Judul Sesi</a>
-  <a href='?upload_rps&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_rps mb1 btn-sm btn-block'>Upload RPS</a>
-  <a href='?upload_soal_uts&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_soal_uts mb1 btn-sm btn-block'>Upload Soal UTS</a>
-  <a href='?upload_soal_uts&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_soal_uas mb1 btn-sm btn-block'>Upload Soal UAS</a>  
-  <a href='?input_nilai_uts&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_nilai_uts mb1 btn-sm btn-block'>Input Nilai UTS</a>  
-  <a href='?input_nilai_uas&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_nilai_uas mb1 btn-sm btn-block'>Input Nilai UAS</a>  
-  ";
+  $set_judul_sesi_enab = "<a href='?set_judul_sesi&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_sesi mb1 btn-sm btn-block'>Set Judul Sesi</a>";
+  $upload_rps_enab = "<a href='?upload_rps&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_rps mb1 btn-sm btn-block'>Upload RPS</a>";
+  $upload_soal_uts_enab = "<a href='?upload_soal_uts&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_soal_uts mb1 btn-sm btn-block'>Upload Soal UTS</a>";
+  $upload_nilai_uts_enab = "<a href='?upload_nilai_uts&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_nilai_uts mb1 btn-sm btn-block'>Upload Nilai UTS</a>";
+  $upload_soal_uas_enab = "<a href='?upload_soal_uas&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_soal_uas mb1 btn-sm btn-block'>Upload Soal UAS</a>";
+  $upload_nilai_uas_enab = "<a href='?upload_nilai_uas&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_nilai_uas mb1 btn-sm btn-block'>Upload Nilai UAS</a>";
+
+  $set_judul_sesi_dis = "<button class='btn btn-secondary btn-sm mb1 btn-block' onclick='alert(\"Silahkan penuhi dahulu persyaratan sebelumnya!\")'>Set Judul Sesi</button>";
+  $upload_rps_dis = "<button class='btn btn-secondary btn-sm mb1 btn-block' onclick='alert(\"Silahkan penuhi dahulu persyaratan sebelumnya!\")'>Upload RPS</button>";
+  $upload_soal_uts_dis = "<button class='btn btn-secondary btn-sm mb1 btn-block' onclick='alert(\"Silahkan penuhi dahulu persyaratan sebelumnya!\")'>Upload Soal UTS</button>";
+  $upload_nilai_uts_dis = "<button class='btn btn-secondary btn-sm mb1 btn-block' onclick='alert(\"Silahkan penuhi dahulu persyaratan sebelumnya!\")'>Upload Nilai UTS</button>";
+  $upload_soal_uas_dis = "<button class='btn btn-secondary btn-sm mb1 btn-block' onclick='alert(\"Silahkan penuhi dahulu persyaratan sebelumnya!\")'>Upload Soal UAS</button>";
+  $upload_nilai_uas_dis = "<button class='btn btn-secondary btn-sm mb1 btn-block' onclick='alert(\"Silahkan penuhi dahulu persyaratan sebelumnya!\")'>Upload Nilai UAS</button>";
+
+  $link_set_judul_sesi = $set_judul_sesi_enab;
+  $link_upload_rps = $danger_sesi=='success' ? $upload_rps_enab : $upload_rps_dis;
+  $link_upload_soal_uts = $danger_rps=='success' ? $upload_soal_uts_enab : $upload_soal_uts_dis;
+  $link_upload_nilai_uts = $danger_soal_uts=='success' ? $upload_nilai_uts_enab : $upload_nilai_uts_dis;
+  $link_upload_soal_uas = $danger_nilai_uts=='success' ? $upload_soal_uas_enab : $upload_soal_uas_dis;
+  $link_upload_nilai_uas = $danger_soal_uas=='success' ? $upload_nilai_uas_enab : $upload_nilai_uas_dis;
+
+
+  $links = $d['jumlah_kelas_peserta'] ? "
+    $link_set_judul_sesi
+    $link_upload_rps
+    $link_upload_soal_uts
+    $link_upload_nilai_uts
+    $link_upload_soal_uas
+    $link_upload_nilai_uas
+  " : '-';
+
+  $kelas_peserta = $d['jumlah_kelas_peserta'] 
+  ? "<div class='kecil'><a class='tebal' href='?lihat_kelas_peserta&id_jadwal=$d[id_jadwal]'>$d[jumlah_kelas_peserta] kelas peserta</a></div>" 
+  : "
+  <div class='red'>
+    0 kelas peserta <a class='btn btn-primary m-2' href='?lapor_kesalahan&fitur=manage_kelas&hal=kelas_peserta masih kosong.&id_jadwal=$d[id_jadwal]'>Laporkan</a>
+  </div>";
 
   $i++;
   # ========================================
@@ -59,8 +89,7 @@ while ($d=mysqli_fetch_assoc($q)) {
     <div class='col-lg-4'>
       <div class='darkblue tebal'>$d[nama_mk]</div>
       <div class='kecil miring'>Status: $status_jadwal</div>
-      <div class='kecil'><b>5 kelas</b> | TI-2030-KIP-P9 (12), TI-2030-KIP-P9 (20), TI-2030-KIP-P9 (3)</div>
-      <div class='kecil'><b>45 Mhs</b></div>
+      $kelas_peserta
     </div>
     <div class='col-lg-4'>
       $d[jenjang]-$d[nama_prodi] $d[angkatan]

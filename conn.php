@@ -2,8 +2,7 @@
 # ============================================================
 # DATABASE CONNECTION
 # ============================================================
-$online_version = 1;
-if ($_SERVER['SERVER_NAME'] == "localhost") $online_version = 0;
+$online_version = $_SERVER['SERVER_NAME'] == 'localhost' ? 0 : 1;
 
 if ($online_version) {
   $db_server = "localhost";

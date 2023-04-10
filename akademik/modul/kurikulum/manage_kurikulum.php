@@ -52,7 +52,7 @@ $id_prodi = $d['id_prodi'];
 
 $back_to = "<div class=mb2>Back to : 
   <a href='?manage_kalender&id_kalender=$id_kalender' class=proper>Manage kalender</a> | 
-  <a href='?manage_multiple_jadwal&id_kurikulum=$id_kurikulum'>Manage Multiple Jadwal</a>
+  <a href='?manage_jadwal_dosen&id_kurikulum=$id_kurikulum'>Manage Jadwal Dosen</a>
 ";
 
 
@@ -236,7 +236,7 @@ while ($d=mysqli_fetch_assoc($q)) {
 $total_sks = $total_praktik + $total_teori;
 
 $merah = $total_mk==$total_mk_terjadwal ? '' : 'merah';
-$ket = $total_mk==$total_mk_terjadwal ? '' : "<div class='merah miring '>Terdapat MK yang belum dijadwalkan dengan Dosen Pengampunya. Silahkan klik <code>Tombol Next</code> $img_aksi[next] pada tiap MK!<br><a href='?manage_multiple_jadwal&id_kurikulum=$id_kurikulum' class='btn btn-primary'>Manage Multiple Jadwal</a></div>";
+$ket = $total_mk==$total_mk_terjadwal ? '' : "<div class='merah miring '>Terdapat MK yang belum dijadwalkan dengan Dosen Pengampunya. Silahkan klik <code>Tombol Next</code> $img_aksi[next] pada tiap MK!<br><a href='?manage_jadwal_dosen&id_kurikulum=$id_kurikulum' class='btn btn-primary'>Manage Jadwal Dosen</a></div>";
 
 if($total_sks==0){
   $persen_praktik=0;
@@ -300,7 +300,7 @@ $form_cetak_pdf = $total_mk==$total_mk_terjadwal
   <span class='btn btn-secondary'>$link_cek_all_sesi</span>
 </form>  
 ") 
-: div_alert('danger',"Masih ada MK yang belum Anda jadwalkan.<hr>$btn_cetak <a href='?manage_multiple_jadwal&id_kurikulum=$id_kurikulum' class='btn btn-primary'>Manage Multiple Jadwal</a>");
+: div_alert('danger',"Masih ada MK yang belum Anda jadwalkan.<hr>$btn_cetak <a href='?manage_jadwal_dosen&id_kurikulum=$id_kurikulum' class='btn btn-primary'>Manage Jadwal Dosen</a>");
 
 
 

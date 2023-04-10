@@ -1,4 +1,4 @@
-<?php $judul = "<h1>MANAGE MULTIPLE JADWAL</h1>"; ?>
+<?php $judul = "<h1>MANAGE JADWAL DOSEN</h1>"; ?>
 <style>
   .ids-kurikulum h2{margin-top:0; color: darkblue; }
   .kurikulum {}
@@ -44,7 +44,8 @@ $id_prodi = $d['id_prodi'];
 
 $back_to = "<div class=mb2>Back to : 
   <a href='?manage_kalender&id_kalender=$id_kalender' class=proper>Manage kalender</a> | 
-  <a href='?manage_kurikulum&id_kurikulum=$id_kurikulum' class=proper>Manage kurikulum</a>  
+  <a href='?manage_kurikulum&id_kurikulum=$id_kurikulum' class=proper>Manage kurikulum</a> | 
+  <a href='?cek_all_sesi&id_kurikulum=$id_kurikulum' class=proper>Cek All Sesi</a>  
 </div>
 ";
 
@@ -211,7 +212,7 @@ while ($d=mysqli_fetch_assoc($q)) {
           <th>No</th>
           <th>Kode</th>
           <th>Mata Kuliah</th>
-          <th>Jadwalkan dengan Dosen:</th>
+          <th>Dosen Koordinator</th>
           <th>Aksi</th>
           </thead>
         

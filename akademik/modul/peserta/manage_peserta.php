@@ -1,4 +1,4 @@
-<h1>Manage Peserta Kelas</h1>
+<h1>Manage Peserta Kelas Angkatan</h1>
 <?php
 if(isset($_POST['btn_buat_sesi_default'])){
   $id_dosen = $_POST['id_dosen'];

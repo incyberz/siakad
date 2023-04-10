@@ -1,9 +1,16 @@
 <?php
 
-$judul = "UPLOAD RPS (RENCANA PEMBELAJARAN SEMESTER)";
+$judul = "LIHAT MAHASISWA";
+die(nr());
 $sub_judul = "Silahkan Upload RPS dengan ekstensi PDF max 1MB.";
 if(isset($_POST['btn_upload'])){
 
+  echo "<pre>";
+  var_dump($_FILES);
+  echo "</pre>";
+  // $folder_uploads = "uploads/$d_dosen[folder_uploads]";
+  // if(!file_exists($folder_uploads)) mkdir($folder_uploads);
+  
   $err='';
   $files = $_FILES['file__'.$_POST['id_jadwal']];
   if($files['type']!='application/pdf'){
@@ -105,7 +112,6 @@ $s2 = "SELECT * FROM tb_kelas_peserta a
 JOIN tb_kurikulum_mk b on b.id=a.id_kurikulum_mk  
 JOIN tb_jadwal c on b.id=c.id_kurikulum_mk  
 WHERE c.id=$id_jadwal ";
-echo $s2;
 $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
 if(mysqli_num_rows($q2)==0){
   $kelas_peserta = '<span class="miring red">--NULL--</span>';

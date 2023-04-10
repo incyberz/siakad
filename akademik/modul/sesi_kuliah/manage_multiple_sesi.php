@@ -1,4 +1,4 @@
-<?php $judul = "<h1>MANAGE MULTIPLE JADWAL</h1>"; ?>
+<?php $judul = "<h1>MANAGE JADWAL DOSEN</h1>"; ?>
 <style>
   .ids-kurikulum h2{margin-top:0; color: darkblue; }
   .kurikulum {}

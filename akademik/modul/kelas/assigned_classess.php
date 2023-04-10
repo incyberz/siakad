@@ -8,7 +8,7 @@ FROM tb_kelas a
 JOIN tb_kelas_peserta b on a.kelas=b.kelas 
 JOIN tb_kurikulum_mk c on c.id=b.id_kurikulum_mk 
 JOIN tb_jadwal d on d.id_kurikulum_mk=c.id 
-JOIN tb_dosen e on e.id=b.id_dosen 
+JOIN tb_dosen e on e.id=d.id_dosen 
 where d.id=$id_jadwal";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 

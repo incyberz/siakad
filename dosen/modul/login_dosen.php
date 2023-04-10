@@ -1,7 +1,7 @@
 <?php
 $pesan = '<p>Masukan username dan password untuk mengakses fitur dosen di SIAKAD STMIK IKMI Cirebon.</p>';
 if(isset($_POST['btn_login_dosen'])){
-  $s = "SELECT 1 from tb_user WHERE username='$_POST[username]' and password=md5('$_POST[password]') and admin_level=2";
+  $s = "SELECT 1 from tb_user WHERE username='$_POST[username]' and password=md5('$_POST[password]') and role=2";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   if(mysqli_num_rows($q)==1){
     $_SESSION['siakad_dosen'] = $_POST['username'];

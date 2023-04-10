@@ -47,7 +47,7 @@ while ($d = mysqli_fetch_assoc($q)) {
   $tr_sty = $d['kelas']=='' ? '' : 'style="background:linear-gradient(#fee,#fcc)"'; 
   $btn_assign = $d['kelas']=='' 
   ? "<button class='btn btn-primary btn-sm btn_aksi' id='assign__$d[id]'>Assign</button>"
-  : "<button class='btn btn-danger btn-sm btn_aksi' id='move__$d[id]'>Move</button>";
+  : "<button class='btn btn-danger btn-sm btn_aksi' id='drop__$d[id]'>Drop</button>";
   $kelas = $d['kelas']==''?'<span class="abu miring">null</span>':$d['kelas'];
   $tr .= "<tr $tr_sty class='$bg_merah' id='tr__$d[id]'>
     <td>$i</td>
