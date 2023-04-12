@@ -1537,19 +1537,19 @@ INSERT INTO `tb_status_sesi` (`id`, `nama`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tb_tipe_sesi`
+-- Table structure for table `tb_mode_sesi`
 --
 
-CREATE TABLE `tb_tipe_sesi` (
+CREATE TABLE `tb_mode_sesi` (
   `id` tinyint(4) NOT NULL,
   `nama` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tb_tipe_sesi`
+-- Dumping data for table `tb_mode_sesi`
 --
 
-INSERT INTO `tb_tipe_sesi` (`id`, `nama`) VALUES
+INSERT INTO `tb_mode_sesi` (`id`, `nama`) VALUES
 (1, 'Teleconference'),
 (2, 'Hybrid-Zoom'),
 (3, 'Hybrid-Offline'),
@@ -1954,9 +1954,9 @@ ALTER TABLE `tb_status_sesi`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `tb_tipe_sesi`
+-- Indexes for table `tb_mode_sesi`
 --
-ALTER TABLE `tb_tipe_sesi`
+ALTER TABLE `tb_mode_sesi`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -2142,7 +2142,7 @@ ALTER TABLE `tb_user`
 ALTER TABLE `tb_assign_ruang`
   ADD CONSTRAINT `tb_assign_ruang_ibfk_1` FOREIGN KEY (`id_sesi_kuliah`) REFERENCES `tb_sesi_kuliah` (`id`),
   ADD CONSTRAINT `tb_assign_ruang_ibfk_2` FOREIGN KEY (`id_ruang`) REFERENCES `tb_ruang` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `tb_assign_ruang_ibfk_3` FOREIGN KEY (`id_tipe_sesi`) REFERENCES `tb_tipe_sesi` (`id`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `tb_assign_ruang_ibfk_3` FOREIGN KEY (`id_tipe_sesi`) REFERENCES `tb_mode_sesi` (`id`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `tb_dosen`

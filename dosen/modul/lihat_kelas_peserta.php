@@ -122,7 +122,7 @@ if(mysqli_num_rows($q2)==0){
       </div>";
       $jumlah_mhs++;
     }
-    $laporkan = "<a href='?lapor_kesalahan&hal=List Mahasiswa masih kosong.&kelas=$d2[kelas]' class='btn btn-primary'>Laporkan</a>";
+    $laporkan = "<a href='?lapor_kesalahan&fitur=manage_peserta&hal=List Mahasiswa masih kosong.&kelas=$d2[kelas]' class='btn btn-primary'>Laporkan</a>";
     $list_mhs = $list_mhs=='' ? div_alert('danger','List Mahasiswa masih kosong. '.$laporkan) : "<div class=flexy>$list_mhs</div>";
     $kelas_peserta .= $list_mhs;
 

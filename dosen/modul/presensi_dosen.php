@@ -128,7 +128,7 @@ if($d['jumlah_ruang']){
 
   from tb_assign_ruang a 
   join tb_ruang b on b.id=a.id_ruang 
-  join tb_tipe_sesi c on c.id=a.id_tipe_sesi 
+  join tb_mode_sesi c on c.id=a.id_tipe_sesi 
   where a.id_sesi_kuliah=$d[id_sesi_kuliah]";
   $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
   $list_ruang = '__';

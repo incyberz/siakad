@@ -41,7 +41,8 @@ $kelas = isset($_GET['kelas']) ? $_GET['kelas'] : '';
 
 switch ($fitur) {
   case 'manage_kelas': $pair_keys="id_jadwal=$id_jadwal"; break;
-  default: die(erid('pair_keys'));
+  case 'manage_peserta': $pair_keys="kelas=$kelas"; break;
+  default: die(erid('fitur::pair_keys'));
 }
 
 $link = "?$fitur&$pair_keys";

@@ -1,7 +1,7 @@
 <?php
 session_start();
 // session_destroy(); exit;
-$dm=0;
+$dm=1;
 include "../config.php";
 include "../../insho_styles.php";
 $folder_rps = "../uploads/rps";

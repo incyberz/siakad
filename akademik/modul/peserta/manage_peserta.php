@@ -54,7 +54,7 @@ $s = "";
         <div>
           <input id=keyword class="form-control">
         </div>
-        <div>
+        <div class=debug>
           <input id=punya_kelas type=checkbox> 
           <label for="punya_kelas">Sudah Punya Kelas</label>
         </div>

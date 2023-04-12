@@ -43,14 +43,14 @@ a.sesi_uas,
 a.jumlah_sesi,
 a.tanggal_jadwal,   
 b.id as id_kurikulum_mk,
-c.nama as nama_mk,
+c.nama as mata_kuliah,
 c.bobot_teori,
 c.bobot_praktik,
 d.nama as dosen_koordinator,  
-e.nomor as nomor_semester,   
+e.nomor as untuk_semester,   
 e.awal_kuliah_uts as awal_perkuliahan,   
 e.id_kalender,
-g.nama as nama_prodi, 
+g.nama as program_studi, 
 h.jenjang,
 h.angkatan 
 
@@ -68,16 +68,16 @@ WHERE a.id=$id_jadwal";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 if(mysqli_num_rows($q)==0) die('Data Jadwal tidak ditemukan.');
 $d = mysqli_fetch_assoc($q);
-$id_kurikulum_mk = $d['id_kurikulum_mk'];
-$nomor_semester = $d['nomor_semester'];
-$awal_perkuliahan = $d['awal_perkuliahan'];
-$jumlah_sesi = $d['jumlah_sesi'];
-$sesi_uts = $d['sesi_uts'];
-$sesi_uas = $d['sesi_uas'];
-$nama_mk = $d['nama_mk'];
-$bobot = $d['bobot_teori']+$d['bobot_praktik'];
+// $id_kurikulum_mk = $d['id_kurikulum_mk'];
+// $untuk_semester = $d['untuk_semester'];
+// $awal_perkuliahan = $d['awal_perkuliahan'];
+// $jumlah_sesi = $d['jumlah_sesi'];
+// $sesi_uts = $d['sesi_uts'];
+// $sesi_uas = $d['sesi_uas'];
+// $mata_kuliah = $d['mata_kuliah'];
+// $bobot = $d['bobot_teori']+$d['bobot_praktik'];
 
-$sub_judul .= "<div class='miring kecil mb2'>Misal: <code>RPS-$d[nama_mk]-$d[jenjang]-$d[nama_prodi]-$d[angkatan].pdf</code></div>";
+$sub_judul .= "<div class='miring kecil mb2'>Misal: <code>RPS-$d[mata_kuliah]-$d[jenjang]-$d[program_studi]-$d[angkatan].pdf</code></div>";
 
 
 $koloms = [];
@@ -105,7 +105,7 @@ $s2 = "SELECT * FROM tb_kelas_peserta a
 JOIN tb_kurikulum_mk b on b.id=a.id_kurikulum_mk  
 JOIN tb_jadwal c on b.id=c.id_kurikulum_mk  
 WHERE c.id=$id_jadwal ";
-echo $s2;
+// echo $s2;
 $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
 if(mysqli_num_rows($q2)==0){
   $kelas_peserta = '<span class="miring red">--NULL--</span>';

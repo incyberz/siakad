@@ -42,33 +42,33 @@ while ($d=mysqli_fetch_assoc($q)) {
 
   $set_judul_sesi_enab = "<a href='?set_judul_sesi&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_sesi mb1 btn-sm btn-block'>Set Judul Sesi</a>";
   $upload_rps_enab = "<a href='?upload_rps&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_rps mb1 btn-sm btn-block'>Upload RPS</a>";
-  $upload_soal_uts_enab = "<a href='?upload_soal_uts&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_soal_uts mb1 btn-sm btn-block'>Upload Soal UTS</a>";
-  $upload_nilai_uts_enab = "<a href='?upload_nilai_uts&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_nilai_uts mb1 btn-sm btn-block'>Upload Nilai UTS</a>";
-  $upload_soal_uas_enab = "<a href='?upload_soal_uas&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_soal_uas mb1 btn-sm btn-block'>Upload Soal UAS</a>";
-  $upload_nilai_uas_enab = "<a href='?upload_nilai_uas&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_nilai_uas mb1 btn-sm btn-block'>Upload Nilai UAS</a>";
+  $input_soal_uts_enab = "<a href='?input_soal_uts&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_soal_uts mb1 btn-sm btn-block'>Input Soal UTS</a>";
+  $input_nilai_uts_enab = "<a href='?input_nilai_uts&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_nilai_uts mb1 btn-sm btn-block'>Input Nilai UTS</a>";
+  $input_soal_uas_enab = "<a href='?input_soal_uas&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_soal_uas mb1 btn-sm btn-block'>Input Soal UAS</a>";
+  $input_nilai_uas_enab = "<a href='?input_nilai_uas&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_nilai_uas mb1 btn-sm btn-block'>Input Nilai UAS</a>";
 
   $set_judul_sesi_dis = "<button class='btn btn-secondary btn-sm mb1 btn-block' onclick='alert(\"Silahkan penuhi dahulu persyaratan sebelumnya!\")'>Set Judul Sesi</button>";
   $upload_rps_dis = "<button class='btn btn-secondary btn-sm mb1 btn-block' onclick='alert(\"Silahkan penuhi dahulu persyaratan sebelumnya!\")'>Upload RPS</button>";
-  $upload_soal_uts_dis = "<button class='btn btn-secondary btn-sm mb1 btn-block' onclick='alert(\"Silahkan penuhi dahulu persyaratan sebelumnya!\")'>Upload Soal UTS</button>";
-  $upload_nilai_uts_dis = "<button class='btn btn-secondary btn-sm mb1 btn-block' onclick='alert(\"Silahkan penuhi dahulu persyaratan sebelumnya!\")'>Upload Nilai UTS</button>";
-  $upload_soal_uas_dis = "<button class='btn btn-secondary btn-sm mb1 btn-block' onclick='alert(\"Silahkan penuhi dahulu persyaratan sebelumnya!\")'>Upload Soal UAS</button>";
-  $upload_nilai_uas_dis = "<button class='btn btn-secondary btn-sm mb1 btn-block' onclick='alert(\"Silahkan penuhi dahulu persyaratan sebelumnya!\")'>Upload Nilai UAS</button>";
+  $input_soal_uts_dis = "<button class='btn btn-secondary btn-sm mb1 btn-block' onclick='alert(\"Silahkan penuhi dahulu persyaratan sebelumnya!\")'>Input Soal UTS</button>";
+  $input_nilai_uts_dis = "<button class='btn btn-secondary btn-sm mb1 btn-block' onclick='alert(\"Silahkan penuhi dahulu persyaratan sebelumnya!\")'>Input Nilai UTS</button>";
+  $input_soal_uas_dis = "<button class='btn btn-secondary btn-sm mb1 btn-block' onclick='alert(\"Silahkan penuhi dahulu persyaratan sebelumnya!\")'>Input Soal UAS</button>";
+  $input_nilai_uas_dis = "<button class='btn btn-secondary btn-sm mb1 btn-block' onclick='alert(\"Silahkan penuhi dahulu persyaratan sebelumnya!\")'>Input Nilai UAS</button>";
 
   $link_set_judul_sesi = $set_judul_sesi_enab;
   $link_upload_rps = $danger_sesi=='success' ? $upload_rps_enab : $upload_rps_dis;
-  $link_upload_soal_uts = $danger_rps=='success' ? $upload_soal_uts_enab : $upload_soal_uts_dis;
-  $link_upload_nilai_uts = $danger_soal_uts=='success' ? $upload_nilai_uts_enab : $upload_nilai_uts_dis;
-  $link_upload_soal_uas = $danger_nilai_uts=='success' ? $upload_soal_uas_enab : $upload_soal_uas_dis;
-  $link_upload_nilai_uas = $danger_soal_uas=='success' ? $upload_nilai_uas_enab : $upload_nilai_uas_dis;
+  $link_input_soal_uts = $danger_rps=='success' ? $input_soal_uts_enab : $input_soal_uts_dis;
+  $link_input_nilai_uts = $danger_soal_uts=='success' ? $input_nilai_uts_enab : $input_nilai_uts_dis;
+  $link_input_soal_uas = $danger_nilai_uts=='success' ? $input_soal_uas_enab : $input_soal_uas_dis;
+  $link_input_nilai_uas = $danger_soal_uas=='success' ? $input_nilai_uas_enab : $input_nilai_uas_dis;
 
 
   $links = $d['jumlah_kelas_peserta'] ? "
     $link_set_judul_sesi
     $link_upload_rps
-    $link_upload_soal_uts
-    $link_upload_nilai_uts
-    $link_upload_soal_uas
-    $link_upload_nilai_uas
+    $link_input_soal_uts
+    $link_input_nilai_uts
+    $link_input_soal_uas
+    $link_input_nilai_uas
   " : '-';
 
   $kelas_peserta = $d['jumlah_kelas_peserta'] 
