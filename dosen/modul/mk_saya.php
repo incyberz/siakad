@@ -42,10 +42,10 @@ while ($d=mysqli_fetch_assoc($q)) {
 
   $set_judul_sesi_enab = "<a href='?set_judul_sesi&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_sesi mb1 btn-sm btn-block'>Set Judul Sesi</a>";
   $upload_rps_enab = "<a href='?upload_rps&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_rps mb1 btn-sm btn-block'>Upload RPS</a>";
-  $input_soal_uts_enab = "<a href='?input_soal_uts&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_soal_uts mb1 btn-sm btn-block'>Input Soal UTS</a>";
+  $input_soal_uts_enab = "<a href='?input_soal&id_jadwal=$d[id_jadwal]&id_tipe_sesi=8' class='btn btn-$danger_soal_uts mb1 btn-sm btn-block'>Input Soal UTS</a>";
   $input_nilai_uts_enab = "<a href='?input_nilai_uts&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_nilai_uts mb1 btn-sm btn-block'>Input Nilai UTS</a>";
   $input_soal_uas_enab = "<a href='?input_soal_uas&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_soal_uas mb1 btn-sm btn-block'>Input Soal UAS</a>";
-  $input_nilai_uas_enab = "<a href='?input_nilai_uas&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_nilai_uas mb1 btn-sm btn-block'>Input Nilai UAS</a>";
+  $input_nilai_uas_enab = "<a href='?input_soal&id_jadwal=$d[id_jadwal]&id_tipe_sesi=16' class='btn btn-$danger_nilai_uas mb1 btn-sm btn-block'>Input Nilai UAS</a>";
 
   $set_judul_sesi_dis = "<button class='btn btn-secondary btn-sm mb1 btn-block' onclick='alert(\"Silahkan penuhi dahulu persyaratan sebelumnya!\")'>Set Judul Sesi</button>";
   $upload_rps_dis = "<button class='btn btn-secondary btn-sm mb1 btn-block' onclick='alert(\"Silahkan penuhi dahulu persyaratan sebelumnya!\")'>Upload RPS</button>";

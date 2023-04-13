@@ -1,4 +1,45 @@
 <?php
+if(isset($_POST['btn_upload']) || isset($_POST['btn_hapus'])){
+
+  echo '<pre>';
+  var_dump($_POST);
+  var_dump($_FILES);
+  echo '</pre>';
+
+  $id_tipe_sesi = $_POST['id_tipe_sesi'];
+  $id_jadwal = $_POST['id_jadwal'];
+  $no_soal = $_POST['no_soal'];
+
+  $folder_jadwal = "$folder_media_soal/$id_jadwal";
+  $folder_tipe_sesi = "$folder_media_soal/$id_jadwal/$id_tipe_sesi";
+
+  if(!file_exists($folder_jadwal)) mkdir($folder_jadwal);
+  if(!file_exists($folder_tipe_sesi)) mkdir($folder_tipe_sesi);
+
+  
+  $err='';
+  $filez = $_FILES['file'.$no_soal];
+  if(!($filez['type']=='image/jpeg' || $filez['type']=='image/png')){
+    $err = 'Ekstensi harus JPG, JPEG,  atau PNG';
+    // echo "ekt";
+  }elseif($filez['size']<10000 || $filez['size']>204800){
+    $err = 'Ukuran file harus antara 10 s.d 200kb (untuk menjaga performa Server CBT)';
+  }else{
+    if(!move_uploaded_file($filez['tmp_name'],"$folder_tipe_sesi/$_POST[no_soal].jpg")){
+      $err = 'Server error. Gagal memindahkan file upload';
+    }
+  }
+
+  $back_to = "<hr><a href='?input_soal&id_jadwal=$id_jadwal&id_tipe_sesi=$id_tipe_sesi' class='btn btn-primary'>Kembali ke Input Soal</a>";
+  $alert = $err=='' ? 'success' : 'danger';
+  $pesan = $err=='' ? 'Upload Media Soal sukses.' : $err;
+
+  echo "<div class='alert alert-$alert'>$pesan$back_to</div>";
+  exit;
+}
+
+
+
 $id_jadwal = isset($_GET['id_jadwal']) ? $_GET['id_jadwal'] : die(erid('id_jadwal'));
 $id_tipe_sesi = isset($_GET['id_tipe_sesi']) ? $_GET['id_tipe_sesi'] : die(erid('id_tipe_sesi'));
 if($id_jadwal=='') die(erid('id_jadwal::empty'));
@@ -9,6 +50,7 @@ $uts = $id_tipe_sesi==8 ? 'UTS' : 'HARIAN';
 $uts = $id_tipe_sesi==16 ? 'UAS' : $uts;
 $judul = 'INPUT SOAL '.$uts;
 $sub_judul = "Silahkan input $jumlah_soal soal untuk SOAL $uts";
+include 'input_soal_styles.php';
 
 
 # ====================================================
@@ -62,7 +104,6 @@ $tr_soal = '';
 $nav_soal = '';
 for ($i=1; $i <= $jumlah_soal ; $i++) { 
   if(in_array($i,$no_soals)){
-    // ektract from array
     // find currentIndex
     $x = array_search($i,$no_soals);
 
@@ -103,7 +144,8 @@ for ($i=1; $i <= $jumlah_soal ; $i++) {
     ";
   }
 
-  $gambar_soal = ''; //zzz
+  $path_gambar = "$folder_media_soal/$id_jadwal/$id_tipe_sesi/$i.jpg";
+  $gambar_soal = file_exists($path_gambar) ? "<div class='miring'>Perhatikan gambar berikut!</div><img class='img_soal' src='$path_gambar' />" : '';
 
   $tmp = "$soal$opsi_a$opsi_b$opsi_c$opsi_d$kj";
   $none = 'style="display:none"';
@@ -114,18 +156,18 @@ for ($i=1; $i <= $jumlah_soal ; $i++) {
       <div class='debug' id=tmp__$i>$tmp</div>
       <div class='form-group'>
         <label>Soal No: $i <span class=debug id='id_soal__$i'>$id_soal</span> </label>
+        $gambar_soal
         <textarea id='soal__$i' rows='5' class='form-control mb-2 ketikan'>$soal</textarea>
         <div class=wadah>
-          $gambar_soal
           <div class='kecil toggle_upload' id=toggle__$i><button class='btn btn-secondary btn-sm'>Upload Gambar</button></div>
           <form method=post enctype='multipart/form-data' id='form_upload__$i' class=hideit>
             <p class='kecil miring mt-2'>Untuk gambar soal sifatnya opsional. Silahkan upload gambar JPG antara 10 s.d 200kB !</p>
+            <input class=debug name=id_tipe_sesi value=$id_tipe_sesi>
             <input class=debug name=id_jadwal value=$id_jadwal>
             <input class=debug name=no_soal value=$i>
             <div class=blok_upload>
-              <div><input type=file class=form-control name=file$i required></div>
-              <div><button class='btn btn-info btn-block btn-sm' name=btn_upload>Upload</button></div>
-              <div><button class='btn btn-danger btn-block btn-sm' name=btn_hapus>Hapus</button></div>
+              <div><input type=file class=form-control name=file$i required accept='.jpg,.jpeg,.png'></div>
+              <div><button class='btn btn-info btn-block' name=btn_upload>Upload</button></div>
             </div>
           </form>
         </div>
@@ -143,54 +185,6 @@ for ($i=1; $i <= $jumlah_soal ; $i++) {
   ";
 }
 
-?>
-<style>
-  .blok_opsi{
-    display:grid;
-    grid-template-columns: 20px auto 80px;
-    grid-gap: 10px;
-    /* margin: 10px 0; */
-    border-radius: 10px;
-    padding: 5px 10px;
-    transition: .2s;
-  }
-  .blok_opsi:hover{
-    border: solid 1px #00f;
-    background: #fcf
-  }
-  .nav_soal{
-    position:sticky;
-    top: 30px;
-    background:white;
-    padding: 5px;
-    margin-bottom: 10px;
-  }
-  .nav_soal_item{
-    display: inline-block;
-    width: 25px;
-    /* background:#ccf; */
-    font-size: small;
-    text-align:center;
-    cursor:pointer;
-    border-radius: 3px;
-  }
-  .nav_soal_item:hover{
-    background: #fcf;
-  }
-  .blok_upload{
-    display:grid;
-    grid-template-columns: auto 70px 70px;
-    grid-gap: 7px;
-  }
-  .footer_soal{
-    display:grid;
-    grid-template-columns: auto 80px 80px;
-    grid-gap: 7px;
-    border-top: solid 1px #ccc;
-    padding-top: 10px;
-  }
-</style>
-<?php
 echo "
 <h3>$judul</h3>
 <div class=wadah>
@@ -200,6 +194,19 @@ echo "
 </div>
 ";
 ?>
+<div class="wadah">
+  <h4>Pengesahan Soal</h4>
+  <form method=post>
+    <div class="alert alert-success">
+      Last approve: $tanggal_approve 
+    </div>
+    <div class="alert alert-danger">
+      Masih ada soal yang belum lengkap (berlatar merah). Silahkan lengkapi terlebih dahulu!
+    </div>
+    <p>Saya menyatakan bahwa semua soal-soal diatas sudah lengkap dan benar serta siap untuk diujikan.</p>
+    <button class='btn btn-primary btn-block' disabled name=btn_approve>Approve Soal</button>
+  </form>
+</div>
 
 
 <script>
@@ -299,25 +306,18 @@ echo "
           }
         })
 
-      }else if(aksi=='hapus'){
+      }else if(aksi=='hapus' && id_soal!='new'){
 
-        let y = prompt('Yakin untuk menghapus soal ini?')
+        let y = confirm('Yakin untuk menghapus soal ini dan seluruh medianya?\n\nPerhatian! Tidak ada fitur rollback (undo-delete).');
+        if(!y) return;
+
         // all simpan-validation passed
-        let link_ajax = `ajax_dosen/ajax_simpan_soal.php?id_soal=${id_soal}&no_soal=${no_soal}&soal=${soal}&opsi_a=${opsi_a}&opsi_b=${opsi_b}&opsi_c=${opsi_c}&opsi_d=${opsi_d}&kj=${kj}&id_tipe_sesi=${id_tipe_sesi}&id_jadwal=${id_jadwal}`;
+        let link_ajax = `ajax_dosen/ajax_hapus_soal.php?id_soal=${id_soal}&no_soal=${no_soal}&id_jadwal=${id_jadwal}&id_tipe_sesi=${id_tipe_sesi}`;
         $.ajax({
           url:link_ajax,
           success:function(a){
             if(a.trim()=='sukses'){
               location.reload();
-              // $('#'+tid).fadeOut();
-              // $('#tr__'+no_soal).removeClass('gradasi-merah');
-              // $('#tr__'+no_soal).addClass('gradasi-hijau');
-              // $('#nav_soal_item__'+no_soal).removeClass('gradasi-merah');
-              // $('#nav_soal_item__'+no_soal).addClass('gradasi-hijau');
-              // $('#last_update__'+no_soal).text('saat ini');
-              // $('#simpan__'+no_soal).fadeOut();
-              // $('#hapus__'+no_soal).fadeIn();
-              // $('.ketikan__'+no_soal).prop('disabled',true);
             }else{
               alert(a)
             }
