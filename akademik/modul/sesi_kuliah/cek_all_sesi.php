@@ -121,9 +121,20 @@ while ($d=mysqli_fetch_assoc($q)) {
   a.nama as nama_mk,
   b.id as id_kurikulum_mk, 
   (SELECT id FROM tb_jadwal WHERE id_kurikulum_mk=b.id) as id_jadwal,  
+  
   (SELECT count(1) FROM tb_sesi_kuliah c 
   JOIN tb_jadwal d on c.id_jadwal=d.id  
-  WHERE d.id_kurikulum_mk=b.id) as jumlah_sesi  
+  WHERE d.id_kurikulum_mk=b.id) as jumlah_sesi,  
+
+  (SELECT count(1) FROM tb_kelas_peserta c 
+  JOIN tb_kurikulum_mk d on c.id_kurikulum_mk=d.id  
+  JOIN tb_mk e on d.id_mk=e.id  
+  WHERE e.id=a.id) as jumlah_kelas,  
+
+  (SELECT count(1) FROM tb_assign_ruang c 
+  JOIN tb_sesi_kuliah d on d.id=c.id_sesi_kuliah
+  JOIN tb_jadwal e on e.id=d.id_jadwal
+  WHERE e.id_kurikulum_mk=b.id and d.pertemuan_ke=1) as jumlah_ruang_p1  
 
   FROM tb_mk a 
   JOIN tb_kurikulum_mk b ON a.id=b.id_mk 
@@ -143,24 +154,28 @@ while ($d=mysqli_fetch_assoc($q)) {
     $j++;
     $total_mk++;
 
-    $img_aksi_next = $d2['jumlah_sesi'] ? $img_aksi['check'] : $img_aksi['next'] ;
-    $red_bold = $d2['jumlah_sesi'] ? '' : 'red bold' ;
-    $link_manage_sesi = "<span><a href='?manage_sesi&id_jadwal=$d2[id_jadwal]'>$img_aksi_next</a></span>";
+    $red_bold_sesi = $d2['jumlah_sesi'] ? '' : 'red bold';
+    $img_next_of_sesi = $d2['jumlah_sesi'] ? $img_aksi['check'] : $img_aksi['next'] ;
+    $link_manage_sesi = "<span><a href='?manage_sesi&id_jadwal=$d2[id_jadwal]'>$img_next_of_sesi</a></span>";
+    
+    $red_bold_kelas = $d2['jumlah_kelas'] ? '' : 'red bold';
+    $img_next_of_kelas = $d2['jumlah_kelas'] ? $img_aksi['check'] : $img_aksi['next'] ;
+    $link_manage_kelas = "<span><a href='?manage_kelas&id_jadwal=$d2[id_jadwal]'>$img_next_of_kelas</a></span>";
+    
+    $red_bold_ruang = $d2['jumlah_ruang_p1'] ? '' : 'red bold';
+    $img_next_of_ruang = $d2['jumlah_ruang_p1'] ? $img_aksi['check'] : $img_aksi['next'] ;
+    $link_manage_ruang = "<span><a href='?manage_sesi&id_jadwal=$d2[id_jadwal]'>$img_next_of_ruang</a></span>";
 
+    $red_bold = ($red_bold_sesi==''&&$red_bold_kelas==''&&$red_bold_ruang=='') ? '' : 'red bold';
 
     $tr.="
     <tr id='tr__$d2[id_mk]'>
       <td>$j</td>
       <td class='$red_bold'>$d2[kode_mk]</td>
       <td class='$red_bold'>$d2[nama_mk]</td>
-      <td class='$red_bold'>$d2[jumlah_sesi] sesi</td>
-      <td>
-        <table class=tb_aksi>
-          <tr>
-            <td>$link_manage_sesi</td>
-          </tr>
-        </table>
-      </td> 
+      <td class='$red_bold_sesi'>$d2[jumlah_sesi] $link_manage_sesi</td>
+      <td class='$red_bold_kelas'>$d2[jumlah_kelas] $link_manage_kelas</td>
+      <td class='$red_bold_ruang'>$d2[jumlah_ruang_p1] $link_manage_ruang</td>
     </tr>    
     ";
   } //end while list MK
@@ -192,8 +207,9 @@ while ($d=mysqli_fetch_assoc($q)) {
           <th>No</th>
           <th>Kode</th>
           <th>Mata Kuliah</th>
-          <th>Jumlah Sesi</th>
-          <th colspan=3 style='text-align:center'>Manage Sesi</th>
+          <th>Sesi</th>
+          <th>Kelas</th>
+          <th>Ruang</th>
         </thead>
         
         $tr

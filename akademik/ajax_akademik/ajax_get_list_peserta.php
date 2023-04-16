@@ -4,17 +4,25 @@ include 'session_security.php';
 
 $keyword = isset($_GET['keyword']) ? $_GET['keyword'] : die(erid('keyword'));
 $kelas = isset($_GET['kelas']) ? $_GET['kelas'] : die(erid('kelas'));
+$tahun_ajar = isset($_GET['tahun_ajar']) ? $_GET['tahun_ajar'] : die(erid('tahun_ajar'));
 $punya_kelas = isset($_GET['punya_kelas']) ? $_GET['punya_kelas'] : die(erid('punya_kelas'));
+$punya_kelas = 1;
 
 # ===================================================
 # LIST JADWAL
 # ===================================================
 $limit = 50;
 $s = "SELECT 
-a.id,
+a.id as id_mhs,
 a.nim,
 a.nama as nama_mhs,
-(SELECT kelas from tb_kelas_angkatan where id_mhs=a.id) as kelas  
+(
+  SELECT b.kelas from tb_kelas_angkatan b 
+  JOIN tb_kelas_angkatan_detail c ON b.id=c.id_kelas_angkatan 
+  where c.id_mhs=a.id and b.tahun_ajar=$tahun_ajar) as kelas,  
+(
+  SELECT id from tb_kelas_angkatan_detail b 
+  where b.id_mhs=a.id) as id_kelas_angkatan_detail  
 
 FROM tb_mhs a 
 WHERE (a.nim like '%$keyword%' OR a.nama like '%$keyword%') 
@@ -27,6 +35,7 @@ $jumlah_row = mysqli_num_rows($q);
 $s .= " LIMIT $limit 
 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+echo "<span class=debug>$s</span>";
 
 $thead = '
   <thead>
@@ -40,20 +49,27 @@ $thead = '
 $tr = '';
 $i=0;
 while ($d = mysqli_fetch_assoc($q)) {
-  if($d['kelas']==$kelas) continue;
+  // if($d['kelas']==$kelas) continue;
   if(!$punya_kelas and $d['kelas']!='') continue;
   $i++;
-  $bg_merah = $d['kelas']=='' ? '' : 'bg-merah'; 
-  $tr_sty = $d['kelas']=='' ? '' : 'style="background:linear-gradient(#fee,#fcc)"'; 
+  // $bg_merah = $d['kelas']=='' ? '' : 'bg-merah'; 
+  $tr_sty = ($d['kelas']=='') ? '' : 'style="background:linear-gradient(#fee,#fcc)"'; 
+  $tr_sty = ($d['kelas']==$kelas) ? 'style="background:linear-gradient(#efe,#cfc)"' : $tr_sty; 
+
+  $id_kelas_angkatan_detail = $d['id_kelas_angkatan_detail']==''? 'new' : $d['id_kelas_angkatan_detail'];
+
   $btn_assign = $d['kelas']=='' 
-  ? "<button class='btn btn-primary btn-sm btn_aksi' id='assign__$d[id]'>Assign</button>"
-  : "<button class='btn btn-danger btn-sm btn_aksi' id='drop__$d[id]'>Drop</button>";
+  ? "<button class='btn btn-primary btn-sm btn_aksi' id='assign__$d[id_mhs]__$id_kelas_angkatan_detail'>Assign</button>"
+  : "<button class='btn btn-danger btn-sm btn_aksi' id='drop__$d[id_mhs]__$id_kelas_angkatan_detail'>Drop</button>";
+
+  $btn_assign = $d['kelas']==$kelas ? '' : $btn_assign;
+
   $kelas = $d['kelas']==''?'<span class="abu miring">null</span>':$d['kelas'];
-  $tr .= "<tr $tr_sty class='$bg_merah' id='tr__$d[id]'>
+  $tr .= "<tr $tr_sty class='bg_merah' id='tr__$d[id_mhs]'>
     <td>$i</td>
     <td>$d[nim]</td>
     <td>$d[nama_mhs]</td>
-    <td id=kelas_asal__$d[id]>$kelas</td>
+    <td id=kelas_asal__$d[id_mhs]>$kelas</td>
     <td>
       $btn_assign
     </td>

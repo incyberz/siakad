@@ -5,14 +5,14 @@ if(isset($_POST['btn_assign_kelas_peserta'])){
   $values = '';
   foreach ($_POST as $key => $value) {
     if($key=='id_kurikulum_mk' || $key=='id_dosen' || $key=='btn_assign_kelas_peserta') continue;
-    $values .= ",('$_POST[id_kurikulum_mk]','$_POST[id_dosen]','$key')";
+    $values .= ",('$_POST[id_kurikulum_mk]','$key')";
 
   }
   if($values!=''){
     $values = "__$values";
     $values = str_replace('__,','',$values);
 
-    $s = "INSERT INTO tb_kelas_peserta (id_kurikulum_mk,id_dosen,kelas) VALUES $values";
+    $s = "INSERT INTO tb_kelas_peserta (id_kurikulum_mk,id_kelas_angkatan) VALUES $values";
     // die($s);
     $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
@@ -89,10 +89,11 @@ include 'include/option_prodi.php';
 <hr>
 <div class="row">
   <div class="col-lg-6">
+    <span class='proper subsistem'>ajax get ceklis kelas</span>
     <p>Silahkan pilih kelas mana saja yang akan menjadi kelas peserta!</p>
     <style>.blok_filter{display:flex; flex-wrap:wrap;} .blok_filter div{margin-right:10px}</style>
     <div class="blok_filter mb2">
-      <div>Angkatan</div>
+      <div>Tahun Ajar</div>
       <div><select class='form-control filter' id="angkatan"><?=$option_angkatan?></select></div>
       <div>Prodi</div>
       <div><select class='form-control filter' id="id_prodi"><?=$option_prodi?></select></div>

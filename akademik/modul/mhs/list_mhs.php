@@ -1,23 +1,16 @@
-<?php 
-$id_kelas_angkatan = isset($_GET['id_kelas_angkatan']) ? $_GET['id_kelas_angkatan'] : die(erid('id_kelas_angkatan'));
-?>
-<div class=subsistem>List Peserta: <?=$id_kelas_angkatan?></div>
+<h3>List Mahasiswa Zzz</h3>
 <?php
 
 $s = "SELECT 
-b.id as id_mhs,
-b.nim,
-b.nama as nama_mhs,
-c.kelas,
-a.id as id_kelas_angkatan_detail 
+a.id,
+a.nim,
+a.nama as nama_mhs,
+a.kelas 
 
-FROM tb_kelas_angkatan_detail a 
-JOIN tb_mhs b on b.id=a.id_mhs 
-JOIN tb_kelas_angkatan c on a.id_kelas_angkatan=c.id  
-WHERE c.id='$id_kelas_angkatan'
-ORDER BY b.nama    
+FROM tb_mhs a 
+WHERE 1 
+ORDER BY a.nama    
 ";
-echo "<span class=debug>$s</span>";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $jumlah_row = mysqli_num_rows($q);
 
@@ -34,7 +27,7 @@ $tr = '';
 $i=0;
 while ($d = mysqli_fetch_assoc($q)) {
   $i++;
-  $btn_drop = "<button class='btn btn-danger btn-sm btn_aksi' id='drop__$d[id_mhs]__$d[id_kelas_angkatan_detail]'>Drop</button>";
+  $btn_presensi = "<button class='btn btn-info btn-sm btn_aksi proper' id='presensi__$d[id]'>presensi</button>";
   $kelas = $d['kelas']==''?'<span class="abu miring">-- null --</span>':$d['kelas'];
   $tr .= "<tr id=tr2__$d[id]>
     <td>$i</td>
@@ -42,7 +35,7 @@ while ($d = mysqli_fetch_assoc($q)) {
     <td>$d[nama_mhs]</td>
     <td>$kelas</td>
     <td>
-      $btn_drop
+      $btn_presensi
     </td>
   </tr>";
 }

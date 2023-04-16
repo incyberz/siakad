@@ -389,7 +389,7 @@ $back_to
         if(tabel=='semester'){
           // kolom_acuan = 'id';
           // acuan = id;
-          // link_ajax = `ajax_global/ajax_global_delete.php?tabel=${tabel}&kolom_acuan=${kolom_acuan}&acuan=${acuan}&`;
+          // link_ajax = `../ajax_global/ajax_global_delete.php?tabel=tb_${tabel}&kolom_acuan=${kolom_acuan}&acuan=${acuan}&`;
         }else if(tabel=='mk'){
           let tabel_semester = 'semester';
           kolom_acuan = 'id_semester';
@@ -398,9 +398,9 @@ $back_to
           kolom_acuan2 = 'id_mk';
           acuan2 = id; //id_mk
           if(aksi=='hapus'){
-            link_ajax = `ajax_global/ajax_global_drop_and_delete.php?tabel=${tabel}&kolom_acuan=${kolom_acuan}&acuan=${acuan}&tabel2=${tabel2}&kolom_acuan2=${kolom_acuan2}&acuan2=${acuan2}&`;
+            link_ajax = `../ajax_global/ajax_global_drop_and_delete.php?tabel=tb_${tabel}&kolom_acuan=${kolom_acuan}&acuan=${acuan}&tabel2=${tabel2}&kolom_acuan2=${kolom_acuan2}&acuan2=${acuan2}&`;
           }else if(aksi=='drop'){
-            link_ajax = `ajax_global/ajax_global_drop.php?tabel=${tabel_semester}&kolom_acuan=${kolom_acuan}&acuan=${acuan}&tabel2=${tabel2}&kolom_acuan2=${kolom_acuan2}&acuan2=${acuan2}&`;
+            link_ajax = `../ajax_global/ajax_global_drop.php?tabel=tb_${tabel_semester}&kolom_acuan=${kolom_acuan}&acuan=${acuan}&tabel2=${tabel2}&kolom_acuan2=${kolom_acuan2}&acuan2=${acuan2}&`;
           }
         }else{
           alert('Belum ada ajax target untuk aksi tabel: '+tabel);
@@ -507,7 +507,7 @@ $back_to
       }
 
       let kolom_acuan = 'id';
-      let link_ajax = `ajax_global/ajax_global_update.php?tabel=${tabel}&kolom_target=${kolom}&isi_baru=${isi_baru}&acuan=${acuan}&kolom_acuan=${kolom_acuan}`;
+      let link_ajax = `../ajax_global/ajax_global_update.php?tabel=tb_${tabel}&kolom_target=${kolom}&isi_baru=${isi_baru}&acuan=${acuan}&kolom_acuan=${kolom_acuan}`;
 
       $.ajax({
         url:link_ajax,

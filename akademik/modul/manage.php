@@ -40,6 +40,7 @@ $rmanage[4] = ['kelas','manage_kelas'];
 $rmanage[5] = ['sesi','manage_sesi'];
 $rmanage[6] = ['peserta','manage_peserta'];
 $rmanage[7] = ['mhs','manage_mhs'];
+$rmanage[8] = ['dosen','monitoring_sks_dosen'];
 
 
 for ($i=0; $i < count($rmanage); $i++) { 

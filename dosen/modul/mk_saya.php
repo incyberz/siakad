@@ -4,6 +4,10 @@ $judul = "MK SAYA";
 $s = "SELECT 
 a.id as id_jadwal,
 a.tanggal_approve_sesi,
+a.tanggal_approve_soal_uts,
+a.tanggal_approve_soal_uas,
+a.tanggal_approve_nilai_uts,
+a.tanggal_approve_nilai_uas,
 c.nama as nama_mk,
 e.jenjang,
 e.angkatan,
@@ -35,15 +39,15 @@ while ($d=mysqli_fetch_assoc($q)) {
   $status_jadwal = $d['status_jadwal']=='' ? '<span class=miring>Belum dilaksanakan</span>' : $d['status_jadwal'];
   $danger_sesi = $d['tanggal_approve_sesi']==''?'danger':'success';
   $danger_rps = file_exists("../uploads/rps/$d[id_jadwal].pdf") ?'success':'danger';
-  $danger_soal_uts = file_exists("../uploads/soal_uts/$d[id_jadwal].docx") ?'success':'danger';
-  $danger_soal_uas = file_exists("../uploads/soal_uas/$d[id_jadwal].docx") ?'success':'danger';
-  $danger_nilai_uts = 0 ?'success':'danger';
-  $danger_nilai_uas = 0 ?'success':'danger';
+  $danger_soal_uts = $d['tanggal_approve_soal_uts']!='' ?'success':'danger';
+  $danger_soal_uas = $d['tanggal_approve_soal_uas']!='' ?'success':'danger';
+  $danger_nilai_uts = $d['tanggal_approve_nilai_uts']!='' ?'success':'danger';
+  $danger_nilai_uas = $d['tanggal_approve_nilai_uas']!='' ?'success':'danger';
 
   $set_judul_sesi_enab = "<a href='?set_judul_sesi&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_sesi mb1 btn-sm btn-block'>Set Judul Sesi</a>";
   $upload_rps_enab = "<a href='?upload_rps&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_rps mb1 btn-sm btn-block'>Upload RPS</a>";
   $input_soal_uts_enab = "<a href='?input_soal&id_jadwal=$d[id_jadwal]&id_tipe_sesi=8' class='btn btn-$danger_soal_uts mb1 btn-sm btn-block'>Input Soal UTS</a>";
-  $input_nilai_uts_enab = "<a href='?input_nilai_uts&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_nilai_uts mb1 btn-sm btn-block'>Input Nilai UTS</a>";
+  $input_nilai_uts_enab = "<a href='?input_nilai&id_jadwal=$d[id_jadwal]&id_tipe_sesi=8' class='btn btn-$danger_nilai_uts mb1 btn-sm btn-block'>Input Nilai UTS</a>";
   $input_soal_uas_enab = "<a href='?input_soal_uas&id_jadwal=$d[id_jadwal]' class='btn btn-$danger_soal_uas mb1 btn-sm btn-block'>Input Soal UAS</a>";
   $input_nilai_uas_enab = "<a href='?input_soal&id_jadwal=$d[id_jadwal]&id_tipe_sesi=16' class='btn btn-$danger_nilai_uas mb1 btn-sm btn-block'>Input Nilai UAS</a>";
 

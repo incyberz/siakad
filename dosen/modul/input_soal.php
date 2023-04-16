@@ -1,10 +1,20 @@
 <?php
-if(isset($_POST['btn_upload']) || isset($_POST['btn_hapus'])){
+if(isset($_POST['btn_approve'])){
+  $kolom = $_POST['id_tipe_sesi']==8 ? 'tanggal_approve_soal_uts' : 'tanggal_approve_soal_uas'; 
+  $s = "UPDATE tb_jadwal SET $kolom=CURRENT_TIMESTAMP WHERE id=$_POST[id_jadwal]";
+  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  $back_to = "<hr><a href='?input_soal&id_jadwal=$_POST[id_jadwal]&id_tipe_sesi=$_POST[id_tipe_sesi]' class='btn btn-primary'>Kembali ke Input Soal</a>";
+  echo "<div class='alert alert-success'>Approve berhasil.$back_to</div>";
+  exit;
 
-  echo '<pre>';
-  var_dump($_POST);
-  var_dump($_FILES);
-  echo '</pre>';
+}
+
+if(isset($_POST['btn_upload'])){
+
+  // echo '<pre>';
+  // var_dump($_POST);
+  // var_dump($_FILES);
+  // echo '</pre>';
 
   $id_tipe_sesi = $_POST['id_tipe_sesi'];
   $id_jadwal = $_POST['id_jadwal'];
@@ -56,7 +66,10 @@ include 'input_soal_styles.php';
 # ====================================================
 # JADWAL PROPERTIES
 # ====================================================
-$s = "SELECT c.nama as mata_kuliah 
+$s = "SELECT 
+c.nama as mata_kuliah, 
+a.tanggal_approve_soal_uts,  
+a.tanggal_approve_soal_uas  
 
 FROM tb_jadwal a 
 JOIN tb_kurikulum_mk b on b.id=a.id_kurikulum_mk 
@@ -66,6 +79,7 @@ $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 if(mysqli_num_rows($q)==0) die('Data Jadwal tidak ditemukan.');
 $d = mysqli_fetch_assoc($q);
 $sub_judul.= " MK $d[mata_kuliah].";
+$tanggal_approve = $id_tipe_sesi==8 ? $d['tanggal_approve_soal_uts'] : $d['tanggal_approve_soal_uas'];
 
 # ====================================================
 # SOAL-SOAL
@@ -151,6 +165,8 @@ for ($i=1; $i <= $jumlah_soal ; $i++) {
   $none = 'style="display:none"';
   $none_hapus = $soal=='' ? $none : '';
 
+  $btn_hapus = $tanggal_approve=='' ? "<div><button class='btn btn-danger btn-block btn_aksi' id='hapus__$i' $none_hapus>Hapus</button></div>" : '';
+
   $tr_soal .= "
     <div class='wadah gradasi-$gradasi' id='tr__$i'>
       <div class='debug' id=tmp__$i>$tmp</div>
@@ -177,7 +193,7 @@ for ($i=1; $i <= $jumlah_soal ; $i++) {
           <div class=footer_soal>
             <div class=kecil>Last update: <span id=last_update__$i>$last_update</span></div>
             <div><button class='btn btn-primary btn-block btn_aksi hideit' id='simpan__$i' $none>Simpan</button></div>
-            <div><button class='btn btn-danger btn-block btn_aksi' id='hapus__$i' $none_hapus>Hapus</button></div>
+            $btn_hapus
           </div>
         </div>
       </div>
@@ -185,28 +201,38 @@ for ($i=1; $i <= $jumlah_soal ; $i++) {
   ";
 }
 
+
 echo "
 <h3>$judul</h3>
 <div class=wadah>
-  $sub_judul
-  <div class='nav_soal'>$nav_soal</div>
-  $tr_soal
+$sub_judul
+<div class='nav_soal'>$nav_soal</div>
+$tr_soal
 </div>
 ";
-?>
-<div class="wadah">
+
+$success = $jumlah_soal==count($soals) ? 'success' : 'danger';
+$pesan = $success=='success' ? "Soal sudah lengkap, silahkan Anda approve!" : 'Masih ada soal yang belum lengkap (berlatar merah). Silahkan lengkapi terlebih dahulu!';
+$pesan = $tanggal_approve=='' ? $pesan : "Anda sudah melakukan approve pada tanggal: $tanggal_approve<hr>Untuk melakukan re-approve harus dilakukan oleh Petugas Akademik (karena mungkin saja telah dicetak atau telah dijadikan bahan CBT).";
+$success = $tanggal_approve=='' ? $success : 'info';
+$disabled = $success=='success' ? '' : 'disabled';
+$button = $tanggal_approve=='' ? "<p>Saya menyatakan bahwa semua soal-soal diatas sudah lengkap dan benar serta siap untuk diujikan.</p>
+    <button class='btn btn-primary btn-block' $disabled name=btn_approve>Approve Soal</button>" : '';
+
+echo "
+<div class='wadah'>
   <h4>Pengesahan Soal</h4>
   <form method=post>
-    <div class="alert alert-success">
-      Last approve: $tanggal_approve 
+    <input class=debug name=id_jadwal value=$id_jadwal>
+    <input class=debug name=id_tipe_sesi value=$id_tipe_sesi>
+    <div class='alert alert-$success'>
+       $pesan
     </div>
-    <div class="alert alert-danger">
-      Masih ada soal yang belum lengkap (berlatar merah). Silahkan lengkapi terlebih dahulu!
-    </div>
-    <p>Saya menyatakan bahwa semua soal-soal diatas sudah lengkap dan benar serta siap untuk diujikan.</p>
-    <button class='btn btn-primary btn-block' disabled name=btn_approve>Approve Soal</button>
+    $button
   </form>
-</div>
+</div>";
+?>
+
 
 
 <script>

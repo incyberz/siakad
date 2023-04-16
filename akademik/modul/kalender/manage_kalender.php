@@ -39,6 +39,8 @@ $d = mysqli_fetch_assoc($q);
 $jumlah_semester = $d['jumlah_semester'];
 $nama_kalender = $d['nama_kalender'];
 $id_kalender = $d['id_kalender'];
+$jenjang = $d['jenjang'];
+// die($jenjang);
 
 echo "<div class=debug id=keterangan_kalender>Kalender Angkatan $d[angkatan] Jenjang $d[jenjang]</div>";
 
@@ -241,7 +243,7 @@ if($jumlah_semester==$jumlah_semester_real){
         if(tabel=='semester'){
           kolom_acuan = 'id';
           acuan = id;
-          link_ajax = `ajax_global/ajax_global_delete.php?tabel=${tabel}&kolom_acuan=${kolom_acuan}&acuan=${acuan}&`;
+          link_ajax = `../ajax_global/ajax_global_delete.php?tabel=${tabel}&kolom_acuan=${kolom_acuan}&acuan=${acuan}&`;
         }else{
           alert('Belum ada ajax target untuk aksi tabel: '+tabel);
           return;
@@ -305,7 +307,7 @@ if($jumlah_semester==$jumlah_semester_real){
           isis = `'${id_kalender}','${max_no_semester}','${tanggal_mulai_baru}','${tanggal_akhir_baru}','${keterangan}'`;
         }
 
-        let link_ajax = `ajax_global/ajax_global_insert.php?tabel=${tabel}&koloms=${koloms}&isis=${isis}`;
+        let link_ajax = `../ajax_global/ajax_global_insert.php?tabel=${tabel}&koloms=${koloms}&isis=${isis}`;
         // alert(link_ajax);return;
         $.ajax({
           url:link_ajax,
@@ -360,7 +362,7 @@ if($jumlah_semester==$jumlah_semester_real){
       }
 
       let kolom_acuan = 'id';
-      let link_ajax = `ajax_global/ajax_global_update.php?tabel=${tabel}&kolom_target=${kolom}&isi_baru=${isi_baru}&acuan=${acuan}&kolom_acuan=${kolom_acuan}`;
+      let link_ajax = `../ajax_global/ajax_global_update.php?tabel=${tabel}&kolom_target=${kolom}&isi_baru=${isi_baru}&acuan=${acuan}&kolom_acuan=${kolom_acuan}`;
 
       $.ajax({
         url:link_ajax,

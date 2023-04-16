@@ -4,6 +4,20 @@ if(isset($_POST['btn_buat_kurikulum'])){
   // var_dump($_POST);
   // echo "</pre>";
 
+  # =================================================
+  # CEK JIKA DUPLIKAT
+  # =================================================
+  $s = "SELECT id as id_kurikulum FROM tb_kurikulum WHERE id_kalender=$_POST[id_kalender] AND  id_prodi=$_POST[id_prodi]";
+  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  if(mysqli_num_rows($q)>1)die('Double Kurikulum detected. Segera lapor programmer!');
+  if(mysqli_num_rows($q)==1){
+    $d=mysqli_fetch_assoc($q);
+    echo "<div class='alert alert-info'>Kurikulum sudah ada.<hr><a href='?manage_kurikulum&id_kurikulum=$d[id_kurikulum]'>Manage Kurikulum</a></div>";
+    exit;
+  }
+
+
+
   $s = "SELECT angkatan,jenjang,(SELECT nama FROM tb_prodi WHERE id=$_POST[id_prodi]) as nama_prodi FROM tb_kalender WHERE id=$_POST[id_kalender]";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   $d = mysqli_fetch_assoc($q);

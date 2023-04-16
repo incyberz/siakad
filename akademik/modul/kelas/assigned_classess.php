@@ -1,12 +1,13 @@
 <?php
 $s = "SELECT 
-a.kelas,
-e.nama as nama_dosen,  
+b.id as id_kelas_angkatan,
+b.kelas,
+b.tahun_ajar,
 b.id as id_kelas_peserta,
-(SELECT count(1) FROM tb_kelas_angkatan WHERE kelas=a.kelas) as jumlah_mhs    
-FROM tb_kelas a 
-JOIN tb_kelas_peserta b on a.kelas=b.kelas 
-JOIN tb_kurikulum_mk c on c.id=b.id_kurikulum_mk 
+(SELECT count(1) FROM tb_kelas_angkatan_detail WHERE id_kelas_angkatan=b.id) as jumlah_mhs    
+FROM tb_kelas_peserta a 
+JOIN tb_kelas_angkatan b on a.id_kelas_angkatan=b.id  
+JOIN tb_kurikulum_mk c on c.id=a.id_kurikulum_mk 
 JOIN tb_jadwal d on d.id_kurikulum_mk=c.id 
 JOIN tb_dosen e on e.id=d.id_dosen 
 where d.id=$id_jadwal";
@@ -15,7 +16,7 @@ $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $thead = '<thead>
   <th class="text-left">No</th>
   <th class="text-left">Kelas Peserta</th>
-  <th class="text-left">Pengampu</th>
+  <th class="text-left">Tahun Ajar</th>
   <th class="text-left">Aksi</th>
 </thead>';
 $tr = '';
@@ -24,8 +25,8 @@ while ($d=mysqli_fetch_assoc($q)) {
   $i++;
   $tr .= "<tr id=tr__$d[id_kelas_peserta]>
     <td>$i</td>
-    <td><span id=$d[kelas]>$d[kelas]</span> | $d[jumlah_mhs] | <a href='?manage_peserta&kelas=$d[kelas]' target=_blank>Manage</a></td>
-    <td id=$d[nama_dosen]>$d[nama_dosen]</td>
+    <td><span id=$d[kelas]>$d[kelas]</span> | $d[jumlah_mhs] | <a href='?manage_peserta&id_kelas_angkatan=$d[id_kelas_angkatan]' target=_blank>Manage</a></td>
+    <td id=$d[tahun_ajar]>$d[tahun_ajar]</td>
     <td>
       <a class='btn btn-info btn-sm' href='?master&p=kelas_peserta&aksi=update&id=$d[id_kelas_peserta]' target='_blank'>Edit</a>
       <button class='btn btn-danger btn-sm btn_aksi' id='drop__$d[id_kelas_peserta]'>Drop</button>
@@ -43,7 +44,9 @@ $tb_ascl = $tr=='' ? "<div class='alert alert-danger'>Belum ada kelas peserta</d
 
 
 ?>
+<div class='subsistem'>Assigned Classess</div>
 <p>Berikut adalah kelas-kelas yang sudah dimasukan (assigned classess).</p>
+<span class=debug><?=$s?></span>
 <?=$tb_ascl?>
 
 

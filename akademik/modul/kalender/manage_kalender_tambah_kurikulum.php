@@ -1,5 +1,5 @@
 <?php
-$s = 'SELECT id,nama FROM tb_prodi ';
+$s = "SELECT id,nama FROM tb_prodi WHERE jenjang='$jenjang'";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $option_prodi = '';
 while ($dopt=mysqli_fetch_assoc($q)) {
@@ -12,7 +12,7 @@ echo $option_prodi=='' ? div_alert('info',"Semua Prodi sudah terpasang pada Kuri
   <h3>Buat Kurikulum Baru</h3>
   <p>Kalender yang telah lengkap dapat Anda buat menjadi Kurikulum berdasarkan Prodi yang ada.</p>
 
-  <form action=' method='post'>
+  <form method='post'>
     <div class='form-group'>
       <div class='debug'>
         id_kalender:
@@ -23,6 +23,7 @@ echo $option_prodi=='' ? div_alert('info',"Semua Prodi sudah terpasang pada Kuri
     <div class='form-group'>
       <select name='id_prodi' id='id_prodi' class='form-control'>
         <option value='0'>-- Pilih Prodi --</option>
+        $option_prodi
       </select>
 
     </div>

@@ -17,13 +17,25 @@ if(isset($_POST['btn_buat_sesi_default'])){
 }
 
 
-$kelas = isset($_GET['kelas']) ? $_GET['kelas'] : '';
+$id_kelas_angkatan = isset($_GET['id_kelas_angkatan']) ? $_GET['id_kelas_angkatan'] : '';
 
-if($kelas==''){
+if($id_kelas_angkatan==''){
   include 'modul/kelas/list_kelas.php';
   exit;
 }
-echo "<div class=wadah >Kelas : <span id=kelas>$kelas</span> | <a href='?manage_peserta'>Change</a></div>";
+
+$s = "SELECT * FROM tb_kelas_angkatan WHERE id=$id_kelas_angkatan";
+$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+$d=mysqli_fetch_assoc($q);
+$tahun_ajar=$d['tahun_ajar'];
+$kelas=$d['kelas'];
+
+echo "<div class=wadah >Assign Mahasiswa untuk Kelas : 
+<span id=kelas class='darkblue bold'>$kelas</span>
+<span id=id_kelas_angkatan class=debug>$id_kelas_angkatan</span> 
+pada Tahun Ajar 
+<span id=tahun_ajar class='darkblue bold'>$tahun_ajar</span>
+</div>";
 $s = "";
 // $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
@@ -46,7 +58,8 @@ $s = "";
 <div class="row manage_peserta">
   <div class="col-lg-6">
     <div class="wadah">
-      <h3>List Mahasiswa</h3>
+      <!-- <h3>List Mahasiswa</h3> -->
+      <div class="subsistem">ajax get list peserta</div>
 
       <style>.blok_filter{display:flex; flex-wrap:wrap; gap:15px}</style>
       <div class='blok_filter mb2'>
@@ -91,10 +104,11 @@ $s = "";
       let keyword = $("#keyword").val();
       let last_keyword = $("#last_keyword").text();
       let kelas = $("#kelas").text();
+      let tahun_ajar = $("#tahun_ajar").text();
       let punya_kelas = $("#punya_kelas").prop("checked")==true ? 1 : 0;
 
       // if(keyword==last_keyword) return;
-      let link_ajax = `ajax_akademik/ajax_get_list_peserta.php?keyword=${keyword}&kelas=${kelas}&punya_kelas=${punya_kelas}&`;
+      let link_ajax = `ajax_akademik/ajax_get_list_peserta.php?keyword=${keyword}&kelas=${kelas}&punya_kelas=${punya_kelas}&tahun_ajar=${tahun_ajar}&`;
       
 
       $.ajax({
@@ -115,6 +129,7 @@ $s = "";
       let rid = tid.split('__');
       let aksi = rid[0];
       let id_mhs = rid[1];
+      let id_kelas_angkatan_detail = rid[2];
 
       let kelas_asal = $("#kelas_asal__"+id_mhs).text()
       let kelas = $("#kelas").text()
@@ -124,7 +139,7 @@ $s = "";
         if(!y) return;
       }
 
-      let link_ajax = `ajax_akademik/ajax_set_kelas_mhs.php?id_mhs=${id_mhs}&kelas=${kelas}&aksi=${aksi}&`;
+      let link_ajax = `ajax_akademik/ajax_set_kelas_mhs.php?id_mhs=${id_mhs}&kelas=${kelas}&aksi=${aksi}&id_kelas_angkatan_detail=${id_kelas_angkatan_detail}&`;
       // alert(link_ajax); return;
       $.ajax({
         url: link_ajax,

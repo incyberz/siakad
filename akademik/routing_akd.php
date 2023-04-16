@@ -26,6 +26,7 @@ switch ($c[0]){
   case 'manage_kelas': $konten = 'modul/kelas/manage_kelas.php';break;
   case 'manage_peserta': $konten = 'modul/peserta/manage_peserta.php';break;
   case 'manage_mhs': $konten = 'modul/mhs/manage_mhs.php';break;
+  case 'monitoring_sks_dosen': $konten = 'modul/dosen/monitoring_sks_dosen.php';break;
   case 'manage_presensi': $konten = 'modul/presensi/manage_presensi.php';break;
   case 'manage_presensi_per_mhs': $konten = 'modul/presensi/manage_presensi_per_mhs.php';break;
   case 'presensi': $konten = 'modul/presensi/presensi_per_mahasiswa.php';break;
