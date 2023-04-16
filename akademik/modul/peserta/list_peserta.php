@@ -1,18 +1,23 @@
-<?php $kelas = isset($_GET['kelas']) ? $_GET['kelas'] : die(erid('kelas'));?>
-<h3>List Peserta: <?=$kelas?></h3>
+<?php 
+$id_kelas_angkatan = isset($_GET['id_kelas_angkatan']) ? $_GET['id_kelas_angkatan'] : die(erid('id_kelas_angkatan'));
+?>
+<div class=subsistem>List Peserta: <?=$id_kelas_angkatan?></div>
 <?php
 
 $s = "SELECT 
 b.id,
 b.nim,
 b.nama as nama_mhs,
-a.kelas 
+c.kelas,
+a.id as id_kelas_angkatan 
 
 FROM tb_kelas_angkatan a 
 JOIN tb_mhs b on b.id=a.id_mhs 
-WHERE a.kelas='$kelas'
+JOIN tb_kelas c on a.kelas=a.kelas  
+WHERE a.id='$id_kelas_angkatan'
 ORDER BY b.nama    
 ";
+echo $s;
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $jumlah_row = mysqli_num_rows($q);
 
