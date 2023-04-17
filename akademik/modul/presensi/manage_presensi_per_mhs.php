@@ -15,7 +15,6 @@ if($id_jadwal=='' || $id_mhs==''){
 $s = "SELECT 
 a.nama,
 a.nim,
-a.kelas,
 a.no_wa,
 a.status_mhs,
 a.folder_uploads,
@@ -82,7 +81,10 @@ a.pertemuan_ke,
 a.nama as nama_sesi,
 a.tanggal_sesi,
 b.nama as nama_dosen,
-(SELECT nama FROM tb_ruang WHERE id=a.id_ruang) as nama_ruang, 
+(
+  SELECT count(1) FROM tb_ruang c 
+  JOIN tb_assign_ruang d ON c.id=d.id_ruang 
+  WHERE d.id_sesi_kuliah=a.id) as jumlah_ruang, 
 (SELECT timestamp_masuk FROM tb_presensi WHERE id_mhs=$id_mhs and id_sesi_kuliah=a.id) as tanggal_presensi, 
 (SELECT status FROM tb_presensi WHERE id_mhs=$id_mhs and id_sesi_kuliah=a.id) as status_presensi 
 
@@ -90,6 +92,7 @@ FROM tb_sesi_kuliah a
 JOIN tb_dosen b on b.id=a.id_dosen 
 
 WHERE a.id_jadwal=$id_jadwal";
+echo "<span class=debug><pre class=debug>$s</pre></span>";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 if(mysqli_num_rows($q)==0) die('Data Jadwal tidak ditemukan.');
 
@@ -101,7 +104,6 @@ $thead = "
     <th class='proper text-left'>tanggal presensi</th>
     <th class='proper text-left'>status</th>
     <th class='proper text-left'>dosen pengajar</th>
-    <th class='proper text-left'>nama ruang</th>
     <th class='proper text-left'>Set Status Presensi</th>
   </thead>
 ";
@@ -109,7 +111,7 @@ $tr = '';
 while ($d=mysqli_fetch_assoc($q)) {
   $tanggal_sesi = date('d-M-y ~ H:i',strtotime($d['tanggal_sesi']));
   $tanggal_presensi = $d['tanggal_presensi']=='' ? $null : date('d-M-y ~ H:i',strtotime($d['tanggal_presensi']));
-  $nama_ruang = $d['nama_ruang']=='' ? $null : $d['nama_ruang'];
+  // $jumlah_ruang = $d['jumlah_ruang']=='' ? $null : $d['jumlah_ruang'];
 
   $btn_active_hadir = $d['status_presensi']=='h' ? 'btn_active' : '';
   $btn_active_s = $d['status_presensi']=='s' ? 'btn_active' : '';
@@ -137,7 +139,6 @@ while ($d=mysqli_fetch_assoc($q)) {
     <td>$tanggal_presensi</td>
     <td>$status_presensi</td>
     <td>$d[nama_dosen]</td>
-    <td>$nama_ruang</td>
     <td>
       $btn_set_hadir
       $btn_s

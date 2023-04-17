@@ -4,7 +4,9 @@ a.id as id_mhs,
 a.nim,
 a.nama as nama_mhs
 FROM tb_mhs a 
-WHERE a.kelas='$kelas'
+JOIN tb_kelas_angkatan_detail b ON a.id=b.id_mhs 
+JOIN tb_kelas_angkatan c ON c.id=b.id_kelas_angkatan 
+WHERE c.kelas='$kelas'
 ORDER BY a.nama 
 ";
 // echo "<pre>$s</pre>";

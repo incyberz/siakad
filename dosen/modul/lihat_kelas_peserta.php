@@ -71,9 +71,12 @@ foreach ($d as $key => $value) {
 # KELAS PESERTA
 # ====================================================
 $jumlah_mhs=0;
-$s2 = "SELECT * FROM tb_kelas_peserta a 
+$s2 = "SELECT 
+d.kelas  
+FROM tb_kelas_peserta a 
 JOIN tb_kurikulum_mk b on b.id=a.id_kurikulum_mk  
 JOIN tb_jadwal c on b.id=c.id_kurikulum_mk  
+JOIN tb_kelas_angkatan d on d.id=a.id_kelas_angkatan   
 WHERE c.id=$id_jadwal ";
 // echo $s2;
 $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
@@ -86,13 +89,14 @@ if(mysqli_num_rows($q2)==0){
     $i++;
     $kelas_peserta.= "<h5 class='darkblue p-2 gradasi-hijau'>$i. $d2[kelas]</h5>";
     $s3 = "SELECT
-    b.id as id_mhs,
-    b.nama as nama_mhs, 
-    b.folder_uploads, 
-    b.gender 
+    c.id as id_mhs,
+    c.nama as nama_mhs, 
+    c.folder_uploads, 
+    c.gender 
 
     FROM tb_kelas_angkatan a 
-    JOIN tb_mhs b on b.id=a.id_mhs  
+    JOIN tb_kelas_angkatan_detail b on a.id=b.id_kelas_angkatan  
+    JOIN tb_mhs c on b.id_mhs=c.id   
     WHERE a.kelas='$d2[kelas]' ";
     // echo $s2;
     $q3 = mysqli_query($cn,$s3) or die(mysqli_error($cn));

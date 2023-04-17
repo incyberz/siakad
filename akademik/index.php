@@ -5,6 +5,7 @@
 session_start();
 $dm = 1;
 $menit_sks = 50;
+$ta_aktif=2023;
 
 include "../config.php";
 

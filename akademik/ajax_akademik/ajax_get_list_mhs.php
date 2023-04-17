@@ -14,7 +14,10 @@ a.id,
 a.nim,
 -- a.kelas,
 a.nama as nama_mhs,
-(SELECT kelas FROM tb_kelas_angkatan WHERE id_mhs=a.id) as kelas  
+(
+  SELECT b.kelas FROM tb_kelas_angkatan b
+  JOIN tb_kelas_angkatan_detail c ON b.id=c.id_kelas_angkatan 
+  WHERE c.id_mhs=a.id) as kelas  
 
 FROM tb_mhs a 
 WHERE (a.nim like '%$keyword%' OR a.nama like '%$keyword%') 

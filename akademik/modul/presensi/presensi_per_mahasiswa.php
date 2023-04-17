@@ -13,38 +13,71 @@ if($id_mhs==''){
 # SAAT INI
 # ==========================================================
 $s = "SELECT 
+a.id as id_mhs,
 a.nama as nama_mhs,
 a.nim,
-a.kelas,
-b.angkatan,
-c.id as id_prodi,
-c.nama as prodi,
-c.jenjang,
-d.nama as nama_jenjang,
-(SELECT id FROM tb_kalender WHERE angkatan=b.angkatan and jenjang=c.jenjang) as id_kalender
+(
+  SELECT 
+  CONCAT(b.kelas,';',e.angkatan,';',f.id,';',f.nama,';',f.jenjang) 
+  FROM tb_kelas_angkatan b 
+  JOIN tb_kelas_angkatan_detail c on c.id_kelas_angkatan=b.id 
+  JOIN tb_mhs d on d.id=c.id_mhs 
+  JOIN tb_kelas e on b.kelas=e.kelas 
+  JOIN tb_prodi f ON e.id_prodi=f.id  
+  WHERE c.id_mhs=a.id 
+  ORDER BY b.tahun_ajar DESC 
+  LIMIT 1  
+) as data_kelas,
+
+(
+  SELECT CONCAT(e.id,';',e.nama,';',e.id_kalender) FROM tb_kurikulum_mk z 
+  JOIN tb_kelas_peserta b on z.id=b.id_kurikulum_mk 
+  JOIN tb_kelas_angkatan c on b.id_kelas_angkatan=c.id 
+  JOIN tb_kelas_angkatan_detail d on d.id_kelas_angkatan=c.id 
+  JOIN tb_kurikulum e on z.id_kurikulum=e.id 
+  WHERE d.id_mhs= $id_mhs
+  LIMIT 1
+) as data_kurikulum
 
 FROM tb_mhs a 
-JOIN tb_kelas b on a.kelas=b.kelas 
-JOIN tb_prodi c on c.id=b.id_prodi 
-JOIN tb_jenjang d on d.jenjang=c.jenjang  
 WHERE a.id=$id_mhs 
 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 if(mysqli_num_rows($q)==0) die('Data mahasiswa tidak ditemukan.');
 if(mysqli_num_rows($q)>1) die('Data mahasiswa harus unik.');
 $d = mysqli_fetch_assoc($q);
-$id_kalender = $d['id_kalender'];
-$id_prodi = $d['id_prodi'];
+echo "<span class=debug>id_mhs: <span id=id_mhs>$d[id_mhs]</span></span>";
 
-if($id_kalender==''){
-  die("<div class='alert alert-danger'>Belum ada kalender akademik untuk angkatan $d[angkatan] jenjang $d[jenjang]<hr><a href='?manage_kalender'>Manage Kalender</a></div>");
-}
+$nama_mhs=$d['nama_mhs'];
+$nim=$d['nim'];
+
+# ==========================================================
+# GET DATA KELAS
+# ==========================================================
+$data_kelas = explode(';',$d['data_kelas']);
+$kelas=$data_kelas[0];
+$angkatan=$data_kelas[1];
+$id_prodi=$data_kelas[2];
+$nama_prodi=$data_kelas[3];
+$jenjang=$data_kelas[4];
+
+# ==========================================================
+# GET KURIKULUM DATA
+# ==========================================================
+$data_kurikulum = explode(';',$d['data_kurikulum']);
+$id_kurikulum=$data_kurikulum[0];
+$nama_kurikulum=$data_kurikulum[1];
+$id_kalender=$data_kurikulum[2];
+
+$manage_kurikulum = "<a href='?manage_kurikulum&id_kurikulum=$id_kurikulum'>Manage Kurikulum</a>";
+$manage_kalender = "<a href='?manage_kalender&id_kalender=$id_kalender' >Manage Kalender</a>";
+
 ?>
 <div class="wadah">
   <ul>
-    <li>Nama: <?=$d['nama_mhs']?></li>
-    <li>NIM: <?=$d['nim']?></li>
-    <li>Kelas: <h3><?=$d['kelas']?></h3></li>
+    <li>Nama: <?=$nama_mhs?></li>
+    <li>NIM: <?=$nim?></li>
+    <li>Kelas: <h3><?=$kelas?></h3></li>
   </ul>
 </div>
 <div class="wadah">
@@ -52,10 +85,9 @@ if($id_kalender==''){
   <div class="wadah">
     <ul>
       <li>Sekarang Tanggal: <?=$today?></li>
-      <li>Angkatan: <?=$d['angkatan']?></li>
-      <li>Prodi: <?=$d['prodi']?></li>
-      <li>Jenjang: <?=$d['nama_jenjang']?></li>
-      <li>ID-Kalender: <?=$d['id_kalender']?></li>
+      <li>Prodi: <?=$jenjang?>-<?=$nama_prodi?> Angkatan <?=$angkatan?></li>
+      <li class=debug>ID-Kalender: <span id=id_kalender><?=$id_kalender?></span></li>
+      <li>Tercatat pada Kurikulum: <?=$nama_kurikulum?><span class=debug id=id_kurikulum><?=$id_kurikulum?></span></li>
     </ul>
   </div>
 </div>
@@ -78,30 +110,12 @@ FROM tb_semester a
 JOIN tb_kalender b on b.id=a.id_kalender 
 WHERE a.id_kalender=$id_kalender 
 ";
-// die($s_kalender);
-
-$q = mysqli_query($cn,$s_kalender) or die(mysqli_error($cn));
-if(mysqli_num_rows($q)==0) die(div_alert('danger',"Kalender Akademik untuk mahasiswa ini belum ada. | <a href='?manage_kalender&id_kalender=$id_kalender' >Manage Kalender</a>"));
-
-# ==========================================================
-# GET KURIKULUM
-# ==========================================================
-$s = "SELECT id as id_kurikulum,nama as nama_kurikulum FROM tb_kurikulum WHERE id_kalender = $id_kalender and id_prodi = $id_prodi ";
-$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-if(mysqli_num_rows($q)>1) die(div_alert('danger','Jumlah kurikulum harus unik.'));
-if(mysqli_num_rows($q)==0) die(div_alert('danger',"Kurikulum untuk kalender dan prodi ini belum ada. | <a href='?manage_kurikulum'>Manage Kurikulum</a>"));
-$d = mysqli_fetch_assoc($q);
-$id_kurikulum = $d['id_kurikulum'];
-$manage_kurikulum = "<a href='?manage_kurikulum&id_kurikulum=$id_kurikulum'>Manage Kurikulum</a>";
-$nama_kurikulum = $d['nama_kurikulum'];
-echo "<div class=wadah>Kurikulum: <span id=nama_kurikulum>$nama_kurikulum</span> <span class=debug id=id_kurikulum>$id_kurikulum</span> </div>";
 
 # ==========================================================
 # CEK SEMESTER FOR MHS DAN KURIKULUM-MK
 # ==========================================================
-$manage_kalender = "<a href='?manage_kalender&id_kalender=$id_kalender' >Manage Kalender</a>";
 $s_semester = $s_kalender." AND a.tanggal_awal <= '$today'";
-// echo "<pre>$s_semester</pre>";
+echo "<pre class=debug>$s_semester</pre>";
 $q = mysqli_query($cn,$s_semester) or die(mysqli_error($cn));
 if(mysqli_num_rows($q)==0) die("<div class='alert alert-danger'>Tidak ada Semester yang cocok pada Kalender Akademik. | $manage_kalender</div>");
 

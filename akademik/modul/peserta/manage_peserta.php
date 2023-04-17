@@ -67,9 +67,9 @@ $s = "";
         <div>
           <input id=keyword class="form-control">
         </div>
-        <div class=debug>
+        <div class=>
           <input id=punya_kelas type=checkbox> 
-          <label for="punya_kelas">Sudah Punya Kelas</label>
+          <label for="punya_kelas">Sudah Punya Kelas di TA-<?=$tahun_ajar?></label>
         </div>
         <span id=last_keyword class="debug">last_keyword</span>
       </div>
@@ -131,15 +131,16 @@ $s = "";
       let id_mhs = rid[1];
       let id_kelas_angkatan_detail = rid[2];
 
-      let kelas_asal = $("#kelas_asal__"+id_mhs).text()
-      let kelas = $("#kelas").text()
+      let kelas_asal = $("#kelas_asal__"+id_mhs).text();
+      let kelas = $("#kelas").text();
+      let id_kelas_angkatan = $("#id_kelas_angkatan").text();
 
       if(aksi=='move'){
         let y = confirm(`Yakin untuk memindahkan kelas?\n\nDari: ${kelas_asal}\nKe: ${kelas}\n\nPerhatian! Pemindahan Kelas akan berdampak pada proses KRS, KHS, dan Pembayaran.`);
         if(!y) return;
       }
 
-      let link_ajax = `ajax_akademik/ajax_set_kelas_mhs.php?id_mhs=${id_mhs}&kelas=${kelas}&aksi=${aksi}&id_kelas_angkatan_detail=${id_kelas_angkatan_detail}&`;
+      let link_ajax = `ajax_akademik/ajax_set_kelas_mhs.php?id_mhs=${id_mhs}&kelas=${kelas}&aksi=${aksi}&id_kelas_angkatan_detail=${id_kelas_angkatan_detail}&id_kelas_angkatan=${id_kelas_angkatan}&`;
       // alert(link_ajax); return;
       $.ajax({
         url: link_ajax,

@@ -21,22 +21,22 @@ echo "<span class=debug>$s</span>";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $jumlah_row = mysqli_num_rows($q);
 
-$thead = '
+$thead = "
   <thead>
     <th>No</th>
     <th>NIM</th>
     <th>Nama</th>
-    <th>Kelas</th>
+    <th>Kelas (TA-$tahun_ajar)</th>
     <th>Aksi</th>
   </thead>
-';
+";
 $tr = '';
 $i=0;
 while ($d = mysqli_fetch_assoc($q)) {
   $i++;
   $btn_drop = "<button class='btn btn-danger btn-sm btn_aksi' id='drop__$d[id_mhs]__$d[id_kelas_angkatan_detail]'>Drop</button>";
   $kelas = $d['kelas']==''?'<span class="abu miring">-- null --</span>':$d['kelas'];
-  $tr .= "<tr id=tr2__$d[id]>
+  $tr .= "<tr id=tr2__$d[id_mhs]>
     <td>$i</td>
     <td>$d[nim]</td>
     <td>$d[nama_mhs]</td>

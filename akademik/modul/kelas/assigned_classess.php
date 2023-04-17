@@ -3,7 +3,7 @@ $s = "SELECT
 b.id as id_kelas_angkatan,
 b.kelas,
 b.tahun_ajar,
-b.id as id_kelas_peserta,
+a.id as id_kelas_peserta,
 (SELECT count(1) FROM tb_kelas_angkatan_detail WHERE id_kelas_angkatan=b.id) as jumlah_mhs    
 FROM tb_kelas_peserta a 
 JOIN tb_kelas_angkatan b on a.id_kelas_angkatan=b.id  
@@ -23,12 +23,12 @@ $tr = '';
 $i = 0;
 while ($d=mysqli_fetch_assoc($q)) {
   $i++;
-  $tr .= "<tr id=tr__$d[id_kelas_peserta]>
+  $red = $d['jumlah_mhs']==0 ? 'red':'';
+  $tr .= "<tr id=tr__$d[id_kelas_peserta] class=$red>
     <td>$i</td>
     <td><span id=$d[kelas]>$d[kelas]</span> | $d[jumlah_mhs] | <a href='?manage_peserta&id_kelas_angkatan=$d[id_kelas_angkatan]' target=_blank>Manage</a></td>
     <td id=$d[tahun_ajar]>$d[tahun_ajar]</td>
     <td>
-      <a class='btn btn-info btn-sm' href='?master&p=kelas_peserta&aksi=update&id=$d[id_kelas_peserta]' target='_blank'>Edit</a>
       <button class='btn btn-danger btn-sm btn_aksi' id='drop__$d[id_kelas_peserta]'>Drop</button>
     </td>
   </tr>";
@@ -77,6 +77,7 @@ $tb_ascl = $tr=='' ? "<div class='alert alert-danger'>Belum ada kelas peserta</d
         $.ajax({
           url: link_ajax,
           success: function(a){
+            console.log(a,link_ajax);
             if(a.trim()=='sukses'){
               $("#tr__"+id_kelas_peserta).fadeOut();
             }else{

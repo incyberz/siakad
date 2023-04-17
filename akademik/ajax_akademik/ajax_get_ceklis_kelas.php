@@ -17,14 +17,14 @@ JOIN tb_jadwal d on d.id_kurikulum_mk=c.id
 JOIN tb_kelas e on e.kelas=a.kelas 
 where a.tahun_ajar=$angkatan and e.id_prodi=$id_prodi and $sql_where_jadwal";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
-$assigned_classes = [];
+$assigned_kelas_angkatan = [];
 $i=0;
 while ($d=mysqli_fetch_assoc($q)) {
-  $assigned_classes[$i] = $d['kelas'];
+  $assigned_kelas_angkatan[$i] = $d['id_kelas_angkatan'];
   $i++;
 }
 
-// die(var_dump($assigned_classes));
+// die(var_dump($assigned_kelas_angkatan));
 
 # ===================================================
 # GET KELAS IN THIS JADWAL
@@ -37,7 +37,7 @@ echo "<span class=debug>$s</span>";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $ceks = '';
 while ($d=mysqli_fetch_assoc($q)) {
-  if(in_array($d['kelas'],$assigned_classes)) continue;
+  if(in_array($d['id_kelas_angkatan'],$assigned_kelas_angkatan)) continue;
   $ceks .= "<div><label><input type=checkbox id='$d[id_kelas_angkatan]' name='$d[id_kelas_angkatan]'> $d[kelas]</label></div>";
 }
 
