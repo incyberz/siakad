@@ -13,6 +13,14 @@ if(isset($_POST['btn_simpan'])){
 
   // echo "<div class='alert alert-$alert'>$pesan$back_to</div>";
   echo "aksi btn_simpan ready to code. $btn_back";
+  foreach ($_POST as $key => $value) {
+    if(strpos("salt$key",'nilai__')){
+      // echo "<br>$key = $value";
+      $r = explode('__',$key);
+      $id_kelas_angkatan_detail = $r[1];
+      echo "<br>id_kelas_angkatan_detail: $id_kelas_angkatan_detail";
+    }
+  }
   exit;
 }
 
@@ -75,7 +83,9 @@ while ($d=mysqli_fetch_assoc($q)) {
   b.tanggal_approve_nilai_uts,
   b.tanggal_approve_nilai_uas,
   c.nama as nama_mhs,
-  c.nim   
+  c.nim,
+  (SELECT CONCAT(z.np,';',z.nt,';',z.nuts,';',z.nuas,';',z.date_created) from tb_nilai z where z.id_kelas_angkatan_detail=a.id ORDER BY date_created DESC LIMIT 1) as data_nilai
+
   FROM tb_kelas_angkatan_detail a 
   JOIN tb_kelas_angkatan b ON a.id_kelas_angkatan=b.id   
   JOIN tb_mhs c ON c.id=a.id_mhs    
@@ -88,6 +98,26 @@ while ($d=mysqli_fetch_assoc($q)) {
     $id = $d2['id'];
     $last_update = $id_tipe_sesi==8 ? $d2['last_update_nilai_uts'] : $d2['last_update_nilai_uts'];
     $tanggal_approve = $id_tipe_sesi==8 ? $d2['tanggal_approve_nilai_uts'] : $d2['tanggal_approve_nilai_uts'];
+
+    if($d2['data_nilai']==''){
+      $np=0;
+      $nt=0;
+      $nuts=0;
+      $nuas=0;
+      $date_created='';
+    }else{
+      $r = explode(';',$d2['data_nilai']);
+      $np=$r[0];
+      $nt=$r[1];
+      $nuts=$r[2];
+      $nuas=$r[3];
+      $date_created=$r[4];
+    }
+
+    $nilai = $id_tipe_sesi==8 ? $nuts : '?';
+    $nilai = $id_tipe_sesi==16 ? $nuas : $nilai;
+    $nilai = $nilai=='' ? 0 : $nilai;
+
     $tr_mhs .= "
     <div class='row mb-4'>
       <div class='col-lg-6'>
@@ -102,7 +132,8 @@ while ($d=mysqli_fetch_assoc($q)) {
       </div>
       <div class='col-lg-3'>NIM. $d2[nim]</span></div>
       <div class='col-lg-3 mt-2'>
-        <input type=number min=0 max=100 required class=form-control name=nilai__$id>
+        <input type=number min=0 max=100 required class='form-control input_nilai' name=nilai__$id id=nilai__$id value=$nilai>
+        <span class=debug>nilai:<span id=span_nilai__$id>$nilai</span></span>
       </div>
     </div>
     ";
@@ -119,6 +150,7 @@ while ($d=mysqli_fetch_assoc($q)) {
   <div class='wadah gradasi-hijau'>
     <h3 class='darkblue mb-4'>$judul</h3>
     <form method=post>
+      <input class=debug name=id_tipe_sesi value=$id_tipe_sesi>
       $tb_mhs 
       <div class='kecil miring mb2'>Last Update: $last_update_show</div>
       <button class='btn btn-$primary btn-block' name=btn_simpan>Simpan Draft Nilai UTS</button>
@@ -129,3 +161,30 @@ while ($d=mysqli_fetch_assoc($q)) {
 
 }
 
+
+
+
+
+
+
+
+?>
+<script>
+  $(function(){
+    $('.input_nilai').focusout(function(){
+      let tid = $(this).prop('id');
+      let rid = tid.split('__');
+      let id_kelas_angkatan_detail = rid[1];
+      let val = $(this).val();
+      let tmp_val = $('#span_nilai__'+id_kelas_angkatan_detail).text();
+      if(val!=tmp_val){
+        // console.log(val,tmp_val,id_kelas_angkatan_detail);
+        
+        
+      }else{
+        console.log('not saved.');
+        
+      }
+    })
+  })
+</script>
