@@ -126,6 +126,8 @@ while ($d=mysqli_fetch_assoc($q)) {
   # ========================================================
   # KELAS PESERTA DAN JUMLAH PESERTA MAHASISWA
   # ========================================================
+  $jumlah_peserta_mhs=0;
+
   if($semua){
     $jumlah_kelas_show = '';
     $list_kelas = '';
@@ -133,13 +135,13 @@ while ($d=mysqli_fetch_assoc($q)) {
     if($d['jumlah_kelas_peserta']){
       $jumlah_kelas_show = "<span class='tebal'>$d[jumlah_kelas_peserta] kelas</span>";
       $s2 = "SELECT 
-      a.kelas,
-      (SELECT count(1) from tb_kelas_angkatan where kelas=a.kelas) as jumlah_mhs  
+      b.kelas,
+      (SELECT count(1) from tb_kelas_angkatan_detail where id_kelas_angkatan=b.id) as jumlah_mhs  
       from tb_kelas_peserta a 
+      JOIN tb_kelas_angkatan b ON a.id_kelas_angkatan=b.id  
       where a.id_kurikulum_mk=$d[id_kurikulum_mk]";
       $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
       $list_kelas = '__';
-      $jumlah_peserta_mhs=0;
       while ($d2=mysqli_fetch_assoc($q2)) {
         $kelas_show = $d2['jumlah_mhs']==0 ? "<span class=red>$d2[kelas] (0)</span>" : "$d2[kelas] ($d2[jumlah_mhs])";
         $err_presensi=$d2['jumlah_mhs']==0?1:$err_presensi;

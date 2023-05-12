@@ -13,14 +13,23 @@ if(isset($_POST['btn_simpan'])){
 
   // echo "<div class='alert alert-$alert'>$pesan$back_to</div>";
   echo "aksi btn_simpan ready to code. $btn_back";
-  foreach ($_POST as $key => $value) {
-    if(strpos("salt$key",'nilai__')){
-      // echo "<br>$key = $value";
-      $r = explode('__',$key);
-      $id_kelas_angkatan_detail = $r[1];
-      echo "<br>id_kelas_angkatan_detail: $id_kelas_angkatan_detail";
-    }
-  }
+  # ====================================================
+  # EXTRACT NILAIS AS VALUES
+  # ====================================================
+  // foreach ($_POST as $key => $value) {
+  //   if(strpos("salt$key",'nilai__')){
+  //     // echo "<br>$key = $value";
+  //     $r = explode('__',$key);
+  //     $id_kelas_angkatan_detail = $r[1];
+  //     echo "<br>id_kelas_angkatan_detail: $id_kelas_angkatan_detail";
+  //   }
+  // }
+
+
+  # ====================================================
+  # UPDATE LAST_UPDATE UTS/UAS AT TB_KELAS_ANGKATAN
+  # ====================================================
+
   exit;
 }
 
@@ -70,69 +79,64 @@ JOIN tb_kelas_angkatan d ON d.id=a.id_kelas_angkatan
 WHERE c.id=$id_jadwal ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 while ($d=mysqli_fetch_assoc($q)) {
-  $judul = "NILAI $uts $d[kelas]";
+  $kelas = $d['kelas'];
+  $judul = "NILAI $uts $kelas";
 
   # ====================================================
   # KELAS PESERTA (MHS)
   # ====================================================
+  $nuts = $id_tipe_sesi==8 ? 'nuts' : 'nuas';
   $s2 = "SELECT 
   a.id,
   a.id_mhs,
+  b.id as id_kelas_angkatan,
   b.last_update_nilai_uts,
   b.last_update_nilai_uas,
   b.tanggal_approve_nilai_uts,
   b.tanggal_approve_nilai_uas,
   c.nama as nama_mhs,
   c.nim,
-  (SELECT CONCAT(z.np,';',z.nt,';',z.nuts,';',z.nuas,';',z.date_created) from tb_nilai z where z.id_kelas_angkatan_detail=a.id ORDER BY date_created DESC LIMIT 1) as data_nilai
+  (
+    SELECT z.$nuts 
+    FROM tb_nilai z where z.id_kelas_angkatan_detail=a.id 
+    ORDER BY date_created DESC LIMIT 1) as nilai
 
   FROM tb_kelas_angkatan_detail a 
   JOIN tb_kelas_angkatan b ON a.id_kelas_angkatan=b.id   
   JOIN tb_mhs c ON c.id=a.id_mhs    
-  WHERE b.kelas='$d[kelas]'";
+  WHERE b.kelas='$kelas'";
+  // echo "<pre class=debug>$s2</pre>";
+
   $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
   $tr_mhs='';
-  $j=0;
+  $jumlah_mhs=0;
+  $jumlah_valid=0;
   while ($d2=mysqli_fetch_assoc($q2)) {
-    $j++;
+    $jumlah_mhs++;
     $id = $d2['id'];
+    $id_kelas_angkatan = $d2['id_kelas_angkatan'];
     $last_update = $id_tipe_sesi==8 ? $d2['last_update_nilai_uts'] : $d2['last_update_nilai_uts'];
     $tanggal_approve = $id_tipe_sesi==8 ? $d2['tanggal_approve_nilai_uts'] : $d2['tanggal_approve_nilai_uts'];
 
-    if($d2['data_nilai']==''){
-      $np=0;
-      $nt=0;
-      $nuts=0;
-      $nuas=0;
-      $date_created='';
-    }else{
-      $r = explode(';',$d2['data_nilai']);
-      $np=$r[0];
-      $nt=$r[1];
-      $nuts=$r[2];
-      $nuas=$r[3];
-      $date_created=$r[4];
-    }
-
-    $nilai = $id_tipe_sesi==8 ? $nuts : '?';
-    $nilai = $id_tipe_sesi==16 ? $nuas : $nilai;
-    $nilai = $nilai=='' ? 0 : $nilai;
+    $nilai = $d2['nilai'];
+    $merah = ($nilai>=0 and $nilai <=100 and $nilai!='') ? '' : 'merah';
+    if($merah=='') $jumlah_valid++;
 
     $tr_mhs .= "
     <div class='row mb-4'>
       <div class='col-lg-6'>
         <div class=row>
           <div class=col-1>
-            $j
+            $jumlah_mhs
           </div>
-          <div class=col-11>
+          <div class='col-11 upper'>
             $d2[nama_mhs]<span class=debug>$d2[id_mhs]</span>
           </div>
         </div>
       </div>
       <div class='col-lg-3'>NIM. $d2[nim]</span></div>
       <div class='col-lg-3 mt-2'>
-        <input type=number min=0 max=100 required class='form-control input_nilai' name=nilai__$id id=nilai__$id value=$nilai>
+        <input type=number min=0 max=100 required class='form-control input_nilai gradasi-$merah' id='$kelas"."__$id' value=$nilai>
         <span class=debug>nilai:<span id=span_nilai__$id>$nilai</span></span>
       </div>
     </div>
@@ -140,7 +144,12 @@ while ($d=mysqli_fetch_assoc($q)) {
 
   }
   $thead = '';
-  $tb_mhs = $tr_mhs='' ? '<div>No Data Mhs</div>' : "$thead$tr_mhs";
+  $debug_jumlah_mhs = "<span class=debug>jumlah_mhs__$kelas: <span id=jumlah_mhs__$kelas>$jumlah_mhs</span></span>";
+  $debug_jumlah_valid = "<span class=debug>jumlah_valid__$kelas: <span id=jumlah_valid__$kelas>$jumlah_valid</span></span>";
+  $disabled = $jumlah_mhs==$jumlah_valid ? '' : 'disabled';
+  $disabled_info = $jumlah_mhs==$jumlah_valid ? '' : "<span class=red id=disabled_info__$kelas>Lengkap <span id=jumlah_valid_show__$kelas>$jumlah_valid</span> of $jumlah_mhs | </span>";
+
+  $tb_mhs = $tr_mhs='' ? '<div>No Data Mhs</div>' : "$thead$tr_mhs $debug_jumlah_mhs $debug_jumlah_valid";
 
   $last_update_show = $last_update=='' ? '<span class=red>none</span> | Silahkan Anda Simpan terlebih dahulu sebelum Pengesahan Nilai '.$uts : date('d-M-Y H:i:s', strtotime($last_update));
   $disabled_pengesahan = $last_update=='' ? 'disabled' : '';
@@ -150,10 +159,11 @@ while ($d=mysqli_fetch_assoc($q)) {
   <div class='wadah gradasi-hijau'>
     <h3 class='darkblue mb-4'>$judul</h3>
     <form method=post>
-      <input class=debug name=id_tipe_sesi value=$id_tipe_sesi>
+      <span class=debug>id_tipe_sesi</span>: <input class=debug name=id_tipe_sesi value=$id_tipe_sesi>
+      <span class=debug>id_kelas_angkatan</span>: <input class=debug name=id_kelas_angkatan value=$id_kelas_angkatan>
       $tb_mhs 
-      <div class='kecil miring mb2'>Last Update: $last_update_show</div>
-      <button class='btn btn-$primary btn-block' name=btn_simpan>Simpan Draft Nilai UTS</button>
+      <div class='kecil miring mb2'>$disabled_info Last Update: $last_update_show</div>
+      <button class='btn btn-$primary btn-block' name=btn_simpan id=btn_simpan__$kelas $disabled>Simpan Draft Nilai UTS</button>
       <button class='btn btn-danger btn-block' $disabled_pengesahan>Pengesahan Nilai</button>
     </form>
   </div>
@@ -174,13 +184,44 @@ while ($d=mysqli_fetch_assoc($q)) {
     $('.input_nilai').focusout(function(){
       let tid = $(this).prop('id');
       let rid = tid.split('__');
+      let kelas = rid[0];
       let id_kelas_angkatan_detail = rid[1];
       let val = $(this).val();
       let tmp_val = $('#span_nilai__'+id_kelas_angkatan_detail).text();
-      if(val!=tmp_val){
+      let id_tipe_sesi = $('#id_tipe_sesi').text();
+      let jumlah_mhs = parseInt($('#jumlah_mhs__'+kelas).text());
+      let jumlah_valid = parseInt($('#jumlah_valid__'+kelas).text());
+      // console.log(kelas, jumlah_mhs);
+
+      if(val!=tmp_val && parseInt(val)>=0){
+
         // console.log(val,tmp_val,id_kelas_angkatan_detail);
-        
-        
+        let link_ajax = `ajax_dosen/ajax_input_nilai.php?id_kelas_angkatan_detail=${id_kelas_angkatan_detail}&id_tipe_sesi=${id_tipe_sesi}&nilai=${val}&`;
+
+        $.ajax({
+          url:link_ajax,
+          success:function(a){
+            if(a.trim()=='sukses'){
+              $('#span_nilai__'+id_kelas_angkatan_detail).text(val);
+              $('#'+tid).removeClass('gradasi-merah');
+              
+              jumlah_valid++;
+              if(jumlah_valid==jumlah_mhs){
+                $('#btn_simpan__'+kelas).prop('disabled',false);
+                $('#disabled_info__'+kelas).hide();
+              }else{
+                $('#btn_simpan__'+kelas).prop('disabled',true);
+                $('#disabled_info__'+kelas).show();
+              }
+              $('#jumlah_valid__'+kelas).text(jumlah_valid);
+              $('#jumlah_valid_show__'+kelas).text(jumlah_valid);
+
+              console.log(jumlah_valid,jumlah_mhs,kelas);
+            }else{
+              alert(a)
+            }
+          }
+        })
       }else{
         console.log('not saved.');
         

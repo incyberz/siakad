@@ -1,0 +1,32 @@
+.hideit{ display: none}
+.tebal, .bold{font-weight: bold}
+.tengah, .center{text-align: center}
+.biru{color: blue}
+.green, .ijo, .hijau{color: green}
+.red, .merah{color: red}
+.blue, .biru{color: blue}
+.pink{color: pink}
+.brown,.coklat{color: brown}
+.orange,.oren{color: orange}
+.yellow,.kuning{color: yellow}
+.purple,.ungu{color: purple}
+
+.link_selected{padding: 5px 15px; border: solid 1px #ccc; border-radius: 15px;background-image: linear-gradient(#dfd,yellow)}
+
+main table{font-size: 10pt}
+main th{padding: 9px 5px;text-align: center;background-image: linear-gradient(#fff,#afa)}
+/*main tr:hover{background-image: linear-gradient(#fff,#ff0)}*/
+
+#jadwal_kuliah td{padding: 3px 5px;vertical-align: middle;}
+#reg_krs td{padding: 5px;vertical-align: middle;}
+/*#jadwal_kuliah a:hover{color: darkred}*/
+
+.div_table{margin-bottom: 10px;background-color: #f8ffff}
+.div_table div{border: solid 1px #ccc; font-size: 10pt;}
+.div_table:hover{background-image: linear-gradient(#fff,#ffa)}
+.div_table .isi_tabel{padding: 5px}
+
+.img_zoom{transition: transform .2s}
+.img_zoom:hover{transform: scale(1.5);}
+
+.div_table2{border: solid 1px #ccc; font-size: 10pt;padding: 10px;margin-bottom: 15px;background-color: #f8ffff}

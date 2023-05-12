@@ -28,3 +28,10 @@ date_default_timezone_set("Asia/Jakarta");
 function erid($a){
     return "Error, index $a belum terdefinisi.";
 }
+
+function clean_sql($a){
+  $a = str_replace('\'','`',$a);
+  $a = str_replace('"','`',$a);
+  $a = str_replace(';','',$a);
+  return $a;
+}

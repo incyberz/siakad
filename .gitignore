@@ -28,3 +28,5 @@ uploads
 *.png
 *.jpg
 *.jpeg
+
+*_tmp
