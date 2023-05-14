@@ -3,10 +3,12 @@
 
     <div class="section-title">
       <h2>About</h2>
-      <p><?=$about_intro ?></p>
+      <p>Ini adalah laman untuk memperkenalkan diri Anda.</p>
     </div>
 
-    <div class="row">
+    <div class="alert alert-info">Comming soon...</div>
+
+    <!-- <div class="row">
       <div class="col-lg-4" data-aos="fade-right">
         <img src="<?=$img_profile ?>" class="img-fluid" alt="">
       </div>
@@ -37,6 +39,10 @@
           <?=$about_details ?>
         </p>
       </div>
+    </div> -->
+
+    <div class="p-2 mt-4" style="border-top:solid 1px #ccc">
+      <a href="?ubah_password">Ubah Password</a> | 
     </div>
 
   </div>

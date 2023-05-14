@@ -3,6 +3,7 @@
 # INDEX MAHASISWA
 # ========================================================
 session_start();
+$dm=0;
 if (0) {
   session_unset();
   exit();

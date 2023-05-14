@@ -68,6 +68,8 @@ $angkatan = $d_mhs['angkatan']!=''?$d_mhs['angkatan']:$undef;
 $nama_prodi = $d_mhs['nama_prodi']!=''?$d_mhs['nama_prodi']:$undef;
 $jenjang = $d_mhs['jenjang']!=''?$d_mhs['jenjang']:$undef;
 
+$is_depas = ($d_mhs['password']=='' || $d_mhs['password']==$nim) ? 1 : 0;
+
 # ========================================================
 # GET DATA SEMESTER
 # ========================================================

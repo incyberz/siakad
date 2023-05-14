@@ -19,7 +19,7 @@ $username= isset($_GET['username']) ? $_GET['username'] : '';
       <td>&nbsp;</td>
       <td>
         <button class="btn btn-primary" style="margin: 10px 5px 5px 0; border-radius: 15px; padding: 5px 35px" id="btn_login" name="btn_login">Login</button> 
-        <a href="mhs" class="btn btn-success" style="margin: 10px 5px 5px 0;border-radius: 15px;padding: 5px 20px">Login Mahasiswa</a> 
+        <a href="v6/mhs/" class="btn btn-success" style="margin: 10px 5px 5px 0;border-radius: 15px;padding: 5px 20px">Login Mahasiswa</a> 
         <?php if($dm) echo " | <a href='akademik/'>Pass Login</a>"; ?>
       </td>
     </tr>

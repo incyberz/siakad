@@ -4,18 +4,14 @@ $nim = '';
 $password = '';
 
 
-$nim = '41205262'; // zzz debug
-$password = '41205262';
+// $nim = '41205262'; // zzz debug
+// $password = '41205262';
 
 
 
 if(isset($_POST['btn_login_mhs'])){
   $nim = clean_sql($_POST['nim']);
   $password = clean_sql($_POST['password']);
-
-  if($nim===$password){
-
-  }
 
   $sql_password = $nim===$password ? 'password is null' : "password=md5('$password')";
   $s = "SELECT 1 from tb_mhs WHERE nim='$nim' and $sql_password";

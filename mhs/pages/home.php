@@ -16,7 +16,6 @@
       </ul>
     </div>
 
-    <!-- <pre><?=$sd?></pre> -->
-
+    <a href='?khs' class="btn btn-success btn-block">Cek Nilai / KHS</a>
   </div>
 </section>

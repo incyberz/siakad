@@ -1,5 +1,5 @@
 <?php
-include 'khs_tmp.php';
+$err='';
 
 # ==========================================================
 # SAAT INI
@@ -54,7 +54,7 @@ if($d['data_kelas']!=''){
   $nama_prodi=$data_kelas[3];
   $jenjang=$data_kelas[4];
 }else{
-  die(div_alert('danger m-4','Maaf, Anda belum dimasukan ke Kelas-Angkatan manapun.'));
+  $err='Maaf, Anda belum dimasukan ke Kelas-Angkatan manapun.';
 }
 
 # ==========================================================
@@ -66,125 +66,138 @@ if($d['data_kurikulum']!=''){
   $nama_kurikulum=$data_kurikulum[1];
   $id_kalender=$data_kurikulum[2];
 
-  $manage_kurikulum = "<a href='?manage_kurikulum&id_kurikulum=$id_kurikulum'>Manage Kurikulum</a>";
-  $manage_kalender = "<a href='?manage_kalender&id_kalender=$id_kalender' >Manage Kalender</a>";
+  $manage_kurikulum = " | <a href='?manage_kurikulum&id_kurikulum=$id_kurikulum'>Manage Kurikulum</a>";
+  $manage_kalender = " | <a href='?manage_kalender&id_kalender=$id_kalender' >Manage Kalender</a>";
 }else{
-  die(div_alert('danger m-4','Maaf, belum ada data kurikulum untuk Anda.'));
+  $id_kalender = $undef;
+  $id_kurikulum = $undef;
+  $nama_kurikulum = $undef;
+  $manage_kalender='';
+  $manage_kurikulum='';
+  $err='Maaf, belum ada data kurikulum untuk Anda.';
 }
 
 echo "<span class=debug>ID-Kalender: <span id=id_kalender>$id_kalender</span></span>";
 
-?>
-<div class="wadah">
+$mhs_attr = "
+<div class='wadah'>
   <ul>
-    <li>Nama: <?=$nama_mhs?></li>
-    <li>NIM: <?=$nim?></li>
-    <li>Kelas: <?=$kelas?></li>
-    <!-- <li>Sekarang Tanggal: <?=$today?></li> -->
-    <li>Prodi: <?=$jenjang?>-<?=$nama_prodi?> Angkatan <?=$angkatan?></li>
-    <li>Tercatat pada Kurikulum: <?=$nama_kurikulum?><span class=debug id=id_kurikulum><?=$id_kurikulum?></span></li>
+    <li>Nama: $nama_mhs</li>
+    <li>NIM: $nim</li>
+    <li>Kelas: $kelas</li>
+    <!-- <li>Sekarang Tanggal: $today</li> -->
+    <li>Prodi: $jenjang-$nama_prodi Angkatan $angkatan</li>
+    <li>Tercatat pada Kurikulum: $nama_kurikulum<span class=debug id=id_kurikulum>$id_kurikulum</span></li>
   </ul>
 </div>
-<?php
-
-
-
-
-
-# ==========================================================
-# CEK KALENDER FOR MHS
-# ==========================================================
-$s_kalender = "SELECT 
-a.id as id_semester, 
-a.nomor, 
-a.tanggal_awal, 
-a.tanggal_akhir 
-
-FROM tb_semester a 
-JOIN tb_kalender b on b.id=a.id_kalender 
-WHERE a.id_kalender=$id_kalender 
 ";
 
-# ==========================================================
-# CEK SEMESTER FOR MHS DAN KURIKULUM-MK
-# ==========================================================
-$s_semester = $s_kalender." AND a.tanggal_awal <= '$today'";
-echo "<pre class=debug>$s_semester</pre>";
-$q = mysqli_query($cn,$s_semester) or die(mysqli_error($cn));
-if(mysqli_num_rows($q)==0) die("<div class='alert alert-danger'>Tidak ada Semester yang cocok pada Kalender Akademik. | $manage_kalender</div>");
 
-$thead = '<thead>
-  <th>Semester</th>
-  <th>Mata Kuliah, Sesi, dan Presensi</th>
-</thead>';
-$thead = ''; //zzz
+
+
+
+# ==========================================================
+# CEK KALENDER FOR MHS DAN HITUNG PRESENSI
+# ==========================================================
 $tr = '';
-$no_mk=0;
-$total_presensi = 0;
-$total_hadir = 0;
-$total_sakit = 0;
-$total_izin = 0;
-$total_alfa = 0;
-while ($d=mysqli_fetch_assoc($q)) {
-  $id_semester = $d['id_semester'];
-  $s2 = "SELECT 
-  a.id as id_kurikulum_mk,
-  a.id_mk,
-  b.nama as nama_mk,
-  (SELECT id FROM tb_jadwal WHERE id_kurikulum_mk=a.id) as id_jadwal,
-  (
-    SELECT d.nama  
-    FROM tb_dosen d 
-    JOIN tb_jadwal e on d.id=e.id_dosen 
-    JOIN tb_kurikulum_mk f on f.id=e.id_kurikulum_mk 
-    WHERE e.id_kurikulum_mk=a.id) as nama_dosen 
+$total_presensi=0;
+$total_hadir=0;
+$total_sakit=0;
+$total_izin=0;
+$total_alfa=0;
 
+if($id_kalender!=$undef){
+  $s_kalender = "SELECT 
+  a.id as id_semester, 
+  a.nomor, 
+  a.tanggal_awal, 
+  a.tanggal_akhir 
 
-  FROM tb_kurikulum_mk a 
-  JOIN tb_mk b on b.id=a.id_mk 
-  WHERE id_semester=$id_semester and id_kurikulum=$id_kurikulum  ";
-  $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
-  $jumlah_mk = mysqli_num_rows($q2);
-  $thead_mk='<thead>
-    <th>No</th>
-    <th>Mata Kuliah</th>
-    <th>Dosen Pengampu</th>
-    <th>Nilai Mata Kuliah</th>
+  FROM tb_semester a 
+  JOIN tb_kalender b on b.id=a.id_kalender 
+  WHERE a.id_kalender=$id_kalender 
+  ";
+
+  # ==========================================================
+  # CEK SEMESTER FOR MHS DAN KURIKULUM-MK
+  # ==========================================================
+  $s_semester = $s_kalender." AND a.tanggal_awal <= '$today'";
+  echo "<pre class=debug>$s_semester</pre>";
+  $q = mysqli_query($cn,$s_semester) or die(mysqli_error($cn));
+  if(mysqli_num_rows($q)==0) die("<div class='alert alert-danger'>Tidak ada Semester yang cocok pada Kalender Akademik. | $manage_kalender</div>");
+
+  $thead = '<thead>
+    <th>Semester</th>
+    <th>Mata Kuliah, Sesi, dan Presensi</th>
   </thead>';
-  $tr_mk='';
-  while ($d2=mysqli_fetch_assoc($q2)) {
-    $no_mk++;
-    $id_kurikulum_mk = $d2['id_kurikulum_mk'];
-    $manage_jadwal = "<a href='?manage_jadwal&id_kurikulum_mk=$id_kurikulum_mk'>Manage Jadwal</a>";
+  $thead = ''; //zzz
+  $no_mk=0;
+  $total_presensi = 0;
+  $total_hadir = 0;
+  $total_sakit = 0;
+  $total_izin = 0;
+  $total_alfa = 0;
+  while ($d=mysqli_fetch_assoc($q)) {
+    $id_semester = $d['id_semester'];
+    $s2 = "SELECT 
+    a.id as id_kurikulum_mk,
+    a.id_mk,
+    b.nama as nama_mk,
+    (SELECT id FROM tb_jadwal WHERE id_kurikulum_mk=a.id) as id_jadwal,
+    (
+      SELECT d.nama  
+      FROM tb_dosen d 
+      JOIN tb_jadwal e on d.id=e.id_dosen 
+      JOIN tb_kurikulum_mk f on f.id=e.id_kurikulum_mk 
+      WHERE e.id_kurikulum_mk=a.id) as nama_dosen 
 
-    # ==========================================================
-    # CEK JADWAL FOR THIS KURIKULUM-MK
-    # ==========================================================
-    $id_jadwal = $d2['id_jadwal'];
-    $nama_dosen = $d2['nama_dosen'];
-    $manage_sesi = "<a href='?manage_sesi&id_jadwal=$id_jadwal'>Manage Sesi</a>";
-    if($id_jadwal=='') die(div_alert('danger',"Terdapat MK Kurikulum yang belum dijadwalkan [<code>$d2[nama_mk]</code>]. | $manage_jadwal"));
+
+    FROM tb_kurikulum_mk a 
+    JOIN tb_mk b on b.id=a.id_mk 
+    WHERE id_semester=$id_semester and id_kurikulum=$id_kurikulum  ";
+    $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
+    $jumlah_mk = mysqli_num_rows($q2);
+    $thead_mk='<thead>
+      <th>No</th>
+      <th>Mata Kuliah</th>
+      <th>Dosen Pengampu</th>
+      <th>Nilai Mata Kuliah</th>
+    </thead>';
+    $tr_mk='';
+    while ($d2=mysqli_fetch_assoc($q2)) {
+      $no_mk++;
+      $id_kurikulum_mk = $d2['id_kurikulum_mk'];
+      $manage_jadwal = "<a href='?manage_jadwal&id_kurikulum_mk=$id_kurikulum_mk'>Manage Jadwal</a>";
+
+      # ==========================================================
+      # CEK JADWAL FOR THIS KURIKULUM-MK
+      # ==========================================================
+      $id_jadwal = $d2['id_jadwal'];
+      $nama_dosen = $d2['nama_dosen'];
+      $manage_sesi = "<a href='?manage_sesi&id_jadwal=$id_jadwal'>Manage Sesi</a>";
+      if($id_jadwal=='') die(div_alert('danger',"Terdapat MK Kurikulum yang belum dijadwalkan [<code>$d2[nama_mk]</code>]. | $manage_jadwal"));
 
 
 
-    $tr_mk .= "
+      $tr_mk .= "
+      <tr>
+        <td>$no_mk</td>
+        <td>$d2[nama_mk]</td>
+        <td>$d2[nama_dosen]</td>
+        <td>$tb_nilai</td>
+      </tr>";
+    }
+    $tb_mk = $tr_mk==''?div_alert('danger',"MK pada semester ini belum ada. | $manage_kurikulum"):"<table class=table>$thead_mk$tr_mk</table>";
+    
+    $tr .= "
     <tr>
-      <td>$no_mk</td>
-      <td>$d2[nama_mk]</td>
-      <td>$d2[nama_dosen]</td>
-      <td>$tb_nilai</td>
+      <td><h3 class=' biru'>Semester $d[nomor]</h3>$d[tanggal_awal] s.d $d[tanggal_akhir]</td>
+      <td>$tb_mk</td>
     </tr>";
-  }
-  $tb_mk = $tr_mk==''?div_alert('danger',"MK pada semester ini belum ada. | $manage_kurikulum"):"<table class=table>$thead_mk$tr_mk</table>";
-  
-  $tr .= "
-  <tr>
-    <td><h3 class=' biru'>Semester $d[nomor]</h3>$d[tanggal_awal] s.d $d[tanggal_akhir]</td>
-    <td>$tb_mk</td>
-  </tr>";
+  }  
 }
 
-$tb = $tr=='' ? div_alert('danger',"Belum ada semester yang dilalui. | $manage_kalender") : "<h3>Semester yang dilalui:</h3><table class=table>$thead$tr</tr></table>";
+$tb = $tr=='' ? div_alert('danger',"Belum ada semester yang dilalui pada SIAKAD. $manage_kalender") : "<h3>Semester yang dilalui:</h3><table class=table>$thead$tr</tr></table>";
 // echo $tb;
 
 $persen_presensi = $total_presensi==0?0:round($total_hadir/$total_presensi*100,2);
@@ -193,22 +206,24 @@ $persen_presensi = $total_presensi==0?0:round($total_hadir/$total_presensi*100,2
 
 
 
-
+include 'khs_akd.php';
+// exit;
 ?>
-
-
 <section id="khs" class="section-bg"  data-aos="fade-left">
   <div class="container">
 
     <div class="section-title">
-      <h2>KHS</h2>
-      <p>Berikut adalah Kartu Hasil Studi (KHS) pada Mata Kuliah yang Anda ikuti.</p>
+      <h2>KHS-SIAKAD</h2>
+      <div class="alert alert-danger">
+        Perhatian! SIAKAD masih dalam tahap pengembangan (UI-Only). <hr>Nilai undefined artinya belum ada data atau belum didaftarkan oleh Petugas Akademik.
+      </div>
+      <p>Berikut adalah Kartu Hasil Studi (KHS) pada Mata Kuliah yang terdaftar pada SIAKAD.</p>
     </div>
-
+    
+    <?=$mhs_attr?>
     <?=$tb?>
 
     <div class="wadah">
-      <h3>Rekap Presensi per Mahasiswa</h3>
       <table class="table">
         <tr class='gradasi-biru tebal'><td>Total Presensi</td><td><?=$total_presensi?></td></tr>
         <tr class='gradasi-hijau'><td>Total Hadir</td><td><?=$total_hadir?></td></tr>
@@ -217,7 +232,7 @@ $persen_presensi = $total_presensi==0?0:round($total_hadir/$total_presensi*100,2
         <tr class='gradasi-merah'><td>Total Alfa</td><td><?=$total_alfa?></td></tr>
       </table>
       <div class="wadah bg-white blue text-center">
-        <h1 class='tebal'>Persentase Presensi: <?=$persen_presensi?>%</h1>
+        <h1 class='tebal'><span style="font-size: 16px">Persentase Presensi:</span> <?=$persen_presensi?>%</h1>
       </div>
     </div>    
 

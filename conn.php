@@ -8,7 +8,7 @@ if ($online_version) {
   $db_server = "localhost";
   $db_user = "siakadikmiac_admsiakad";
   $db_pass = "SiakadIKMICirebon2022";
-  $db_name = "siakadikmiac_siakad_v4";
+  $db_name = "siakadikmiac_siakad_v6";
 }else{
   $db_server = "localhost";
   $db_user = "root";
