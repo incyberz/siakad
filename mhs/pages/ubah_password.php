@@ -1,5 +1,5 @@
 <?php
-echo "d_mhs[pass]: $d_mhs[password] post[password]: $_POST[password]";
+// echo "d_mhs[pass]: $d_mhs[password] post[password]: $_POST[password]";
 $hideit='';
 $password='';
 $cpassword='';
@@ -7,21 +7,21 @@ $password_lama='';
 $depas_note = $is_depas?div_alert('warning','Password Anda masih default (masih kosong atau sama dengan NIM). Anda wajib mengubahnya untuk meningkatkan keamanan akun Anda.'):'Silahkan Anda ubah password:';
 
 if(isset($_POST['btn_ubah_password'])){
-  echo '<pre>';
-  var_dump($_POST);
-  echo '</pre>';
+  // echo '<pre>';
+  // var_dump($_POST);
+  // echo '</pre>';
   if($_POST['password']==$_POST['nim']){
     echo div_alert('danger', 'Password tidak boleh sama dengan NIM.');
   }elseif($_POST['password']==$_POST['cpassword']){
-    if($d_mhs['password']!=md5($_POST['password_lama'])){
-      echo div_alert('danger', 'Password lama Anda tidak sesuai.'.$debug_note);
+    if($d_mhs['password']!=md5($_POST['password_lama']) and $d_mhs['password']!=''){
+      echo div_alert('danger', 'Password lama Anda tidak sesuai.');
     }else{
       $sql_password_lama = $_POST['password_lama']=='' ? 'password IS NULL' : 'password = \''.md5($_POST['password_lama']).'\'';
       $s = "UPDATE tb_mhs SET password=md5('$_POST[password]') WHERE $sql_password_lama AND nim='$nim'";
-      echo $s;
+      // echo $s;
       $q=mysqli_query($cn,$s) or die(mysqli_error($cn));
       // echo '<script>location.replace("?")</script>';
-      echo div_alert('success','Ubah Password berhasil.'.$s);
+      echo div_alert('success','Ubah Password berhasil.<hr><a href="?" class="btn btn-primary btn-block">Kembali ke Home</a>');
       exit;
     }
   }else{

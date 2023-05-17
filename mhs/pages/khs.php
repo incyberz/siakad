@@ -138,6 +138,7 @@ if($id_kalender!=$undef){
   $total_izin = 0;
   $total_alfa = 0;
   while ($d=mysqli_fetch_assoc($q)) {
+    $tb_nilai = 'tb_nilai zzz';
     $id_semester = $d['id_semester'];
     $s2 = "SELECT 
     a.id as id_kurikulum_mk,
@@ -208,6 +209,7 @@ $persen_presensi = $total_presensi==0?0:round($total_hadir/$total_presensi*100,2
 
 include 'khs_akd.php';
 // exit;
+if(0){
 ?>
 <section id="khs" class="section-bg"  data-aos="fade-left">
   <div class="container">
@@ -239,3 +241,4 @@ include 'khs_akd.php';
 
   </div>
 </section>
+<?php } ?>

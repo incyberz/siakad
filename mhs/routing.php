@@ -1,5 +1,6 @@
 <?php 
-$parameter = ($is_depas && $parameter!='logout') ? 'ubah_password' : $parameter;
+// $parameter = ($is_depas && $parameter!='logout') ? 'ubah_password' : $parameter;
+// zzz debug skip password
 switch ($parameter) {
   case '': 
   case 'home': include "pages/home.php"; break;
