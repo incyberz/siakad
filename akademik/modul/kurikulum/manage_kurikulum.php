@@ -294,7 +294,7 @@ $disabled_pdf = $total_mk==$total_mk_terjadwal ? '' : 'disabled';
 $btn_cetak = "<button class='btn btn-primary' $disabled_pdf>$img_aksi[pdf] Cetak PDF</button>";
 $form_cetak_pdf = $total_mk==$total_mk_terjadwal 
 ? div_alert('success',"Semua MK sudah terjadwal. Silahkan Anda boleh mencetak Kurikulum PDF.<hr>
-<form method=post target=_blank action='pdf/kurikulum.php'>
+<form method=post target=_blank action='../pdf/kurikulum.php'>
   <input class=debug name=id_kurikulum value=$id_kurikulum>
   $btn_cetak
   <span class='btn btn-secondary'>$link_cek_all_sesi</span>

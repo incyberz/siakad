@@ -18,6 +18,7 @@ function hm2angka($a){
 # ==========================================================
 $s = "SELECT 
 a.*, 
+b.kode as kode_mk,
 b.nama as nama_mk,
 b.semester,
 b.dosen,
@@ -33,6 +34,7 @@ if(mysqli_num_rows($q)>0){
     $div[$i]=''; 
     $total_bobot_smt[$i]=0;
     $total_nilai_smt[$i]=0;
+    $dmk[$i]='';
   }
   $i=0;
   $total_bobot=0;
@@ -41,43 +43,61 @@ if(mysqli_num_rows($q)>0){
   while ($d=mysqli_fetch_assoc($q)) {
     $i++;
     $max_smt = $d['semester']>$max_smt?$d['semester']:$max_smt;
-    $d['nilai'] = $d['nilai']==''?'<span style="color:#f55"><i>null</i></span>':$d['nilai'];
+    $nilai = $d['nilai']==''?'<span style="color:#f55"><i>null</i></span>':$d['nilai'];
     $d['hm'] = $d['hm']==''?'E':$d['hm'];
     $total_bobot+=$d['bobot'];
     $total_nilai+=hm2angka($d['hm'])*$d['bobot'];
     $total_bobot_smt[$d['semester']]+=$d['bobot'];
     $total_nilai_smt[$d['semester']]+=hm2angka($d['hm'])*$d['bobot'];
+    $kode_mk = $d['kode_mk']==''?'':$d['kode_mk'].' :: ';
     $div[$d['semester']].="
       <div class='wadah bg-white'>
         <div class=row>
           <div class='col-sm-1 kecil desktop'>$i</div>
-          <div class='col-sm-5'>$d[nama_mk]</div>
-          <div class='col-sm-2 kecil'><span class='mobile'>Nilai:</span> $d[nilai]</div>
+          <div class='col-sm-5'>$kode_mk$d[nama_mk]</div>
+          <div class='col-sm-2 kecil'><span class='mobile'>Nilai:</span> $nilai</div>
           <div class='col-sm-2 kecil'><span class='mobile'>SKS:</span> $d[bobot]</div>
           <div class='col-sm-2 kecil'><span class='mobile'>HM:</span> $d[hm]</div>
         </div>
       </div>
     ";
+
+    $kode_mk = $d['kode_mk']==''?'-':$d['kode_mk'];
+    $dmk[$d['semester']] .= $i . ';'
+             . $kode_mk . ';'
+             . $d['nama_mk'] . ';'
+             . $d['nilai'] . ';'
+             . $d['bobot'] . ';'
+             . $d['hm'] . ';'
+             . '<br>'
+             ;
+
+
   }
+
 
   
   $divs='';
+  $dmks='';
   for ($i=1; $i <= $max_smt ; $i++) {
-    $ips[$i] = $total_bobot_smt[$i]==0?0:round($total_nilai_smt[$i]/$total_bobot_smt[$i],2);
-    $ips_show[$i] = "<div class='wadah gradasi-kuning text-center'>IP-Semester-$i : $ips[$i]</div>";
+    $ip[$i] = $total_bobot_smt[$i]==0?0:round($total_nilai_smt[$i]/$total_bobot_smt[$i],2);
+    $ip_show[$i] = "<div class='wadah gradasi-kuning text-center'>IP-Semester-$i : $ip[$i]</div>";
     $div[$i]=$div[$i]==''?"<div class='wadah gradasi-merah'>Semester $i ~ No Data.</div>"
-    :"<div class='wadah gradasi-hijau'><p>Semester $i</p>$div[$i]$ips_show[$i]</div>";
+    :"<div class='wadah gradasi-hijau'><p>Semester $i</p>$div[$i]$ip_show[$i]</div>";
+    $dmk[$i]=$dmk[$i]==''?"Semester $i ~ No Data.":"$dmk[$i]|$ip[$i]";
     $divs.=$div[$i];
+    $dmks.=$dmk[$i].'<hr>';
   }
 
   $ipk = $total_bobot==0?0:round($total_nilai/$total_bobot,2);
   $ipk_show = "<div class='wadah gradasi-biru text-center'>IP Kumulatif : $ipk</div>";
 
   $divs.= $ipk_show;
+  $dmks.= "||$ipk";
   $info = '<div class="mt-3"><small><i>)* jika terdapat nilai <code>null</code> maka dikarenakan Anda belum KRS.</i></small></div>';
   $divs.=$info;
 }else{
-  $divs = div_alert('danger','No data nilai akademik.');
+  $divs = div_alert('danger','Belum ada data nilai dari akademik.');
 }
 ?>
 
@@ -85,13 +105,22 @@ if(mysqli_num_rows($q)>0){
 <section id="khs_akd" class="section-bg"  data-aos="fade-left">
   <div class="container">
 
+  <div class=wadah>
+    <?=$dmks?>
+  </div>
+
     <div class="section-title">
       <h2>KHS dari Akademik</h2>
       <p>Berikut adalah Kartu Hasil Studi (KHS) langsung dari Data Akademik (Non-SIAKAD).</p>
     </div>
 
     <?=$divs?>
-  <hr>
+    <hr>
+    <form method=post target=_blank action='?khs_pdf'>
+      <input type="hiddena" value="<?=$dmks?>" name=dmks>
+      <input type="hidden" value="<?=$nim?>" name=nim>
+      <button class="btn btn-primary">Donload KHS PDF</button>
+    </form>
 
   </div>
 </section>

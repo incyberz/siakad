@@ -10,21 +10,7 @@ switch ($parameter) {
   if(file_exists($auto_page)){
     include $auto_page;
   }else{
-    die('Index parameter: '. $parameter . ' belum terdefinisi.');
+    die(div_alert('danger','Index parameter: '. $parameter . ' belum terdefinisi.'));
   }
-
-  // if($admin_level==2 or $admin_level==9){
-  //   # =================================================
-  //   # KHUSUS GM
-  //   # =================================================
-  //   switch ($parameter) {
-  //     case 'rpresensi': include "pages/gm/presensi_rekap.php"; break;
-  //     default: include "na.php"; break;
-  //   }
-  // }else{
-  //   include "na.php"; 
-  // }
-
-  // break;
 }
 ?>

@@ -3,6 +3,7 @@
 # INDEX MAHASISWA
 # ========================================================
 session_start();
+$nama_mhs='';
 $dm=0;
 if (0) {
   session_unset();
@@ -34,7 +35,7 @@ if(!isset($_SESSION['siakad_mhs'])){
   $is_login=1;
   $nim = $_SESSION['siakad_mhs'];
   // $nim = '31229996'; /// zzz debug ahmad firdaus dummy
-  // $nim = '41204692'; 
+  $nim = '41200214'; 
 
 
   # ========================================================
@@ -76,7 +77,7 @@ if(!isset($_SESSION['siakad_mhs'])){
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Portal Mhs - <?=$nama_mhs ?></title>
+  <title>SIAKAD Mhs - <?=$nama_mhs ?></title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
