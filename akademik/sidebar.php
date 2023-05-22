@@ -20,7 +20,8 @@
 
       <li class=proper><a onclick="belom()"><i class="icon_genius"></i><span class=merah>Pembayaran</span></a></li>
       <li class=proper><a onclick="belom()"><i class="icon_genius"></i><span class=merah>KRS</span></a></li>
-      <li class=proper><a onclick="belom()"><i class="icon_genius"></i><span class=merah>KHS</span></a></li>
+      <!-- <li class=proper><a onclick="belom()"><i class="icon_genius"></i><span class=merah>KHS</span></a></li> -->
+      <li class=proper><a href="?khs"><i class="icon_genius"></i>KHS</a></li>
       <li class=proper><a onclick="belom()"><i class="icon_genius"></i><span class=merah>Transkrip</span></a></li>
 
       <!-- <li class=proper><a href="?presensi"><i class="icon_genius"></i>Presensi</a></li> -->

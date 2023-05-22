@@ -1,0 +1,2 @@
+<h1>Verifikasi Draft KHS</h1>
+Lorem ipsum dolor, sit amet consectetur adipisicing elit. Cupiditate labore vel incidunt eum quia suscipit blanditiis doloribus in deserunt error, minus atque iure ea totam dicta tempora adipisci voluptatem! Perspiciatis!

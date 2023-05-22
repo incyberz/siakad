@@ -65,14 +65,22 @@ if(mysqli_num_rows($q)>0){
 
     $ipks[$d['semester']] = $total_nm_smt[$d['semester']]/$total_sks_smt[$d['semester']];
     $kode_mk = $d['kode_mk']==''?'':$d['kode_mk'].' :: ';
+
+    $img_wa = '<img src="../assets/img/icons/wa.png" height=25px />';
+
     $div[$d['semester']].="
       <div class='wadah bg-white'>
         <div class=row>
           <div class='col-sm-1 kecil desktop'>$i</div>
           <div class='col-sm-5'>$kode_mk$d[nama_mk]</div>
-          <div class='col-sm-2 kecil'><span class='mobile'>HM:</span> $d[hm]</div>
-          <div class='col-sm-2 kecil'><span class='mobile'>SKS:</span> $d[bobot]</div>
-          <div class='col-sm-2 kecil'><span class='mobile'>NM:</span> $nm</div>
+          <div class='col-sm-6 kecil'>
+            <div class=row>
+              <div class='col-sm-3'><span class='mobile'>HM:</span> $d[hm]</div>
+              <div class='col-sm-3'><span class='mobile'>SKS:</span> $d[bobot]</div>
+              <div class='col-sm-3'><span class='mobile'>NM:</span> $nm</div>
+              <div class='col-sm-3'><a href='#zzz'>$img_wa</a></div>
+            </div>
+          </div>
         </div>
       </div>
     ";
@@ -161,7 +169,7 @@ if(mysqli_num_rows($q)>0){
     <?=$divs?>
     <hr>
     <form method=post target=_blank action='pages/khs_pdf.php'>
-      <input type="hiddena" value="<?=$dmks?>" name=dmks>
+      <input type="hidden" value="<?=$dmks?>" name=dmks>
       <input type="hidden" value="<?=$nim?>" name=nim>
       <button class="btn btn-primary">Donload KHS PDF</button>
     </form>
