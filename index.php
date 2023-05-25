@@ -77,7 +77,7 @@ include 'public/fitur_routing.php';
   <link href="assets/css/style.css" rel="stylesheet">
   <link href="assets/css/siakad.css" rel="stylesheet">
   <script src="assets/vendor/jquery/jquery.min.js"></script>
-  <?php include '../insho_styles.php'; ?>
+  <?php include 'include/insho_styles_link.php'; ?>
 </head>
 
 <body>

@@ -6,4 +6,4 @@ if(!$kelas){
   exit;
 }
 
-echo 'lanjut';
+echo 'This page ready to code.';

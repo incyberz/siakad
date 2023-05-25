@@ -3,7 +3,14 @@ session_start();
 // session_destroy(); exit;
 $dm=1;
 include "../config.php";
-include "../../insho_styles.php";
+
+# ========================================================
+# INCLUDE INSHO STYLES
+# ========================================================
+$insho_styles = $online_version ? '../insho_styles.php' : '../../insho_styles.php';
+include $insho_styles;
+
+
 $folder_rps = "../uploads/rps";
 $folder_media_soal = "../uploads/media_soal";
 

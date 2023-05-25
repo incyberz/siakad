@@ -23,8 +23,8 @@ b.nama as nama_mk,
 b.semester,
 b.dosen,
 b.bobot 
-FROM tb_nilai_tmp a 
-JOIN tb_mk_tmp b ON a.id_mk_tmp=b.id 
+FROM tb_nilai_manual a 
+JOIN tb_mk_manual b ON a.id_mk_manual=b.id 
 WHERE a.nim='$nim' 
 ORDER BY b.semester";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
@@ -78,7 +78,7 @@ if(mysqli_num_rows($q)>0){
               <div class='col-sm-3'><span class='mobile'>HM:</span> $d[hm]</div>
               <div class='col-sm-3'><span class='mobile'>SKS:</span> $d[bobot]</div>
               <div class='col-sm-3'><span class='mobile'>NM:</span> $nm</div>
-              <div class='col-sm-3'><a href='#zzz'>$img_wa</a></div>
+              <div class='col-sm-3'><a href='#zzz' class='wa_not_ready'>$img_wa</a></div>
             </div>
           </div>
         </div>
@@ -157,10 +157,6 @@ if(mysqli_num_rows($q)>0){
 <section id="khs_akd" class="section-bg"  data-aos="fade-left">
   <div class="container">
 
-  <div class=wadah>
-    <?=$dmks?>
-  </div>
-
     <div class="section-title">
       <h2>KHS dari Akademik</h2>
       <p>Berikut adalah Kartu Hasil Studi (KHS) langsung dari Data Akademik (Non-SIAKAD).</p>
@@ -177,3 +173,10 @@ if(mysqli_num_rows($q)>0){
   </div>
 </section>
 
+<script>
+  $(function(){
+    $('.wa_not_ready').click(function(){
+      alert('Maaf, Fitur Whatsapp Gateway sedang dalam tahap pengembangan. Terimakasih sudah mencoba.\n\n(by SIAKAD Programmer)');
+    })
+  })
+</script>

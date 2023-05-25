@@ -18,12 +18,8 @@ include "../config.php";
 # ========================================================
 # INCLUDE INSHO STYLES
 # ========================================================
-$insho_styles = '../../insho_styles.php';
-if(file_exists($insho_styles)){
-  include $insho_styles;
-}else{
-  echo "Warning! InSho Styles Sheet not found.";
-}
+$insho_styles = $online_version ? '../insho_styles.php' : '../../insho_styles.php';
+include $insho_styles;
 
 if(!isset($_SESSION['siakad_mhs'])){
   // $_SESSION['siakad_mhs'] = "51220001";
@@ -35,7 +31,7 @@ if(!isset($_SESSION['siakad_mhs'])){
   $is_login=1;
   $nim = $_SESSION['siakad_mhs'];
   // $nim = '31229996'; /// zzz debug ahmad firdaus dummy
-  $nim = '41200214'; 
+  // $nim = '41200214'; 
 
 
   # ========================================================

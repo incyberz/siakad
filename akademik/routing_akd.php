@@ -39,9 +39,14 @@ switch ($c[0]){
 
   case 'khs': $konten = 'modul/khs/manage_khs.php';break;
   case 'input_khs': $konten = 'modul/khs/input_khs.php';break;
+  case 'import_khs': $konten = 'modul/khs/import_khs.php';break;
   case 'input_khs_manual': $konten = 'modul/khs/input_khs_manual.php';break;
   case 'export_khs': $konten = 'modul/khs/export_khs.php';break;
   case 'verifikasi_draft_khs': $konten = 'modul/khs/verifikasi_draft_khs.php';break;
+
+  case 'list_khs_manual': $konten = 'modul/khs/list_khs_manual.php';break;
+  case 'input_khs_manual': $konten = 'modul/khs/input_khs_manual.php';break;
+  case 'import_khs_manual': $konten = 'modul/khs/import_khs_manual.php';break;
 }
 
 $manage_kalender = '<a href="?manage_kalender" class="proper">manage kalender</a>';

@@ -207,7 +207,7 @@ $persen_presensi = $total_presensi==0?0:round($total_hadir/$total_presensi*100,2
 
 
 
-include 'khs_akd.php';
+include 'khs_manual.php';
 // exit;
 if(0){
 ?>

@@ -13,7 +13,8 @@ include "../config.php";
 # ========================================================
 # INCLUDE INSHO STYLES
 # ========================================================
-include 'include/insho_styles.php';
+$insho_styles = $online_version ? '../insho_styles.php' : '../../insho_styles.php';
+include $insho_styles;
 
 # ========================================================
 # INCLUDE LOGIN PETUGAS
