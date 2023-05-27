@@ -2,6 +2,7 @@
 <style>.mobile{display:none}@media(max-width:575px){.mobile{display:inline}}</style>
 <style>.desktop{display:inline}@media(max-width:575px){.desktop{display:none}}</style>
 <?php
+$disabled_pdf = '';
 function hm2angka($a){
   switch (strtolower($a)) {
     case 'a': return 4; break;
@@ -150,6 +151,7 @@ if(mysqli_num_rows($q)>0){
   $divs.=$info;
 }else{
   $divs = div_alert('danger','Belum ada data nilai dari akademik.');
+  $disabled_pdf = 'disabled';
 }
 ?>
 
@@ -167,7 +169,7 @@ if(mysqli_num_rows($q)>0){
     <form method=post target=_blank action='pages/khs_pdf.php'>
       <input type="hidden" value="<?=$dmks?>" name=dmks>
       <input type="hidden" value="<?=$nim?>" name=nim>
-      <button class="btn btn-primary">Donload KHS PDF</button>
+      <button class="btn btn-primary" <?=$disabled_pdf?>>Donload KHS PDF</button>
     </form>
 
   </div>

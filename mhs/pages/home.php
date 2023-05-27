@@ -8,6 +8,7 @@
       <span class=debug>id_mhs <span><?=$id_mhs?></span></span>
       <span class=debug>id_semester <span><?=$id_semester?></span></span>
       <ul>
+        <li>Status: <?=$status_mhs?></li>
         <li>Angtakan: <?=$angkatan?></li>
         <li>Prodi: <?=$nama_prodi?></li>
         <li>Semester: <?=$semester?></li>

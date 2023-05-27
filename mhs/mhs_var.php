@@ -8,6 +8,7 @@ $angkatan=$undef;
 $prodi=$undef;
 $semester=$undef;
 $kelas=$undef;
+$status_mhs=$undef;
 
 
 # ========================================================
@@ -64,6 +65,10 @@ $no_wa = $d_mhs['no_wa']!=''?$d_mhs['no_wa']:$undef;
 $no_wa_show = $no_wa==$undef?$undef:substr($no_wa,0,4).'***'.substr($no_wa,strlen($no_wa)-3,3);
 $link_wa = "https://api.whatsapp.com/send?phone=62$no_wa&text=Halo... saya $nama_mhs";
 
+# ========================================================
+# STATUS AKADEMIK
+# ========================================================
+$status_mhs = $d_mhs['status_mhs']==1 ? 'Aktif' : 'Tidak Aktif';
 $angkatan = $d_mhs['angkatan']!=''?$d_mhs['angkatan']:$undef;
 $nama_prodi = $d_mhs['nama_prodi']!=''?$d_mhs['nama_prodi']:$undef;
 $jenjang = $d_mhs['jenjang']!=''?$d_mhs['jenjang']:$undef;

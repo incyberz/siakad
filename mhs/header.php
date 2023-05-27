@@ -24,8 +24,13 @@
         
       </div> -->
     </div>
-    <div class='text-light'><?=$nama_mhs?></div>
-    <div class='text-light'><small>NIM: <?=$nim?></small></div>
+    <div class='text-light'><span id=nama_mhs><?=$nama_mhs?></span></div>
+    <div class='text-light'>
+      <small>
+        NIM: <span id=nim><?=$nim?></span>
+        <span class=debug>id_mhs: <span id=id_mhs><?=$id_mhs?></span></span>
+      </small>
+    </div>
 
     <?php include "nav.php"; ?>
     <button type="button" class="mobile-nav-toggle d-xl-none"><i class="icofont-navigation-menu"></i></button>
