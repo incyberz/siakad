@@ -61,9 +61,10 @@ if(!file_exists($img_bg)) $img_bg = "uploads/bg_na.jpg";
 $id_mhs = $d_mhs['id'];
 $nama_mhs = $d_mhs['nama'];
 $nama_mhs = ucwords(strtolower($nama_mhs));
-$no_wa = $d_mhs['no_wa']!=''?$d_mhs['no_wa']:$undef;
-$no_wa_show = $no_wa==$undef?$undef:substr($no_wa,0,4).'***'.substr($no_wa,strlen($no_wa)-3,3);
+$no_wa = $d_mhs['no_wa']!=''?$d_mhs['no_wa']:'';
+$no_wa_show = $no_wa==''?$undef:substr($no_wa,0,4).'***'.substr($no_wa,strlen($no_wa)-3,3);
 $link_wa = "https://api.whatsapp.com/send?phone=62$no_wa&text=Halo... saya $nama_mhs";
+$is_verified_no_wa = $d_mhs['is_verified_no_wa'];
 
 # ========================================================
 # STATUS AKADEMIK

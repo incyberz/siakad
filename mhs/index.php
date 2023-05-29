@@ -14,6 +14,7 @@ if (0) {
 //   die("Anda belum login. Silahkan <a href='../'>login dahulu</a>.");
 // } 
 include "../config.php";
+include "../include/nomor_ikmi.php";
 
 # ========================================================
 # INCLUDE INSHO STYLES

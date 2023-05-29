@@ -22,7 +22,7 @@ a.*,
 b.kode as kode_mk,
 b.nama as nama_mk,
 b.semester,
-b.dosen,
+b.dosen_manual,
 b.bobot 
 FROM tb_nilai_manual a 
 JOIN tb_mk_manual b ON a.id_mk_manual=b.id 
@@ -67,7 +67,13 @@ if(mysqli_num_rows($q)>0){
     $ipks[$d['semester']] = $total_nm_smt[$d['semester']]/$total_sks_smt[$d['semester']];
     $kode_mk = $d['kode_mk']==''?'':$d['kode_mk'].' :: ';
 
-    $img_wa = '<img src="../assets/img/icons/wa.png" height=25px />';
+    $img_wa_complain = '<img src="../assets/img/icons/wa_complain.png" height=25px />';
+    $img_agree = '<img src="../assets/img/icons/agree.png" height=25px />';
+    $img_check = '<img src="../assets/img/icons/check.png" height=25px />';
+    $link_complain = "<a href='?komplain_nilai&id_nilai=$d[id]' onclick='return confirm(\"Apakah kamu ingin komplain nilai ini ke dosen?\")'>$img_wa_complain</a>";
+    $link_agree = "<a href='?agree_nilai&id_nilai=$d[id]' onclick='return confirm(\"Apakah kamu setuju dengan nilai tersebut?\")'>$img_agree</a>";
+
+    $aksi_nilai = $d['tanggal_disetujui_mhs']=='' ? "$link_complain $link_agree" : $img_check;
 
     $div[$d['semester']].="
       <div class='wadah bg-white'>
@@ -79,7 +85,7 @@ if(mysqli_num_rows($q)>0){
               <div class='col-sm-3'><span class='mobile'>HM:</span> $d[hm]</div>
               <div class='col-sm-3'><span class='mobile'>SKS:</span> $d[bobot]</div>
               <div class='col-sm-3'><span class='mobile'>NM:</span> $nm</div>
-              <div class='col-sm-3'><a href='#zzz' class='wa_not_ready'>$img_wa</a></div>
+              <div class='col-sm-3'>$aksi_nilai</div>
             </div>
           </div>
         </div>

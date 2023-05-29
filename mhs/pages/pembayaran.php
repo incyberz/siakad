@@ -29,11 +29,21 @@ while ($d=mysqli_fetch_assoc($q)) {
   $jumlah_bayar = $d['jumlah_bayar']==''?'':number_format($d['jumlah_bayar'],0);
   $sisa_bayar = $d['nominal']-$d['jumlah_bayar'];
 
-  $wa_petugas = "<a href='?wa'><img height=25px class=img_zoom src='../assets/img/icons/wa.png'></a>";
+  $form_wa_petugas = "
+    <form method=post action='?wa'>
+      <input class=debug name=perihal value='Verifikasi Pembayaran $d[nama]'>
+      <input class=debug name=kepada value='Petugas Keuangan'>
+      <input class=debug name=no_tujuan value='$no_bau'>
+      <input class=debug name=tanggal_pengajuan value='$d[last_bayar]'>
+      <input class=debug name=info value='Nominal: $jumlah_bayar'>
+      <input class=debug name=link_akses value='https://siakad.ikmi.ac.id/keuangan/?verifikasi_bukti_bayar&nim=$nim&id_biaya=$d[id]'>
+      <button class='btn btn-success btn-sm'><img height=25px class=img_zoom src='../assets/img/icons/wa.png'> Hubungi Petugas</button>
+    </form>
+  ";
 
 
   $lunas_show = $jumlah_bayar==''?'':"<div><a class='tebal red' href='?lihat_trx&id_biaya=$d[id]'>Belum Lunas (sisa ".number_format($sisa_bayar).')</a></div>';
-  $lunas_show = $sisa_bayar==0?"<div><a class='tebal darkred' href='?lihat_trx&id_biaya=$d[id]'>Sedang Proses Verifikasi</a> $wa_petugas</div>":$lunas_show;
+  $lunas_show = $sisa_bayar==0?"<div><a class='tebal darkred' href='?lihat_trx&id_biaya=$d[id]'>Sedang Proses Verifikasi</a> $form_wa_petugas</div>":$lunas_show;
   $lunas_show = $d['status_bayar']==1?"<div><a class='tebal biru' href='?lihat_trx&id_biaya=$d[id]'>Lunas</a></div>":$lunas_show;
   $status_bayar = $jumlah_bayar==''?'':"$jumlah_bayar<div class='kecil miring abu'>$d[last_bayar]</div>$lunas_show";
   
