@@ -72,11 +72,11 @@ if($d['sedang_komplain']){
   </div>
   ";
 }else{
-  $d['hm'] = strtoupper($d['hm']);
-  $d['id_dosen'] = 999; //zzz
-  $d['nama_dosen'] = 'IIN, M.Kom'; //zzz
-  $d['no_wa_dosen'] = '6287729007318'; //zzz
-  $d['hm'] = 'C'; //zzz
+  // $d['hm'] = strtoupper($d['hm']);
+  // $d['id_dosen'] = 999; //zzz
+  // $d['nama_dosen'] = 'IIN, M.Kom'; //zzz
+  // $d['no_wa_dosen'] = '6287729007318'; //zzz
+  // $d['hm'] = 'C'; //zzz
 
   $rhm = ['A','B','C','D','E'];
   $opthm = '';
@@ -86,7 +86,7 @@ if($d['sedang_komplain']){
   }
 
   if($d['id_dosen']==''){
-    $form = div_alert('danger', 'Maaf, Data Mata Kuliah ini belum belum dipasangkan dengan Data Dosen pada SIAKAD.');
+    $form = div_alert('danger', 'Maaf, Data Mata Kuliah ini belum dipasangkan dengan Data Dosen pada SIAKAD.');
   }elseif($d['no_wa_dosen']==''){
     $form = div_alert('danger', "Maaf, Data Dosen dengan nama <u>$d[nama_dosen]</u> belum mempunyai data Nomor Whatsapp pada SIAKAD.");
   }elseif($d['hm']=='A'){

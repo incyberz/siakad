@@ -23,7 +23,9 @@ b.kode as kode_mk,
 b.nama as nama_mk,
 b.semester,
 b.dosen_manual,
-b.bobot 
+b.bobot,
+(SELECT 1 FROM tb_komplain_nilai WHERE id_nilai=a.id) as sedang_komplain 
+
 FROM tb_nilai_manual a 
 JOIN tb_mk_manual b ON a.id_mk_manual=b.id 
 WHERE a.nim='$nim' 
@@ -43,7 +45,11 @@ if(mysqli_num_rows($q)>0){
   $total_nm_all=0;
   $max_smt=0;
   $last_smt=0;
+  $count_nilai=0;
+  $count_nilai_verified=0;
   while ($d=mysqli_fetch_assoc($q)) {
+    $count_nilai++;
+    if($d['tanggal_disetujui_mhs']!='')$count_nilai_verified++;
     // $i++;
     if($last_smt!=$d['semester']){
       $last_smt=$d['semester'];
@@ -68,18 +74,24 @@ if(mysqli_num_rows($q)>0){
     $kode_mk = $d['kode_mk']==''?'':$d['kode_mk'].' :: ';
 
     $img_wa_complain = '<img src="../assets/img/icons/wa_complain.png" height=25px />';
+    $img_sedang_complain = '<img src="../assets/img/icons/load.png" height=25px />';
     $img_agree = '<img src="../assets/img/icons/agree.png" height=25px />';
     $img_check = '<img src="../assets/img/icons/check.png" height=25px />';
     $link_complain = "<a href='?komplain_nilai&id_nilai=$d[id]' onclick='return confirm(\"Apakah kamu ingin komplain nilai ini ke dosen?\")'>$img_wa_complain</a>";
+    $link_sedang_complain = "<a href='?komplain_nilai&id_nilai=$d[id]' onclick='return confirm(\"Menuju laman komplain nilai?\")'>$img_sedang_complain</a>";
     $link_agree = "<a href='?agree_nilai&id_nilai=$d[id]' onclick='return confirm(\"Apakah kamu setuju dengan nilai tersebut?\")'>$img_agree</a>";
 
     $aksi_nilai = $d['tanggal_disetujui_mhs']=='' ? "$link_complain $link_agree" : $img_check;
+    $aksi_nilai = $d['sedang_komplain']=='' ? $aksi_nilai : $link_sedang_complain;
 
     $div[$d['semester']].="
       <div class='wadah bg-white'>
         <div class=row>
           <div class='col-sm-1 kecil desktop'>$i</div>
-          <div class='col-sm-5'>$kode_mk$d[nama_mk]</div>
+          <div class='col-sm-5'>
+            $kode_mk$d[nama_mk]
+            <span class=debug>id_nilai: $d[id]</span>
+          </div>
           <div class='col-sm-6 kecil'>
             <div class=row>
               <div class='col-sm-3'><span class='mobile'>HM:</span> $d[hm]</div>
@@ -106,10 +118,12 @@ if(mysqli_num_rows($q)>0){
              ;
 
 
-  }
+  } //end while loop db
 
 
-  
+  # =============================================
+  # UI DATA HINGGA MAX SEMESTER
+  # =============================================
   $divs='';
   $dmks='';
   $ipks=0;
@@ -146,7 +160,7 @@ if(mysqli_num_rows($q)>0){
     $dmk[$i]=$dmk[$i]==''?"Semester $i ~ No Data.":"$dmk[$i]|$ip[$i]|$ipks|$total_sks|$total_nm";
     $divs.=$div[$i];
     $dmks.=$dmk[$i].'<hr>';
-  }
+  } // END FOR MAX SEMESTER
 
   $ipk = $total_sks_all==0?0:round($total_nm_all/$total_sks_all,2);
   $ipk_show = "<div class='wadah gradasi-biru text-center'>IP Kumulatif : $ipk</div>";
@@ -159,6 +173,9 @@ if(mysqli_num_rows($q)>0){
   $divs = div_alert('danger','Belum ada data nilai dari akademik.');
   $disabled_pdf = 'disabled';
 }
+
+$disabled_pdf = $count_nilai==$count_nilai_verified ? $disabled_pdf : 'disabled';
+$info_disabled = $count_nilai==$count_nilai_verified ? '' : "<div class='kecil red miring'>Semua nilai harus terverifikasi (Anda setujui) agar dapat cetak KHS.";
 ?>
 
 
@@ -176,6 +193,7 @@ if(mysqli_num_rows($q)>0){
       <input type="hidden" value="<?=$dmks?>" name=dmks>
       <input type="hidden" value="<?=$nim?>" name=nim>
       <button class="btn btn-primary" <?=$disabled_pdf?>>Donload KHS PDF</button>
+      <?=$info_disabled?>
     </form>
 
   </div>
