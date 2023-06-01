@@ -2,7 +2,10 @@
 $last_use_wa_gateway = $d_mhs['last_use_wa_gateway'];
 $last_use_second = 600-(strtotime('now')-strtotime($last_use_wa_gateway));
 
-if($dm) {$last_use_second = 0; } //zzz debug
+if($dm) {
+  $last_use_second = 0; 
+  echo '<span class=debug>Debug Mode enabled, set zero last_use_second.</span>';
+}
 
 $script_timer_selisih = "
 <script>
@@ -60,13 +63,10 @@ if($last_use_second>1){
     // exit;
   }else{
     // normal flow
-    // $no_wa=''; // zzz debug
-    // $is_verified_no_wa=0; //zzz debug
     echo "<span class=debug>no_wa: $no_wa</span>";
     if($no_wa=='' OR !$is_verified_no_wa){
       $link_ver_my_wa = '$link_ver_my_wa';
       
-      // $text_wa = "Yth. Petugas Akademik ... zzz";
       
       $no_wa_tujuan = $no_baak;
       $link_verif = "https://siakad.ikmi.ac.id/akademik/?verifikasi_nomor_wa_mhs&no_wa=${no_wa}&nim=${nim}";

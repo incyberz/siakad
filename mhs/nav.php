@@ -9,7 +9,6 @@
   #navigasi li{padding: 5px; list-style:none} 
 
 </style>
-<!-- <nav class="nav-menuzzz" id="navigasi"> -->
   <ul id="navigasi">
     <li class="active"><a href="?"><i class="bx bx-home"></i> <span>Home</span></a></li>
     <li><a href="?pembayaran"><i class="bx bx-file-blank"></i> <span>Pembayaran</span></a></li>
@@ -23,4 +22,3 @@
     <li><a href="?logout" onclick="return confirm('Yakin untuk Logout?')"><i class="bx bx-log-out"></i> <span>Logout</span></a></li>
     <!-- <li><a href="?contact"><i class="bx bx-phone-call"></i> Contact</a></li> -->
   </ul>
-<!-- </nav> -->

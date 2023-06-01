@@ -1,6 +1,6 @@
 <?php 
 // ubah password default
-$parameter = ($is_depas && $parameter!='logout') ? 'ubah_password' : $parameter;
+// $parameter = ($is_depas && $parameter!='logout') ? 'ubah_password' : $parameter;
 
 switch ($parameter) {
   case '': 

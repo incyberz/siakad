@@ -4,7 +4,7 @@
 # ========================================================
 session_start();
 $nama_mhs='';
-$dm=1;
+$dm=0;
 if (0) {
   session_unset();
   exit();
@@ -31,8 +31,6 @@ if(!isset($_SESSION['siakad_mhs'])){
 }else{
   $is_login=1;
   $nim = $_SESSION['siakad_mhs'];
-  // $nim = '31229996'; /// zzz debug ahmad firdaus dummy
-  // $nim = '41200214'; 
 
 
   # ========================================================

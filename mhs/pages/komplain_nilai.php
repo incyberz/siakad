@@ -40,27 +40,36 @@ $d = mysqli_fetch_assoc($q);
 
 if($d['sedang_komplain']){
   $s = "SELECT a.*, 
-  b.nama as nama_dosen,
-  b.no_wa as no_wa_dosen 
+  (SELECT nama FROM tb_dosen where id=a.id_dosen) as nama_dosen,
+  (SELECT no_wa FROM tb_dosen where id=a.id_dosen) as no_wa_dosen 
 
   FROM tb_komplain_nilai a 
-  JOIN tb_dosen b ON a.id_dosen=b.id  
   WHERE a.id_nilai=$id_nilai";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   $d=mysqli_fetch_assoc($q);
+
+  if(mysqli_num_rows($q)==0) die(div_alert('danger', 'Data Komplain Nilai tidak ditemukan.'));
 
   // Status Komplain
   // 0|null belum diperiksa
   // 1 sudah dibaca
   // 2 disetujui
   // -1 rejected
+
+  // echo '<pre>';
+  // var_dump($d);
+  // echo '</pre>';
+
+
   $status_komplain = $d['status']==1 ? 'Sedang diperiksa' : 'Belum dibaca';
   $status_komplain = $d['status']==2 ? 'Komplain Disetujui' : $status_komplain;
   $status_komplain = $d['status']==-1 ? 'Komplain Ditolak' : $status_komplain;
 
+  $link_batalkan = " | <a onclick='return confirm(\"Yakin untuk membatalkan komplain?\")' href='?batalkan_komplain&id_nilai=$id_nilai' class=red>Batalkan</a>";
+
   $form = "
   <div class=wadah>
-    <div class='tebal darkblue mb-2'>Status: Sedang Komplain.</div>
+    <div class='tebal darkblue mb-2'>Status: Sedang Komplain. $link_batalkan</div>
     <div class=wadah>
       <div>Kepada : $d[nama_dosen]</div>
       <div>Whatsapp : $d[no_wa_dosen]</div>
@@ -72,11 +81,6 @@ if($d['sedang_komplain']){
   </div>
   ";
 }else{
-  // $d['hm'] = strtoupper($d['hm']);
-  // $d['id_dosen'] = 999; //zzz
-  // $d['nama_dosen'] = 'IIN, M.Kom'; //zzz
-  // $d['no_wa_dosen'] = '6287729007318'; //zzz
-  // $d['hm'] = 'C'; //zzz
 
   $rhm = ['A','B','C','D','E'];
   $opthm = '';
@@ -86,7 +90,7 @@ if($d['sedang_komplain']){
   }
 
   if($d['id_dosen']==''){
-    $form = div_alert('danger', 'Maaf, Data Mata Kuliah ini belum dipasangkan dengan Data Dosen pada SIAKAD.');
+    $form = div_alert('danger', 'Maaf Anda belum bisa komplain, Data Dosen pada Nilai Mata Kuliah ini belum ada.');
   }elseif($d['no_wa_dosen']==''){
     $form = div_alert('danger', "Maaf, Data Dosen dengan nama <u>$d[nama_dosen]</u> belum mempunyai data Nomor Whatsapp pada SIAKAD.");
   }elseif($d['hm']=='A'){

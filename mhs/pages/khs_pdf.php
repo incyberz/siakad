@@ -48,12 +48,27 @@ $lhhz = 3; //line height SPACER HZ
 # ====================================================
 # PROCESSING POST DATA
 # ====================================================
-$post_nim = isset($_POST['nim']) ? $_POST['nim'] : die(div_alert('danger','Page ini tidak bisa diakses secara langsung. Silahkan menuju <a href="?khs">Menu KHS</a>'));
-$dmks = isset($_POST['dmks']) ? $_POST['dmks'] : die(div_alert('danger','Belum ada Data KHS. Silahkan menuju <a href="?khs">Menu KHS</a>'));
-$prodi = 'TEKNIK INFORMATIKA (S1)'; //ZZZ
-$nama_mhs = 'AHMAD FIRDASU'; //ZZZ
-$nim = '41414114'; //ZZZ
-$jalur = 'KIP KULIAH'; //ZZZ
+$post_nim = isset($_POST['nim']) ? $_POST['nim'] : die("Index nim undefined.");
+$dmks = isset($_POST['dmks']) ? $_POST['dmks'] : die("Index dmks undefined.");
+$nama_mhs = isset($_POST['nama_mhs']) ? $_POST['nama_mhs'] : die("Index nama_mhs undefined.");
+$nim = isset($_POST['nim']) ? $_POST['nim'] : die("Index nim undefined.");
+$jalur = isset($_POST['jalur']) ? $_POST['jalur'] : '';
+
+$semester = 'all';
+for ($i=1; $i < 8; $i++) { 
+  if(isset($_POST['dw_'.$i])) $semester = $i;
+}
+
+$rprodi = [
+  41=>'S1-TEKNIK INFORMATIKA',
+  42=>'S1-REKAYASA PERANGKAT LUNAK',
+  43=>'S1-SISTEM INFORMASI',
+  31=>'D3-MANAJEMEN INFORMATIKA',
+  32=>'D3-KOMPUTERISASI AKUNTANSI',
+];
+
+$kode_prodi = substr($nim,0,2);
+$prodi = $rprodi[$kode_prodi];
 
 // Nama :   Ahmad Firdaus   Program :   KIP
 // 33	      67	            33	        67
@@ -63,6 +78,9 @@ $jalur = 'KIP KULIAH'; //ZZZ
 $pdf->SetFont('Arial','B',10); // set-font
 $pdf->Cell(0,5,'KARTU HASIL STUDI (KHS)',0,1,'C');
 $pdf->Cell(0,5,'PROGRAM STUDI '.$prodi,0,1,'C');
+if($semester!='all'){
+  $pdf->Cell(0,5,'SEMESTER '.$semester,0,1,'C');
+}
 $pdf->Cell(200, 5, " ", 0, 1); // spacer
 
 
@@ -78,8 +96,10 @@ $pdf->Cell(167, $lh, ": $nama_mhs", $dm, 1);
 $pdf->SetFont('Arial','',9); // set-font
 $pdf->Cell(33, $lh, 'NIM', $dm, 0);
 $pdf->Cell(167, $lh, ": $nim", $dm, 1);
-$pdf->Cell(33, $lh, 'JALUR', $dm, 0);
-$pdf->Cell(167, $lh, ": $jalur", $dm, 1);
+if($jalur!=''){
+  $pdf->Cell(33, $lh, 'JALUR', $dm, 0);
+  $pdf->Cell(167, $lh, ": $jalur", $dm, 1);
+}
 
 $pdf->Cell(200, 5, " ", 0, 1); // spacer
 
@@ -104,9 +124,15 @@ $pdf->Cell($ks[6], $lhs, 'NM', 1, 1,'C',1);
 # ====================================================
 # SPLIT IPK
 # ====================================================
+// echo '<pre>';
+// echo var_dump($dmks);
+// echo '</pre>';
+// exit;
+
 $rd = explode('||',$dmks);
 $ipk = $rd[1];
 $d_smts = $rd[0];
+
 // echo "<h1>IPK : $ipk</h1>";
 
 # ====================================================
@@ -114,7 +140,10 @@ $d_smts = $rd[0];
 # ====================================================
 $rd = explode('<hr>',$d_smts);
 $jumlah_smt = count($rd)-1;
-for ($i=0; $i < $jumlah_smt ; $i++) { 
+$loop_awal = $semester=='all'? 0 : $semester-1;
+$loop_ahir = $semester=='all'? $jumlah_smt : $semester;
+// $loop_ahir = $jumlah_smt;
+for ($i=$loop_awal; $i < $loop_ahir ; $i++) { 
 
   $no_smt = $i+1;
   $pdf->Cell(200, 2, " ", 0, 1); // spacer

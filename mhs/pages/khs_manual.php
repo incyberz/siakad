@@ -39,6 +39,8 @@ if(mysqli_num_rows($q)>0){
     $total_sks_smt[$i]=0;
     $total_nm_smt[$i]=0;
     $dmk[$i]='';
+    $count_nilai_verified_smt[$i]=0;
+    $count_mk_smt[$i]=0;
   }
   $i=0;
   $total_sks_all=0;
@@ -49,7 +51,11 @@ if(mysqli_num_rows($q)>0){
   $count_nilai_verified=0;
   while ($d=mysqli_fetch_assoc($q)) {
     $count_nilai++;
-    if($d['tanggal_disetujui_mhs']!='')$count_nilai_verified++;
+    $count_mk_smt[$d['semester']]++;
+    if($d['tanggal_disetujui_mhs']!=''){
+      $count_nilai_verified++;
+      $count_nilai_verified_smt[$d['semester']]++;
+    }
     // $i++;
     if($last_smt!=$d['semester']){
       $last_smt=$d['semester'];
@@ -77,7 +83,7 @@ if(mysqli_num_rows($q)>0){
     $img_sedang_complain = '<img src="../assets/img/icons/load.png" height=25px />';
     $img_agree = '<img src="../assets/img/icons/agree.png" height=25px />';
     $img_check = '<img src="../assets/img/icons/check.png" height=25px />';
-    $link_complain = "<a href='?komplain_nilai&id_nilai=$d[id]' onclick='return confirm(\"Apakah kamu ingin komplain nilai ini ke dosen?\")'>$img_wa_complain</a>";
+    $link_complain = $d['hm']=='A' ? '' : "<a href='?komplain_nilai&id_nilai=$d[id]' onclick='return confirm(\"Apakah kamu ingin komplain nilai ini ke dosen?\")'>$img_wa_complain</a>";
     $link_sedang_complain = "<a href='?komplain_nilai&id_nilai=$d[id]' onclick='return confirm(\"Menuju laman komplain nilai?\")'>$img_sedang_complain</a>";
     $link_agree = "<a href='?agree_nilai&id_nilai=$d[id]' onclick='return confirm(\"Apakah kamu setuju dengan nilai tersebut?\")'>$img_agree</a>";
 
@@ -129,6 +135,7 @@ if(mysqli_num_rows($q)>0){
   $ipks=0;
   $total_sks=0;
   $total_nm=0;
+  $btn_smt='';
   for ($i=1; $i <= $max_smt ; $i++) {
     $ip[$i] = $total_sks_smt[$i]==0?0:round($total_nm_smt[$i]/$total_sks_smt[$i],2);
     $total_sks+=$total_sks_smt[$i];
@@ -153,13 +160,17 @@ if(mysqli_num_rows($q)>0){
           NM: $total_nm
         </div>
       </div>
-    </div>";
-    
+    </div>
+
+    ";
+
     $div[$i]=$div[$i]==''?"<div class='wadah gradasi-merah'>Semester $i ~ No Data.</div>"
     :"<div class='wadah gradasi-hijau'><p>Semester $i</p>$div[$i]$ip_show[$i]</div>";
     $dmk[$i]=$dmk[$i]==''?"Semester $i ~ No Data.":"$dmk[$i]|$ip[$i]|$ipks|$total_sks|$total_nm";
     $divs.=$div[$i];
     $dmks.=$dmk[$i].'<hr>';
+    $disabled_pdf_smt = $count_mk_smt[$i]==$count_nilai_verified_smt[$i]?'': 'disabled';
+    $btn_smt.= "<button class='btn btn-primary mr-2' $disabled_pdf_smt name=dw_$i>$i</button>";
   } // END FOR MAX SEMESTER
 
   $ipk = $total_sks_all==0?0:round($total_nm_all/$total_sks_all,2);
@@ -176,6 +187,7 @@ if(mysqli_num_rows($q)>0){
 
 $disabled_pdf = $count_nilai==$count_nilai_verified ? $disabled_pdf : 'disabled';
 $info_disabled = $count_nilai==$count_nilai_verified ? '' : "<div class='kecil red miring'>Semua nilai harus terverifikasi (Anda setujui) agar dapat cetak KHS.";
+
 ?>
 
 
@@ -190,10 +202,15 @@ $info_disabled = $count_nilai==$count_nilai_verified ? '' : "<div class='kecil r
     <?=$divs?>
     <hr>
     <form method=post target=_blank action='pages/khs_pdf.php'>
-      <input type="hidden" value="<?=$dmks?>" name=dmks>
-      <input type="hidden" value="<?=$nim?>" name=nim>
-      <button class="btn btn-primary" <?=$disabled_pdf?>>Donload KHS PDF</button>
-      <?=$info_disabled?>
+      <div class="wadah">
+        <p>Download KHS pada semester:</p>
+        <input type="hidden" value="<?=$dmks?>" name=dmks>
+        <input type="hidden" value="<?=$nim?>" name=nim>
+        <input type="hidden" value="<?=$nama_mhs?>" name=nama_mhs>
+        <?=$btn_smt?>
+        <button class='btn btn-primary' <?=$disabled_pdf?> name=dw_all>All</button>
+        <div class=mt-2><?=$info_disabled?></div>
+      </div>
     </form>
 
   </div>

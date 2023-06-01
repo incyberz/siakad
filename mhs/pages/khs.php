@@ -126,11 +126,11 @@ if($id_kalender!=$undef){
   $q = mysqli_query($cn,$s_semester) or die(mysqli_error($cn));
   if(mysqli_num_rows($q)==0) die("<div class='alert alert-danger'>Tidak ada Semester yang cocok pada Kalender Akademik. | $manage_kalender</div>");
 
-  $thead = '<thead>
-    <th>Semester</th>
-    <th>Mata Kuliah, Sesi, dan Presensi</th>
-  </thead>';
-  $thead = ''; //zzz
+  // $thead = '<thead>
+  //   <th>Semester</th>
+  //   <th>Mata Kuliah, Sesi, dan Presensi</th>
+  // </thead>';
+  $thead = '';
   $no_mk=0;
   $total_presensi = 0;
   $total_hadir = 0;
@@ -138,7 +138,7 @@ if($id_kalender!=$undef){
   $total_izin = 0;
   $total_alfa = 0;
   while ($d=mysqli_fetch_assoc($q)) {
-    $tb_nilai = 'tb_nilai zzz';
+    $tb_nilai = 'tb_nilai ready to code.';
     $id_semester = $d['id_semester'];
     $s2 = "SELECT 
     a.id as id_kurikulum_mk,

@@ -1,19 +1,17 @@
 <?php
 if(isset($_POST['btn_setuju'])){
-  echo '<pre>';
-  var_dump($_POST);
-  var_dump($_FILES);
-  echo '</pre>';
+  // echo '<pre>';
+  // var_dump($_POST);
+  // var_dump($_FILES);
+  // echo '</pre>';
   
   $id_nilai = $_POST['id_nilai'];
   $back = " | <a href='?komplain_nilai&id_nilai=$id_nilai'>Kembali</a>";
 
-  $nilai_awal = $_POST['nilai_awal'];
-  $seharusnya = $_POST['seharusnya'];
-  
-  $s = "UPDATE tb_nilai_manual SET tanggal_disetujui_mhs=CURRENT_TIMESTAMP";
+  $s = "UPDATE tb_nilai_manual SET tanggal_disetujui_mhs=CURRENT_TIMESTAMP WHERE id=$id_nilai";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 
+  echo div_alert('success','Update Status Nilai sukses.');
   die("<script>location.replace('?khs')</script>");
 
 }
@@ -68,10 +66,10 @@ if($d['sedang_komplain']){
   ";
 }else{
   $d['hm'] = strtoupper($d['hm']);
-  $d['id_dosen'] = 999; //zzz
-  $d['nama_dosen'] = 'IIN, M.Kom'; //zzz
-  $d['no_wa_dosen'] = '6287729007318'; //zzz
-  $d['hm'] = 'C'; //zzz
+  // $d['id_dosen'] = 999; 
+  // $d['nama_dosen'] = 'IIN, M.Kom'; 
+  // $d['no_wa_dosen'] = '6287729007318'; 
+  // $d['hm'] = 'C'; 
 
   $rhm = ['A','B','C','D','E'];
   $opthm = '';

@@ -1,7 +1,7 @@
 <?php
 $s = "SELECT a.*,
 (
-  SELECT SUM(jumlah) FROM tb_bayar WHERE id_biaya=a.id
+  SELECT SUM(jumlah) FROM tb_bayar WHERE id_biaya=a.id and id_mhs=$id_mhs 
   ) as jumlah_bayar, 
 (
   SELECT tanggal_bayar FROM tb_bayar WHERE id_biaya=a.id AND id_mhs=$id_mhs ORDER BY tanggal_bayar DESC LIMIT 1
@@ -16,12 +16,12 @@ FROM tb_biaya a
 WHERE a.no is not null ORDER BY a.no";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
-$tr_biaya='
+$tr_biaya="
 <thead>
   <th>Jenis Biaya</th>
   <th class=text-right>Jumlah & Status Bayar</th>
 </thead>
-';
+";
 $i=0;
 while ($d=mysqli_fetch_assoc($q)) {
   $i++;
@@ -79,9 +79,6 @@ while ($d=mysqli_fetch_assoc($q)) {
     <div class="section-title">
       <h2>Pembayaran</h2>
       <p>Berikut adalah Data Pembayaran yang pernah Anda bayarkan:</p>
-      <!-- <div class="alert alert-info">
-        Maaf, fitur ini belum bisa Anda gunakan.
-      </div> -->
     </div>
 
     <table class="table table-striped table-hover">
