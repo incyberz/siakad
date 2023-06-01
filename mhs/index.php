@@ -5,14 +5,7 @@
 session_start();
 $nama_mhs='';
 $dm=0;
-if (0) {
-  session_unset();
-  exit();
-}
-// if(!isset($_SESSION['siakad_mhs'])){
-//   header("Location: ../?");
-//   die("Anda belum login. Silahkan <a href='../'>login dahulu</a>.");
-// } 
+if (0) { session_unset(); exit();}
 include "../config.php";
 include "../include/nomor_ikmi.php";
 
@@ -23,10 +16,6 @@ $insho_styles = $online_version ? '../insho_styles.php' : '../../insho_styles.ph
 include $insho_styles;
 
 if(!isset($_SESSION['siakad_mhs'])){
-  // $_SESSION['siakad_mhs'] = "51220001";
-  // die("Auto Login enabled. Please Refresh!");
-  // include 'pages/login.php';
-  // exit;
   $is_login=0;
 }else{
   $is_login=1;
