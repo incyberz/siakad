@@ -1,6 +1,11 @@
 <?php 
 // ubah password default
-// $parameter = ($is_depas && $parameter!='logout') ? 'ubah_password' : $parameter;
+$skip_ubah_password=1;
+if($skip_ubah_password){
+  echo '<div class="red tebal">Perhatian! Mode Pass Ubah Password is ON.</div>';
+}else{
+  $parameter = ($is_depas && $parameter!='logout') ? 'ubah_password' : $parameter;
+}
 
 switch ($parameter) {
   case '': 
