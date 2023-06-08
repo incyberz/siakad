@@ -24,7 +24,10 @@ $s = "SELECT a.*,
   FROM tb_semester p 
   JOIN tb_kalender q ON p.id_kalender=q.id 
   WHERE p.tanggal_awal<='$today' AND p.tanggal_akhir>'$today' 
-  AND q.angkatan=a.angkatan) as id_semester 
+  AND q.angkatan=a.angkatan 
+  ORDER BY p.tanggal_awal DESC 
+  LIMIT 1
+  ) as id_last_semester 
 
 FROM tb_mhs a 
 
@@ -60,6 +63,7 @@ if(!file_exists($img_bg)) $img_bg = "uploads/bg_na.jpg";
 
 $id_mhs = $d_mhs['id'];
 $nama_mhs = $d_mhs['nama'];
+$angkatan = $d_mhs['angkatan'];
 $nama_mhs = ucwords(strtolower($nama_mhs));
 $no_wa = $d_mhs['no_wa']!=''?$d_mhs['no_wa']:'';
 $no_wa_show = $no_wa==''?$undef:substr($no_wa,0,4).'***'.substr($no_wa,strlen($no_wa)-3,3);
@@ -79,9 +83,9 @@ $is_depas = ($d_mhs['password']=='' || $d_mhs['password']==$nim) ? 1 : 0;
 # ========================================================
 # GET DATA SEMESTER
 # ========================================================
-$id_semester = $d_mhs['id_semester']!=''?$d_mhs['id_semester']:'';
-if($id_semester!=''){
-  $s = "SELECT * FROM tb_semester WHERE id=$id_semester";
+$id_last_semester = $d_mhs['id_last_semester']!=''?$d_mhs['id_last_semester']:'';
+if($id_last_semester!=''){
+  $s = "SELECT * FROM tb_semester WHERE id=$id_last_semester";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   $d_semester = mysqli_fetch_assoc($q);
   $semester = $d_semester['nomor']; //nomor semester

@@ -99,16 +99,16 @@ while ($d = mysqli_fetch_array($q)) {
           <span class="profile-ava">
             <img width="30px" height="30px" alt="" src="<?=$img_pegawai?>">
           </span>
-          <span class="username"><?=$cnama_pegawai?></span>
+          <span class="username"><?=$nama_user?></span>
           <b class="caret"></b>
         </a>
         <ul class="dropdown-menu extended logout">
           <div class="log-arrow-up"></div>
-          <li class="eborder-top">
+          <!-- <li class="eborder-top">
             <a href="?profile"><i class="icon_profile"></i> My Profile</a>
-          </li>
+          </li> -->
           <li>
-            <a href="?logout" onclick="return confirm('Yakin untuk logout?')"><i class="icon_key_alt"></i> Log Out</a>
+            <a href="../?logout" onclick="return confirm('Yakin untuk logout?')"><i class="icon_key_alt"></i> Log Out</a>
           </li>
         </ul>
       </li>

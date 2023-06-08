@@ -19,7 +19,13 @@ include $insho_styles;
 # ========================================================
 # INCLUDE LOGIN PETUGAS
 # ========================================================
-include 'include/data_login_petugas.php';
+if(isset($_SESSION['siakad_username'])){
+  $username = $_SESSION['siakad_username'];
+  include '../user_vars.php';
+}else{
+  echo '<script>location.replace("../")</script>';
+}
+// include 'include/data_login_petugas.php';
 
 # ========================================================
 # SIAKAD INSTALL HISTORY

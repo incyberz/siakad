@@ -52,6 +52,7 @@ $post_nim = isset($_POST['nim']) ? $_POST['nim'] : die("Index nim undefined.");
 $dmks = isset($_POST['dmks']) ? $_POST['dmks'] : die("Index dmks undefined.");
 $nama_mhs = isset($_POST['nama_mhs']) ? $_POST['nama_mhs'] : die("Index nama_mhs undefined.");
 $nim = isset($_POST['nim']) ? $_POST['nim'] : die("Index nim undefined.");
+$angkatan = isset($_POST['angkatan']) ? $_POST['angkatan'] : die("Index angkatan undefined.");
 $jalur = isset($_POST['jalur']) ? $_POST['jalur'] : '';
 
 $semester = 'all';
@@ -228,7 +229,7 @@ $titimangsa = 'Cirebon, '.date('Y-m-d H:i:s').' WIB';
 $pdf->Cell(200, $lh, $print_from, 0, 1,'',0);
 $pdf->Cell(200, $lh, $titimangsa, 0, 1,'',0);
 $pdf->Cell(200, $lh, ucwords(strtolower($prodi)), 0, 1,'',0);
-$qr_nim = substr($nim,0,4);
+$qr_nim = substr($nim,0,2).substr($angkatan,2,2);
 // $pdf->Image("qr.png", x, y, w, h, );
 $pdf->Image("../../assets/img/qr_prodi/khs_$qr_nim.png", null, null, 30, );
 

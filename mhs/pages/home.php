@@ -6,7 +6,7 @@
       <p>Selamat Datang <?=$nama_mhs?>! Anda sedang login sebagai Mahasiswa.</p>
       <hr>
       <span class=debug>id_mhs <span><?=$id_mhs?></span></span>
-      <span class=debug>id_semester <span><?=$id_semester?></span></span>
+      <span class=debug>id_last_semester <span><?=$id_last_semester?></span></span>
       <ul>
         <li>Status: <?=$status_mhs?></li>
         <li>Angtakan: <?=$angkatan?></li>

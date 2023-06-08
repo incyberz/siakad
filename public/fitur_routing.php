@@ -1,17 +1,17 @@
 <?php 
 $fitur = [
-  "v2/data_mhs",
-  "v2/data_krs",
-  "v2/data_nilai",
-  "v2/data_jadwal",
-  "v2/data_skripsi",
-  "v2/data_transkrip",
-  "v2/data_lulusan",
-  "v2/data_dosen",
-  "v2/data_tendik",
-  "v2/data_keuangan",
+  "akademik/?manage_mhs",
+  "akademik/?krs",
+  "akademik/?khs",
+  "akademik/?manage_jadwal",
+  "akademik/?master",
+  "akademik/?khs",
+  "akademik/?manage_mhs",
+  "akademik/?master&p=dosen",
+  "akademik/?master&p=tendik",
+  "keuangan",
   "inventory",
-  "v2/data_perpus"
+  "perpus"
 ];
 
 $nama_fitur = [

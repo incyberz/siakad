@@ -2,6 +2,7 @@
 <style>.mobile{display:none}@media(max-width:575px){.mobile{display:inline}}</style>
 <style>.desktop{display:inline}@media(max-width:575px){.desktop{display:none}}</style>
 <?php
+$test_mode=1;
 $disabled_pdf = '';
 function hm2angka($a){
   switch (strtolower($a)) {
@@ -170,6 +171,10 @@ if(mysqli_num_rows($q)>0){
     $divs.=$div[$i];
     $dmks.=$dmk[$i].'<hr>';
     $disabled_pdf_smt = $count_mk_smt[$i]==$count_nilai_verified_smt[$i]?'': 'disabled';
+    if($test_mode){
+      echo "<div class='red bold italic'>Debug Mode Cetak KHS is ON.</div>";
+      $disabled_pdf_smt='';
+    }
     $btn_smt.= "<button class='btn btn-primary mr-2' $disabled_pdf_smt name=dw_$i>$i</button>";
   } // END FOR MAX SEMESTER
 
@@ -186,6 +191,10 @@ if(mysqli_num_rows($q)>0){
 }
 
 $disabled_pdf = $count_nilai==$count_nilai_verified ? $disabled_pdf : 'disabled';
+if($test_mode){
+  echo "<div class='red bold miring'>Perhatian! Debug Mode Pass Cetak KHS All Semester is enabled.</div>";
+  $disabled_pdf = '';
+}
 $info_disabled = $count_nilai==$count_nilai_verified ? '' : "<div class='kecil red miring'>Semua nilai harus terverifikasi (Anda setujui) agar dapat cetak KHS.";
 
 ?>
@@ -206,6 +215,7 @@ $info_disabled = $count_nilai==$count_nilai_verified ? '' : "<div class='kecil r
         <p>Download KHS pada semester:</p>
         <input type="hidden" value="<?=$dmks?>" name=dmks>
         <input type="hidden" value="<?=$nim?>" name=nim>
+        <input type="hidden" value="<?=$angkatan?>" name=angkatan>
         <input type="hidden" value="<?=$nama_mhs?>" name=nama_mhs>
         <?=$btn_smt?>
         <button class='btn btn-primary' <?=$disabled_pdf?> name=dw_all>All</button>

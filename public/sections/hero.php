@@ -1,6 +1,6 @@
 <?php 
 if($is_login){
-  $text_welcome = "Halo $cnama_pegawai You are login as <span class='biru tebal'>$cadmin_level</span> !";
+  $text_welcome = "Halo $nama_user You are login as <span class='biru tebal'>$login_as</span> !";
   $text_welcome2 = "<a href='#fitur' class='btn-get-started scrollto' id='btn_goto_fitur'>Access Features</a>";
   $hide_hero = 'none';
 }else{

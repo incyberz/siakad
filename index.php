@@ -3,21 +3,19 @@
 # SIAKAD PUBLIC INDEX
 # ========================================================
 session_start();
+echo '<pre>'; var_dump($_SESSION); echo '</pre>';
 $dm = 0;
 $now = date('Y-m-d H:i:s');
 $today = date('Y-m-d');
 
-$cusername = '';
-$cnama_pegawai = "Pengunjung";
-$cjenis_user = "Pengunjung";
-$cadmin_level = 0;
+$nama_user = "Pengunjung";
+$login_as = "Pengunjung";
 $is_login = 0;
 
+include 'config.php';
 if (isset($_SESSION['siakad_username'])) {
-  $cusername = $_SESSION['siakad_username'];
-  $cnama_pegawai = $_SESSION['cnama_pegawai'];
-  $cadmin_level = $_SESSION['cadmin_level'];
-  $cjenis_user = $_SESSION['cjenis_user'];
+  $username = $_SESSION['siakad_username'];
+  include 'user_vars.php';
   $is_login=1;
 }
 
@@ -83,7 +81,6 @@ include 'public/fitur_routing.php';
 <body>
 
   <?php 
-  include 'config.php';
   include 'public/header.php';
   include 'public/sections/hero.php'; 
   ?>

@@ -1,11 +1,5 @@
 <?php 
-for ($i=0; $i < 12; $i++) { 
-  $link_fitur[$i] = "#hero";
-  if($is_login) $link_fitur[$i] = $fitur[$i]; 
-}
-
-
-
+for ($i=0; $i < count($fitur); $i++) $link_fitur[$i] = $is_login ? $fitur[$i] : "#hero";
 ?>
 <style>
   .fitur { transition: transform .2s;}
@@ -20,18 +14,32 @@ for ($i=0; $i < 12; $i++) {
 
     <div class="section-title" data-aos="zoom-in">
       <h2>Fitur</h2>
-      <p>Selamat datang Pengunjung! Untuk mengakses fitur SIAKAD silahkan login terlebih dahulu.</p>
+      <?php if($is_login){
+        echo "<div>Selamat datang $nama_user! Anda login sebagai $login_as. <hr>Anda dapat mengakses fitur-fitur berikut:</div>";
+      } else{
+        echo "<p>Selamat datang Pengunjung! Untuk mengakses fitur SIAKAD silahkan login terlebih dahulu.</p>";
+      }
+      ?>
 
-      <!-- <p><a href="?logout" onclick="return confirm('Ingin Logout?')">Logout</a> | Selamat <?=$waktu?> <span class="biru"><?=$cnama_pegawai?></span>! Anda login sebagai <span class="merah"><?=$cjenis_user?></span> </p> -->
+      <!-- <p><a href="?logout" onclick="return confirm('Ingin Logout?')">Logout</a> | Selamat <?=$waktu?> <span class="biru"><?=$nama_user?></span>! Anda login sebagai <span class="merah"><?=$login_as?></span> </p> -->
     </div>
     <hr>
     <nav class="">
       <div class="row">
         
-        <?php for ($i=0; $i < 12; $i++) { 
+        <?php for ($i=0; $i < count($fitur); $i++) { 
           $j = $i+1; 
           $nama_fitur_alt = $nama_fitur[$i];
           $clink_fitur = $link_fitur[$i];
+
+          // echo "<h1>".$sub_domain."==".substr($fitur[$i],0,strlen($sub_domain))."</h1>";
+          if($sub_domain==substr($fitur[$i],0,strlen($sub_domain))){
+            $link_fitur[$i] = '';
+          }else{
+            continue;
+          }
+          
+          
 
           echo "
           <div class='col-lg-2 col-md-4 col-6'>
