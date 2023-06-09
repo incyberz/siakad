@@ -1,63 +1,93 @@
 <?php 
-// $s = "SELECT 1 from tb_pegawai where status_pegawai=1";
-// $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-// $not_teaching_today = mysqli_num_rows($q);
-
-
-$not_teaching_today = 820;
-$jumlah_teaching = 39;
-$jumlah_teaching_terlaksana = 12;
-
-$not_presention_sakit = 12; //zzz
-$not_presention_izin = 3; //zzz
-$not_presention_alfa = 7; //zzz
-$not_presention_tsj = 51; //zzz
-$not_presention_today = $not_presention_sakit+$not_presention_izin+$not_presention_alfa+$not_presention_tsj; //zzz
-
-$not_teaching_sakit = 1; //zzz
-$not_teaching_izin = 2; //zzz
-$not_teaching_alfa = 0; //zzz
-$not_teaching_tsj = 2; //zzz
-$not_teaching_today = $not_teaching_sakit+$not_teaching_izin+$not_teaching_alfa+$not_teaching_tsj; //zzz
-
-$jumlah_presensi = 567;
-$jumlah_presensi_terlaksana = 324;
-
-$persen_presensi = round($jumlah_presensi_terlaksana/$jumlah_presensi*100);
-$persen_teaching = round($jumlah_teaching_terlaksana/$jumlah_teaching*100);
 
 $today = date("D, d M Y h:i");
-$ta = "2021-2022";
+
+$jumlah_mhs_aktif = 0;
+$jumlah_sudah_bayar = 2300;
+$jumlah_sudah_krs = 2286;
+
+$s = "SELECT id_prodi from tb_mhs where status_mhs=1";
+$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+$jumlah_mhs_aktif = mysqli_num_rows($q);
+$rid_prodi = [41,42,43,31,32];
+$rlabel_prodi = ['TI','RPL','SI','MI','KA'];
+for ($i=0; $i < count($rid_prodi); $i++) $jumlah_mhs_aktif_prodi[$rid_prodi[$i]] = 0;
+$jumlah_mhs_aktif_unprodi = 0;
+
+
+while ($d = mysqli_fetch_assoc($q)) {
+	$id_prodi=$d['id_prodi'];
+	if($id_prodi==41){ $jumlah_mhs_aktif_prodi[41]++;		
+	}elseif($id_prodi==42){ $jumlah_mhs_aktif_prodi[42]++;
+	}elseif($id_prodi==43){ $jumlah_mhs_aktif_prodi[43]++;
+	}elseif($id_prodi==31){ $jumlah_mhs_aktif_prodi[31]++;
+	}elseif($id_prodi==32){ $jumlah_mhs_aktif_prodi[32]++;
+	}else{$jumlah_mhs_aktif_unprodi++;}
+}
+
+$jumlah_mhs_aktif_prodi_show = '';
+for ($i=0; $i < count($rid_prodi); $i++){
+	$jumlah_mhs_aktif_prodi_show .= "
+		<div class='col-md-2'>
+			<div class='wadah bg-white rounded30'>
+				<div><b>$rlabel_prodi[$i]</b></div>
+				<div class='count_h2'>".$jumlah_mhs_aktif_prodi[$rid_prodi[$i]]."</div>
+			</div>
+		</div>
+	";
+}
+
+$jumlah_mhs_aktif_unprodi = 89; //zzz
+$merah = $jumlah_mhs_aktif_unprodi>0 ? 'gradasi-merah' : 'bg-white';
+
+$jumlah_mhs_aktif_prodi_show .= "
+	<div class='col-md-2'>
+		<div class='wadah rounded30 $merah'>
+			<div><b>Unprodi</b></div>
+			<div class='count_h2'>$jumlah_mhs_aktif_unprodi</div>
+		</div>
+	</div>
+";
+
 ?>
 
 <h3 class="page-header"><i class="fa fa-laptop"></i>SIAKAD Dashboard</h3>
 
 
-<p style="background-color: #ffa;padding: 10px"><strong>Today</strong>: <?=$today?> | <strong>TA</strong>: <?=$ta?> | <strong>Petugas</strong>: <?=$cnama_pegawai?> | <strong>Login as</strong>: <?=$cjenis_user?></p>
+<p style="background-color: #ffa;padding: 10px"><b>Today</b>: <?=$today?> | <b>Petugas</b>: <?=$nama_user?> | <b>Login as</b>: <?=$login_as?>  </p>
 
-<style type="text/css">
-.dashboard_wfh{border: solid 1px #aaa; margin: 5px;padding: 15px; border-radius: 10px; background-color: #def}
-.wfh_header{font-size: 16px;font-weight: bold;color: darkblue}
-.wfh_count{font-size: 50px;font-weight: bold;}
-.not_present_count{font-size: 30px;font-weight: bold;}
-.wfh_count_of{font-size: 24px;font-weight: bold;}
-.wfh_count_satuan{font-size: 14px;font-weight: bold}
+<div class="alert alert-info">
+	<b>Semester Aktif:</b>
+	<ul>
+		<li>Semester 2 hingga 2 Jun 2023</li>
+		<li>Semester 4 hingga 12 Mei 2023</li>
+		<li>Semester 6 hingga 26 Apr 2023</li>
+		<li>Semester 8 hingga 20 Feb 2023</li>
+	</ul>
+
+</div>
+
+
+<!-- <div class='alert alert-danger'>Perhatian! Masih Data Dummy.</div> -->
+
+<style>
+	.count_block{text-align:center; cursor: pointer;transition:.2s}
+	.count_block:hover{letter-spacing: 1px; background: linear-gradient(#fcf,#fff)}
+	.count_h1{font-size: 40px}
+	.count_h2{font-size: 30px; border-radius:40px;}
+	.count_h1_info{margin-bottom:20px}
+	.rounded50{border-radius:40px}
+	.rounded30{border-radius:30px}
 </style>
-
-<div class='alert alert-danger'>Perhatian! Masih Data Dummy.</div>
-
 <div class="row">
 	<div class="col-lg-2">
-		<div class="zzz" style="border: solid 1px #aaa; margin: 5px;padding: 5px; border-radius: 60px; background-color: #def">
-			<div class="text-center">
-				<div style="font-size: 40px">
-					<?=$jumlah_mahasiswa_aktif?>
-				</div>
-				<div style="margin-bottom: 10px; font-size: 18pxa">
-					<a href="?Mhs&tipe=wfo" class="not_ready">
-						Mhs Aktif
-					</a>
-				</div>
+		<div class="wadah gradasi-hijau rounded50 count_block">
+			<div class="count_h1">
+				<?=$jumlah_mhs_aktif?>
+			</div>
+			<div class="count_h1_info">Mhs Aktif</div>
+			<div class="row">
+				<?=$jumlah_mhs_aktif_prodi_show?>
 			</div>
 		</div>
 	</div>

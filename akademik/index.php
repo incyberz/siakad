@@ -15,6 +15,7 @@ include "../config.php";
 # ========================================================
 $insho_styles = $online_version ? '../insho_styles.php' : '../../insho_styles.php';
 include $insho_styles;
+include 'akd_styles.php';
 
 # ========================================================
 # INCLUDE LOGIN PETUGAS

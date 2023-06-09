@@ -57,11 +57,13 @@ while ($d=mysqli_fetch_assoc($q)) {
 echo "<span class=debug>sum_nominal: $sum_nominal</span>";
 if($sum_nominal==0){
   // set to default
-  $autoset = "Semua nominal biaya masih kosong. Anda dapat setting ";
+  $autoset = "Semua nominal biaya masih kosong. Anda dapat setting Auto-Set Biaya Default berdasarkan Nominal Default pada Komponen Biaya. <hr><a href='#' class='btn btn-info'>Set Biaya Default</a>";
 }else{
   // reset to default
+  $autoset = "Anda sudah setting biaya angkatan $angkatan prodi $nama_prodi secara manual. <hr><a href='#' class='btn btn-danger'>Reset Semua Biaya ke Default</a>";
 }
 
+echo "<div class=wadah>$autoset</div>";
 
 
 ?>

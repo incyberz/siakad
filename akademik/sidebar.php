@@ -18,7 +18,8 @@
       <li class=proper><a href="?manage_mhs"><i class="icon_genius"></i>Manage Mhs</a></li> -->
       <li class=proper><a href="?dpnu"><i class="icon_genius"></i>DPNU</a></li>
 
-      <li class=proper><a onclick="belom()"><i class="icon_genius"></i><span class=merah>Pembayaran</span></a></li>
+      <li class=proper><a href="?pembayaran_home"><i class="icon_genius"></i>Pembayaran</a></li>
+      <!-- <li class=proper><a onclick="belom()"><i class="icon_genius"></i><span class=merah>Pembayaran</span></a></li> -->
       <li class=proper><a onclick="belom()"><i class="icon_genius"></i><span class=merah>KRS</span></a></li>
       <!-- <li class=proper><a onclick="belom()"><i class="icon_genius"></i><span class=merah>KHS</span></a></li> -->
       <li class=proper><a href="?khs"><i class="icon_genius"></i>KHS</a></li>
