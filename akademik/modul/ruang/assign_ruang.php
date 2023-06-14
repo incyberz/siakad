@@ -113,7 +113,7 @@ $tsesi = strtotime($tanggal_sesi);
 $stop_sesi = $d['stop_sesi'];
 $jam_keluar = date('H:i',strtotime($stop_sesi));
 
-$link_edit_tanggal_sesi = "<a href='?master&p=sesi_kuliah&aksi=update&id=$id_sesi_kuliah' target=_blank>Edit Manual</a>";
+$link_edit_tanggal_sesi = "<a href='?master&p=sesi_kuliah&aksi=update&id=$id_sesi_kuliah' target=_blank>Edit <span class=debug>Manual</span></a>";
 $tanggal_sesi_show = '<h4 class="biru tebal">'.$nama_hari[date('w',$tsesi)].', '.date('d M Y / H:i',$tsesi).' s.d '.$jam_keluar.'</h4>'.$link_edit_tanggal_sesi;
 $id_jadwal = $d['id_jadwal'];
 $id_semester = $d['id_semester'];

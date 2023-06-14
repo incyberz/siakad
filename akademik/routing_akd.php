@@ -48,10 +48,18 @@ switch ($c[0]){
   case 'input_khs_manual': $konten = 'modul/khs/input_khs_manual.php';break;
   case 'import_khs_manual': $konten = 'modul/khs/import_khs_manual.php';break;
 
+  case 'mhs_aktif': $konten = 'modul/mhs/mhs_aktif.php';break;
+  case 'list_mhs_aktif': $konten = 'modul/mhs/list_mhs_aktif.php';break;
+
   case 'pembayaran_home': $konten = 'modul/pembayaran/pembayaran_home.php';break;
+  case 'pembayaran_manual': $konten = 'modul/pembayaran/pembayaran_manual.php';break;
+  case 'rekap_pembayaran_manual': $konten = 'modul/pembayaran/rekap_pembayaran_manual.php';break;
   case 'manage_pembayaran': $konten = 'modul/pembayaran/manage_pembayaran.php';break;
   case 'manage_komponen_biaya': $konten = 'modul/pembayaran/manage_komponen_biaya.php';break;
   case 'manage_biaya_angkatan': $konten = 'modul/pembayaran/manage_biaya_angkatan.php';break;
+  case 'penagihan': $konten = 'modul/pembayaran/penagihan.php';break;
+  case 'penagihan_semester': $konten = 'modul/pembayaran/penagihan_semester.php';break;
+  case 'penagihan_lainnya': $konten = 'modul/pembayaran/penagihan_lainnya.php';break;
 }
 
 $manage_kalender = '<a href="?manage_kalender" class="proper">manage kalender</a>';

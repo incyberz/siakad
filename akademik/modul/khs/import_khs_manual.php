@@ -1,4 +1,4 @@
-<h1>Import KHS Manual</h1>
+<h1>Import KHS <span class=debug>Manual</span></h1>
 <style>th{text-align:left}</style>
 <?php
 

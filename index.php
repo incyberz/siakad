@@ -3,7 +3,7 @@
 # SIAKAD PUBLIC INDEX
 # ========================================================
 session_start();
-echo '<pre>'; var_dump($_SESSION); echo '</pre>';
+// echo '<pre class=debug>'; var_dump($_SESSION); echo '</pre>';
 $dm = 0;
 $now = date('Y-m-d H:i:s');
 $today = date('Y-m-d');

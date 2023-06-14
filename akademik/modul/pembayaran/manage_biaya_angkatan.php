@@ -1,4 +1,32 @@
 <?php
+if (isset($_POST['btn_set_biaya_default'])) {
+  $angkatan = $_POST['angkatan'];
+  $id_prodi = $_POST['id_prodi'];
+  $s = "SELECT id,nominal_default FROM tb_biaya";
+  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  $values = '';
+  
+  while ($d=mysqli_fetch_assoc($q)) {
+    $id = $d['id'];
+    $nominal = $d['nominal_default'];
+    $values .= "('$id','$angkatan','$id_prodi','$nominal'),";
+    
+  }
+  $s = "INSERT INTO tb_biaya_angkatan (id_biaya,angkatan,id_prodi,nominal) VALUES $values".'__';
+  $s = str_replace(',__','',$s);
+  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  echo div_alert('success', 'Set Nominal Default success. Redirecting ...');
+  echo "<script>location.replace('?manage_biaya_angkatan&angkatan=$angkatan&id_prodi=$id_prodi')</script>";
+  exit;
+
+}
+
+echo $s;
+
+
+# =====================================================
+# START 
+# =====================================================
 $angkatan = isset($_GET['angkatan']) ? $_GET['angkatan'] : die(erid('angkatan'));
 $id_prodi = isset($_GET['id_prodi']) ? $_GET['id_prodi'] : '';
 echo "<span class=debug>id_prodi: <span id=id_prodi>$id_prodi</span> | angkatan: <span id=angkatan>$angkatan</span></span><h1>Manage Biaya Angkatan</h1>";
@@ -57,18 +85,33 @@ while ($d=mysqli_fetch_assoc($q)) {
 echo "<span class=debug>sum_nominal: $sum_nominal</span>";
 if($sum_nominal==0){
   // set to default
-  $autoset = "Semua nominal biaya masih kosong. Anda dapat setting Auto-Set Biaya Default berdasarkan Nominal Default pada Komponen Biaya. <hr><a href='#' class='btn btn-info'>Set Biaya Default</a>";
+  $autoset = "
+  <div class=wadah>
+    <div class=mb2>
+      <b>Semua nominal biaya masih kosong</b>. 
+      Anda dapat setting Auto-Set Biaya Default berdasarkan Nominal Default pada Komponen Biaya, atau silahkan mengisi nominal satu-persatu! 
+    </div>
+    <form method=post>
+      <input class=debug name=angkatan value=$angkatan>
+      <input class=debug name=id_prodi value=$id_prodi>
+      <button class='btn btn-info' name=btn_set_biaya_default onclick='return confirm(\"Set Semua Nominal Biaya ke Default?\")'>Set Biaya Default</button>
+    </form>
+  </div>";
+  $reset = '';
 }else{
   // reset to default
-  $autoset = "Anda sudah setting biaya angkatan $angkatan prodi $nama_prodi secara manual. <hr><a href='#' class='btn btn-danger'>Reset Semua Biaya ke Default</a>";
+  $reset = "<div class=wadah>Anda sudah setting biaya angkatan $angkatan prodi $nama_prodi secara manual. <hr><a href='#' class='btn btn-danger'>Reset Semua Biaya ke Default</a></div>";
+  $reset = ''; // aborted fitur
+  $autoset = '';
 }
 
-echo "<div class=wadah>$autoset</div>";
 
 
 ?>
+<?=$autoset ?>
 <p>Berikut adalah Nominal Biaya untuk <b><u>Angkatan <?=$angkatan?></u></b> prodi <b><u><?=$nama_prodi?></u></b>.</p>
 <table class="table">
   <?=$tr_biaya?>
 </table>
 <div class="kecil miring abu">Jika besar cicilan = <code>null</code> maka pembayaran tidak dapat dicicil.</div>
+<?=$reset?>

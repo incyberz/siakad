@@ -18,3 +18,23 @@
   }
   ?>
 </div>
+
+
+
+<!-- System Manual -->
+<div class="master-home">
+
+  <?php
+  $rmanual[0] = ['Manage Pembayaran Manual','pembayaran_manual'];
+  $rmanual[1] = ['Rekap Pembayaran Manual','rekap_pembayaran_manual'];
+
+
+  for ($i=0; $i < count($rmanual); $i++) { 
+    echo "
+    <div class='item-master'>
+      <div><a href='?".$rmanual[$i][1]."'>".$rmanual[$i][0]."</a></div>
+    </div>
+    ";
+  }
+  ?>
+</div>
