@@ -1,4 +1,5 @@
 <?php 
+$sub_domain=''; // zzz old code
 for ($i=0; $i < count($fitur); $i++) $link_fitur[$i] = $is_login ? $fitur[$i] : "#hero";
 ?>
 <style>

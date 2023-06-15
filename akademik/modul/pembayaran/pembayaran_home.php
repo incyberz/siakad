@@ -25,8 +25,8 @@
 <div class="master-home">
 
   <?php
-  $rmanual[0] = ['Manage Pembayaran Manual','pembayaran_manual'];
-  $rmanual[1] = ['Rekap Pembayaran Manual','rekap_pembayaran_manual'];
+  $rmanual[0] = ['Rekap Pembayaran','rekap_pembayaran_manual'];
+  $rmanual[1] = ['Manage Status Pembayaran','pembayaran_manual'];
 
 
   for ($i=0; $i < count($rmanual); $i++) { 

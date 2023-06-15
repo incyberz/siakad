@@ -1,10 +1,10 @@
-<h1>List Mahasiswa Aktif <span class=debug>Manual</span></h1>
+<h1>List Sudah Bayar <span class=debug>Manual</span></h1>
 
 <?php
 $null = '<span class="red miring kecil">null</span>';
 
 # =============================================================
-# NORMAL FLOW NON-AKTIF
+# NORMAL FLOW AKTIF
 # =============================================================
 $keyword = isset($_GET['keyword']) ? $_GET['keyword'] : '';
 $keyword = isset($_POST['keyword']) ? $_POST['keyword'] : $keyword;
@@ -25,12 +25,14 @@ $form_filter = "
 ";
 
 $from = " FROM tb_mhs a 
-WHERE (status_mhs is null OR status_mhs < 1) 
-AND a.nama LIKE '%$keyword%' 
+WHERE status_mhs=1 
+AND (a.nama LIKE '%$keyword%' 
 OR a.kelas_manual LIKE '%$keyword%' 
-OR a.nim LIKE '%$keyword%'  
+OR a.nim LIKE '%$keyword%') 
+
 ";
 $s = "SELECT 1 $from";
+echo "<span class=debug><pre>Debug Jumlah Aktif: $s</pre></span>";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $jumlah_non = mysqli_num_rows($q);
 
@@ -53,13 +55,13 @@ if(mysqli_num_rows($q)>0){
         <div><b>Semester</b> : $semester</div>
         </td>
         <td>
-          <button class='btn btn-success btn-sm btn_aksi' id=set_aktif__$d[nim]>Set Aktif</button>
+          <button class='btn btn-success btn-sm btn_aksi' id=set_lunas__$d[nim]>Set Lunas</button>
         </td>
       </tr>
     ";
   }
 }
-$tb_non = $tr=='' ? div_alert('info','Mahasiswa non-aktif tidak ditemukan.') 
+$tb_non = $tr=='' ? div_alert('info','Mahasiswa aktif tidak ditemukan.') 
 : "<table class='table table-striped'>$tr</table>";
 
 $limit_info = $jumlah_non>10 ? "| <code>Limit 10</code> | Silahkan Filter!" : '';
@@ -70,7 +72,7 @@ $limit_info = $jumlah_non>10 ? "| <code>Limit 10</code> | Silahkan Filter!" : ''
 
 
 # =============================================================
-# NORMAL MHS AKTIF
+# NORMAL BAYAR
 # =============================================================
 $bg = $keyword2=='' ? '' : 'style="background: #0f0"';
 $form_filter2 = "
@@ -89,11 +91,12 @@ WHERE status_mhs = 1
 AND (a.nama LIKE '%$keyword2%' 
 OR a.kelas_manual LIKE '%$keyword2%' 
 OR a.nim LIKE '%$keyword2%')  
+AND status_bayar_manual = 1 
 ";
 $s = "SELECT id $from";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-echo "<span class=debug><pre>Debug Jumlah Aktif: $s</pre></span>";
-$jumlah_aktif = mysqli_num_rows($q);
+echo "<span class=debug><pre>Debug Jumlah Bayar: $s</pre></span>";
+$jumlah_bayar = mysqli_num_rows($q);
 
 $s = "SELECT a.*,(
   SELECT singkatan FROM tb_prodi WHERE id=a.id_prodi 
@@ -114,16 +117,16 @@ if(mysqli_num_rows($q)>0){
         <div><b>Semester</b> : $semester</div>
         </td>
         <td>
-          <button class='btn btn-danger btn-sm btn_aksi' id=set_non__$d[nim]>Set Non-Aktif</button>
+          <button class='btn btn-danger btn-sm btn_aksi' id=set_belum_bayar__$d[nim]>Set Belum bayar</button>
         </td>
       </tr>
     ";
   }
 }
-$tb_aktif = $tr=='' ? div_alert('info','Mahasiswa Aktif tidak ditemukan.') 
+$tb_aktif = $tr=='' ? div_alert('info','Data pembayaran tidak ditemukan.') 
 : "<table class='table table-striped'>$tr</table>";
 
-$limit_info2 = $jumlah_aktif>10 ? "| <code>Limit 10</code> | Silahkan Filter!" : '';
+$limit_info2 = $jumlah_bayar>10 ? "| <code>Limit 10</code> | Silahkan Filter!" : '';
 
 
 
@@ -136,16 +139,16 @@ echo "
 <div class='row'>
   <div class='col-sm-6'>
     <div class='wadah'>
-      <h3 class=darkred>List Mahasiswa Non Aktif</h3>
-      <div class='small mb1'>$jumlah_non mhs non aktif ditemukan. $limit_info</div>
+      <h3>List Mahasiswa Aktif</h3>
+      <div class='small mb1'>$jumlah_non mhs aktif ditemukan. $limit_info</div>
       $form_filter
       $tb_non
     </div>
   </div>
   <div class='col-sm-6'>
     <div class='wadah'>
-      <h3 class='biru tebal'>List Mahasiswa Aktif</h3>
-      <div class='small mb1'>$jumlah_aktif mhs aktif ditemukan. $limit_info2</div>
+      <h3 class='biru tebal'>List Sudah Bayar</h3>
+      <div class='small mb1'>$jumlah_bayar lunas bayar ditemukan. $limit_info2</div>
       $form_filter2
       $tb_aktif
     </div>
@@ -167,10 +170,10 @@ echo "
       let nama_mhs = $('#nama_mhs__'+nim).text();
 
       let c = '';
-      if(aksi=='set_aktif'){
-        c = `Yakin untuk mengaktifkan mahasiswa atas nama ${nama_mhs}?`;
-      }else if(aksi=='set_non'){
-        c = `Yakin untuk me-non-aktifkan mahasiswa atas nama ${nama_mhs}?\n\nMahasiswa nonaktif tidak dapat mengakses data kemahasiswaan pada SIAKAD.`;
+      if(aksi=='set_lunas'){
+        c = `Yakin untuk set lunas atas nama ${nama_mhs}?`;
+      }else if(aksi=='set_belum_bayar'){
+        c = `Yakin untuk set belum bayar atas nama ${nama_mhs}?\n\nMahasiswa belum bayar tidak bisa mengakses KRS, Ujian, atau KHS.`;
       }
       let y = confirm(c);
       if(!y) return;
@@ -185,7 +188,7 @@ echo "
         url:link_ajax,
         success:function(a){
           if(a.trim()=='sukses'){
-            let di = aksi=='set_aktif' ? `diaktifkan` : '<span class=red>dinonaktifkan</span>';
+            let di = aksi=='set_lunas' ? `diaktifkan` : '<span class=red>dinonaktifkan</span>';
             $('#tr__'+nim).html(`<td colspan=3>Mahasiswa dengan nim: ${nim} telah ${di}.</td>`);
           }else{
             alert(a);

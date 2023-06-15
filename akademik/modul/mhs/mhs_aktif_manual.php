@@ -63,26 +63,30 @@ while ($d=mysqli_fetch_assoc($q)) {
   } 
 }
 
-$loop = '';
 $loop_allmhs = '';
+$loop_aktif = '';
 for ($i=0; $i < count($rid_prodi); $i++){
-  $loop .= "<div class='wadah bg-white'><div class='darkblue mb2'>Prodi ".$rnama_prodi[$i]." : ".$jumlah_allmhs_prodi[$rid_prodi[$i]]."</div>";
   $persen = $jumlah_allmhs_prodi[$rid_prodi[$i]]==0 ? 0 
   : round(100*$jumlah_aktif_prodi[$rid_prodi[$i]]/$jumlah_allmhs_prodi[$rid_prodi[$i]],2);
   $warna = $persen==0 ? 'merah' : '';
   // $persen = 100; // test debug
   $warna = $persen==100 ? 'biru tebal' : $warna;
-  $loop_allmhs .= "<div class='wadah bg-white $warna'><div class='$warna mb2'>Prodi ".$rnama_prodi[$i]." : ".$jumlah_aktif_prodi[$rid_prodi[$i]]." ($persen%)</div>";
+  $hideit_prodi = ($rid_prodi[$i]==99 and $persen==0) ? 'hideit' : ''; //hide unprodi if count 0
+  // $hideit_prodi = '';
+  $loop_allmhs .= "<div class='wadah bg-white $hideit_prodi'><div class='darkblue mb2'>Prodi ".$rnama_prodi[$i]." : ".$jumlah_allmhs_prodi[$rid_prodi[$i]]."</div>";
+  $loop_aktif .= "<div class='wadah bg-white $warna $hideit_prodi'><div class='$warna mb2'>Prodi ".$rnama_prodi[$i]." : ".$jumlah_aktif_prodi[$rid_prodi[$i]]." ($persen%)</div>";
   for ($j=0; $j < count($rangkatan); $j++) { 
-    $loop .= "<div class='wadah gradasi-kuning'>$rnama_prodi[$i]-$rangkatan[$j] : ".$jumlah_allmhs_prodi_angkatan[$rid_prodi[$i]][$rangkatan[$j]]."</div>";
     $persen = $jumlah_allmhs_prodi_angkatan[$rid_prodi[$i]][$rangkatan[$j]]==0 ? 0 
     : round(100*$jumlah_aktif_prodi_angkatan[$rid_prodi[$i]][$rangkatan[$j]]/$jumlah_allmhs_prodi_angkatan[$rid_prodi[$i]][$rangkatan[$j]],2);
     $gradasi = $persen==0 ? 'merah' : 'kuning';
     $gradasi = $persen==100 ? 'hijau' : $gradasi;
-    $loop_allmhs .= "<div class='wadah gradasi-$gradasi'>$rnama_prodi[$i]-$rangkatan[$j] : ".$jumlah_aktif_prodi_angkatan[$rid_prodi[$i]][$rangkatan[$j]]." ($persen%)</div>";
+    $hideit_lainnya1 = $jumlah_allmhs_prodi_angkatan[$rid_prodi[$i]][$rangkatan[$j]]==0 ? 'hideit' : ''; //hide lainnya pada prodi if count 0
+    $hideit_lainnya2 = $persen==0 ? 'hideit' : ''; //hide lainnya pada prodi if count 0
+    $loop_allmhs .= "<div class='wadah gradasi-kuning $hideit_lainnya1'>$rnama_prodi[$i]-$rangkatan[$j] : ".$jumlah_allmhs_prodi_angkatan[$rid_prodi[$i]][$rangkatan[$j]]."</div>";
+    $loop_aktif .= "<div class='wadah gradasi-$gradasi $hideit_lainnya2'>$rnama_prodi[$i]-$rangkatan[$j] : ".$jumlah_aktif_prodi_angkatan[$rid_prodi[$i]][$rangkatan[$j]]." ($persen%)</div>";
   }
-  $loop .= '</div>';
   $loop_allmhs .= '</div>';
+  $loop_aktif .= '</div>';
 } 
 
 $persen = $jumlah_allmhs==0 ? 0 : round(100*$jumlah_aktif/$jumlah_allmhs,2) ; 
@@ -92,7 +96,7 @@ echo "
   <div class='col-lg-6'>
     <div class='wadah gradasi-kuning'>
       <div class='biru mb2'>All Mhs : $jumlah_allmhs</div>
-      $loop
+      $loop_allmhs
     </div>
   </div>
 
@@ -100,7 +104,7 @@ echo "
   <div class='col-lg-6'>
     <div class='wadah gradasi-hijau'>
       <div class='biru mb2'><a href='?list_mhs_aktif'>Mhs Aktif : $jumlah_aktif ($persen%)</a> <img class='img_expand expand_v1' src='../assets/img/icons/expand.png' height=20px></div>
-      $loop_allmhs
+      $loop_aktif
     </div>
   </div>
 </div>

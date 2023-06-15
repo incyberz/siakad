@@ -77,7 +77,7 @@ echo "
 
   <div class='col-lg-6'>
     <div class='wadah gradasi-hijau'>
-      <div class='biru mb2'>Sudah Bayar : $jumlah_bayar ($persen%)</div>
+      <div class='biru mb2'><a href='?list_sudah_bayar'>Sudah Bayar : $jumlah_bayar ($persen%)</a></div>
       $loop_bayar
     </div>
   </div>

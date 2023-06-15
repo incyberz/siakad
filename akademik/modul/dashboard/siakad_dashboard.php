@@ -122,7 +122,7 @@ $ul = $li=='' ? "<div class=red>Belum ada semester aktif pada SIAKAD.</div>"
 			<div class="count_h1">
 				<a href="?mhs_aktif"><?=$jumlah_mhs_aktif?></a>
 			</div>
-			<div class="count_h1_info">Mhs Aktif</div>
+			<div class="count_h1_info"><a href="?mhs_aktif">Mhs Aktif</a></div>
 			<?=$jumlah_mhs_aktif_prodi_show?>
 		</div>
 	</div>
@@ -130,9 +130,9 @@ $ul = $li=='' ? "<div class=red>Belum ada semester aktif pada SIAKAD.</div>"
 	<div class="col-lg-4">
 		<div class="wadah gradasi-hijau rounded50 count_block">
 			<div class="count_h1">
-				<?=$jumlah_sudah_bayar?>
+				<a href="?rekap_pembayaran_manual"><?=$jumlah_sudah_bayar?></a>
 			</div>
-			<div class="count_h1_info">Sudah Bayar</div>
+			<div class="count_h1_info"><a href="?rekap_pembayaran_manual">Sudah Bayar</a></div>
 			<?=$jumlah_sudah_bayar_prodi_show?>
 		</div>
 	</div>
