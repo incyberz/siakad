@@ -73,8 +73,8 @@ for ($i=0; $i < count($rid_prodi); $i++){
   $warna = $persen==100 ? 'biru tebal' : $warna;
   $hideit_prodi = ($rid_prodi[$i]==99 and $persen==0) ? 'hideit' : ''; //hide unprodi if count 0
   // $hideit_prodi = '';
-  $loop_allmhs .= "<div class='wadah bg-white $hideit_prodi'><div class='darkblue mb2'>Prodi ".$rnama_prodi[$i]." : ".$jumlah_allmhs_prodi[$rid_prodi[$i]]."</div>";
-  $loop_aktif .= "<div class='wadah bg-white $warna $hideit_prodi'><div class='$warna mb2'>Prodi ".$rnama_prodi[$i]." : ".$jumlah_aktif_prodi[$rid_prodi[$i]]." ($persen%)</div>";
+  $loop_allmhs .= "<div class='wadah bg-white $hideit_prodi'><div class='darkblue mb2'>Prodi $rnama_prodi[$i] : ".$jumlah_allmhs_prodi[$rid_prodi[$i]]."</div>";
+  $loop_aktif .= "<div class='wadah bg-white $warna $hideit_prodi'><div class='$warna mb2'>Prodi $rnama_prodi[$i] : ".$jumlah_aktif_prodi[$rid_prodi[$i]]." ($persen%)</div>";
   for ($j=0; $j < count($rangkatan); $j++) { 
     $persen = $jumlah_allmhs_prodi_angkatan[$rid_prodi[$i]][$rangkatan[$j]]==0 ? 0 
     : round(100*$jumlah_aktif_prodi_angkatan[$rid_prodi[$i]][$rangkatan[$j]]/$jumlah_allmhs_prodi_angkatan[$rid_prodi[$i]][$rangkatan[$j]],2);
@@ -82,8 +82,10 @@ for ($i=0; $i < count($rid_prodi); $i++){
     $gradasi = $persen==100 ? 'hijau' : $gradasi;
     $hideit_lainnya1 = $jumlah_allmhs_prodi_angkatan[$rid_prodi[$i]][$rangkatan[$j]]==0 ? 'hideit' : ''; //hide lainnya pada prodi if count 0
     $hideit_lainnya2 = $persen==0 ? 'hideit' : ''; //hide lainnya pada prodi if count 0
-    $loop_allmhs .= "<div class='wadah gradasi-kuning $hideit_lainnya1'>$rnama_prodi[$i]-$rangkatan[$j] : ".$jumlah_allmhs_prodi_angkatan[$rid_prodi[$i]][$rangkatan[$j]]."</div>";
-    $loop_aktif .= "<div class='wadah gradasi-$gradasi $hideit_lainnya2'>$rnama_prodi[$i]-$rangkatan[$j] : ".$jumlah_aktif_prodi_angkatan[$rid_prodi[$i]][$rangkatan[$j]]." ($persen%)</div>";
+    $prodi_ang = "$rnama_prodi[$i]-$rangkatan[$j]";
+    $prodi_ang = $rangkatan[$j]=='lainnya' ? $prodi_ang : "<a href='?list_mhs_aktif&keyword=$prodi_ang&keyword2=$prodi_ang'>$prodi_ang</a>";
+    $loop_allmhs .= "<div class='wadah gradasi-kuning $hideit_lainnya1'>$prodi_ang : ".$jumlah_allmhs_prodi_angkatan[$rid_prodi[$i]][$rangkatan[$j]]."</div>";
+    $loop_aktif .= "<div class='wadah gradasi-$gradasi $hideit_lainnya2'>$prodi_ang : ".$jumlah_aktif_prodi_angkatan[$rid_prodi[$i]][$rangkatan[$j]]." ($persen%)</div>";
   }
   $loop_allmhs .= '</div>';
   $loop_aktif .= '</div>';

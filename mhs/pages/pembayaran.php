@@ -1,6 +1,9 @@
 <?php
 $s = "SELECT a.*,
 (
+  SELECT bisa_dicicil FROM tb_biaya_angkatan WHERE id_biaya=a.id  
+  ) as bisa_dicicil, 
+(
   SELECT SUM(jumlah) FROM tb_bayar WHERE id_biaya=a.id and id_mhs=$id_mhs 
   ) as jumlah_bayar, 
 (
@@ -25,9 +28,9 @@ $tr_biaya="
 $i=0;
 while ($d=mysqli_fetch_assoc($q)) {
   $i++;
-  $nominal = number_format($d['nominal'],0);
+  $nominal = number_format($d['nominal_default'],0);
   $jumlah_bayar = $d['jumlah_bayar']==''?'':number_format($d['jumlah_bayar'],0);
-  $sisa_bayar = $d['nominal']-$d['jumlah_bayar'];
+  $sisa_bayar = $d['nominal_default']-$d['jumlah_bayar'];
 
   $form_wa_petugas = "
     <form method=post action='?wa'>
@@ -49,7 +52,7 @@ while ($d=mysqli_fetch_assoc($q)) {
   
   $form_bayar = "
   <form method=post action='?bayar'>
-    <input class=debug name=dapat_dicicil value='$d[dapat_dicicil]'>
+    <input class=debug name=bisa_dicicil value='$d[bisa_dicicil]'>
     <input class=debug name=nama_biaya value='$d[nama]'>
     <input class=debug name=id_biaya value='$d[id]'>
     <input class=debug name=sisa_bayar value='$sisa_bayar'>

@@ -7,6 +7,10 @@ if($skip_ubah_password){
   $parameter = ($is_depas && $parameter!='logout') ? 'ubah_password' : $parameter;
 }
 
+// redirect to home mahasiswa non-aktif
+$parameter = ($status_mhs==0 and $parameter!='logout') ? '' : $parameter;
+
+
 switch ($parameter) {
   case '': 
   case 'home': include "pages/home.php"; break;

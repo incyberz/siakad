@@ -73,7 +73,8 @@ $is_verified_no_wa = $d_mhs['is_verified_no_wa'];
 # ========================================================
 # STATUS AKADEMIK
 # ========================================================
-$status_mhs = $d_mhs['status_mhs']==1 ? 'Aktif' : 'Tidak Aktif';
+$status_mhs = $d_mhs['status_mhs'];
+$status_mhs_show = $status_mhs ? '<span class=blue>Aktif</span>' : '<span class="red bold">Tidak Aktif</span>';
 $angkatan = $d_mhs['angkatan']!=''?$d_mhs['angkatan']:$undef;
 $nama_prodi = $d_mhs['nama_prodi']!=''?$d_mhs['nama_prodi']:$undef;
 $jenjang = $d_mhs['jenjang']!=''?$d_mhs['jenjang']:$undef;

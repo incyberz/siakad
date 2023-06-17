@@ -30,10 +30,10 @@ if(isset($_POST['btn_upload'])){
 $id_biaya = isset($_POST['id_biaya'])?$_POST['id_biaya']:die(erid('id_biaya'));
 $nama_biaya = isset($_POST['nama_biaya'])?$_POST['nama_biaya']:die(erid('nama_biaya'));
 $sisa_bayar = isset($_POST['sisa_bayar'])?$_POST['sisa_bayar']:die(erid('sisa_bayar'));
-$dapat_dicicil = isset($_POST['dapat_dicicil'])?$_POST['dapat_dicicil']:die(erid('dapat_dicicil'));
+$bisa_dicicil = isset($_POST['bisa_dicicil'])?$_POST['bisa_dicicil']:die(erid('bisa_dicicil'));
 
-$info_cicilan = $dapat_dicicil ? "<span class='kecil miring hijau'>)* Biaya ini dapat Anda cicil.</span>":"<span class='kecil miring darkred'>)* Biaya ini tidak dapat dicicil.</span>";
-$input_bayar = $dapat_dicicil 
+$info_cicilan = $bisa_dicicil ? "<span class='kecil miring hijau'>)* Biaya ini dapat Anda cicil.</span>":"<span class='kecil miring darkred'>)* Biaya ini tidak dapat dicicil.</span>";
+$input_bayar = $bisa_dicicil 
 ? "<input id=jumlah_bayar name=jumlah_bayar type='number' class='form-control' min=50000 max=$sisa_bayar value=$sisa_bayar required>" 
 : "<input class='form-control' value=$sisa_bayar disabled><input class=debug name=jumlah_bayar value=$sisa_bayar>";
 

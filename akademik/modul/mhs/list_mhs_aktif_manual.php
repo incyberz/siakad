@@ -26,9 +26,9 @@ $form_filter = "
 
 $from = " FROM tb_mhs a 
 WHERE (status_mhs is null OR status_mhs < 1) 
-AND a.nama LIKE '%$keyword%' 
+AND (a.nama LIKE '%$keyword%' 
 OR a.kelas_manual LIKE '%$keyword%' 
-OR a.nim LIKE '%$keyword%'  
+OR a.nim LIKE '%$keyword%')   
 ";
 $s = "SELECT 1 $from";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
@@ -46,10 +46,14 @@ if(mysqli_num_rows($q)>0){
     $semester = $d['semester_manual']=='' ? $null : $d['semester_manual'];
     $tr .= "
       <tr id=tr__$d[nim]>
-        <td><span id='nama_mhs__$d[nim]'>$d[nama]</span><div class='kecil miring abu'>$d[nim]</div></td>
+        <td>
+          <span id='nama_mhs__$d[nim]'>$d[nama]</span>
+          <div class='kecil miring abu'>$d[nim]</div>
+          <div class=kecil><a href='?login_as&nim=$d[nim]' target=_blank onclick='return confirm(\"Ingin login sebagai mahasiswa-non-aktif ini?\")'>Login as</a></div>
+        </td>
         <td class=kecil>
         <div><b>Prodi</b> : $d[nama_prodi]</div>
-        <div><b>Kelas</b> : $kelas</div>
+        <div><b>Kelas</b> : <a href='?list_mhs_aktif&keyword=$kelas&keyword2=$kelas'>$kelas</a></div>
         <div><b>Semester</b> : $semester</div>
         </td>
         <td>
@@ -107,10 +111,14 @@ if(mysqli_num_rows($q)>0){
     $semester = $d['semester_manual']=='' ? $null : $d['semester_manual'];
     $tr .= "
       <tr id=tr__$d[nim]>
-        <td><span id='nama_mhs__$d[nim]'>$d[nama]</span><div class='kecil miring abu'>$d[nim]</div></td>
+        <td>
+          <span id='nama_mhs__$d[nim]'>$d[nama]</span>
+          <div class='kecil miring abu'>$d[nim]</div>
+          <div class=kecil><a href='?login_as&nim=$d[nim]' target=_blank onclick='return confirm(\"Ingin login sebagai mahasiswa ini?\")'>Login as</a></div>
+        </td>
         <td class=kecil>
         <div><b>Prodi</b> : $d[nama_prodi]</div>
-        <div><b>Kelas</b> : $kelas</div>
+        <div><b>Kelas</b> : <a href='?list_mhs_aktif&keyword=$kelas&keyword2=$kelas'>$kelas</a></div>
         <div><b>Semester</b> : $semester</div>
         </td>
         <td>
