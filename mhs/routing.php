@@ -1,6 +1,6 @@
 <?php 
 // ubah password default
-$skip_ubah_password=1;
+$skip_ubah_password=0;
 if($skip_ubah_password){
   echo '<div class="red tebal">Perhatian! Mode Pass Ubah Password is ON.</div>';
 }else{

@@ -1,6 +1,9 @@
-<h1>List Sudah Bayar <span class=debug>Manual</span></h1>
+<h1>Manage Status Pembayaran <span class=debug>Manual</span></h1>
 
-<?php
+<?php $izin = ($admin_level==4) ? 1 : 0;
+if(!$izin) echo div_alert('danger','Maaf, hanya Bagian Keuangan yang mempunyai akses penuh pada Menu ini.');
+$disabled = $izin ? '' : 'disabled';
+
 $null = '<span class="red miring kecil">null</span>';
 
 # =============================================================
@@ -19,7 +22,7 @@ $form_filter = "
     <input name='keyword2' value='$keyword2' class=debug> 
     <input name='keyword' value='$keyword' $bg required minlength=3 maxlength=20> 
     <button class='btn btn-primary btn-sm'>Filter</button>
-    <a href='?list_mhs_aktif' class='btn btn-info btn-sm'>Clear</a>
+    <a href='?list_sudah_bayar' class='btn btn-info btn-sm'>Clear</a>
   </div>
 </form>
 ";
@@ -29,6 +32,7 @@ WHERE status_mhs=1
 AND (a.nama LIKE '%$keyword%' 
 OR a.kelas_manual LIKE '%$keyword%' 
 OR a.nim LIKE '%$keyword%') 
+AND (status_bayar_manual != 1 OR status_bayar_manual is null) 
 
 ";
 $s = "SELECT 1 $from";
@@ -39,7 +43,7 @@ $jumlah_non = mysqli_num_rows($q);
 $s = "SELECT a.*,(
   SELECT singkatan FROM tb_prodi WHERE id=a.id_prodi 
 ) as nama_prodi 
-$from ORDER BY a.nama LIMIT 10 ";
+$from ORDER BY a.nama LIMIT 40 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $tr = '';
 if(mysqli_num_rows($q)>0){
@@ -55,7 +59,7 @@ if(mysqli_num_rows($q)>0){
         <div><b>Semester</b> : $semester</div>
         </td>
         <td>
-          <button class='btn btn-success btn-sm btn_aksi' id=set_lunas__$d[nim]>Set Lunas</button>
+          <button class='btn btn-success btn-sm btn_aksi' id=set_lunas__$d[nim] $disabled>Set Lunas</button>
         </td>
       </tr>
     ";
@@ -64,7 +68,7 @@ if(mysqli_num_rows($q)>0){
 $tb_non = $tr=='' ? div_alert('info','Mahasiswa aktif tidak ditemukan.') 
 : "<table class='table table-striped'>$tr</table>";
 
-$limit_info = $jumlah_non>10 ? "| <code>Limit 10</code> | Silahkan Filter!" : '';
+$limit_info = $jumlah_non>40 ? "| <code>Limit 40</code> | Silahkan Filter!" : '';
 
 
 
@@ -81,7 +85,7 @@ $form_filter2 = "
     <input name='keyword' value='$keyword' class=debug> 
     <input name='keyword2' value='$keyword2' $bg required minlength=3 maxlength=20> 
     <button class='btn btn-primary btn-sm'>Filter</button>
-    <a href='?list_mhs_aktif' class='btn btn-info btn-sm'>Clear</a>
+    <a href='?list_sudah_bayar' class='btn btn-info btn-sm'>Clear</a>
   </div>
 </form>
 ";
@@ -101,7 +105,7 @@ $jumlah_bayar = mysqli_num_rows($q);
 $s = "SELECT a.*,(
   SELECT singkatan FROM tb_prodi WHERE id=a.id_prodi 
 ) as nama_prodi 
-$from ORDER BY a.nama LIMIT 10 ";
+$from ORDER BY a.nama LIMIT 40 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $tr = '';
 if(mysqli_num_rows($q)>0){
@@ -117,7 +121,7 @@ if(mysqli_num_rows($q)>0){
         <div><b>Semester</b> : $semester</div>
         </td>
         <td>
-          <button class='btn btn-danger btn-sm btn_aksi' id=set_belum_bayar__$d[nim]>Set Belum bayar</button>
+          <button class='btn btn-danger btn-sm btn_aksi' id=set_belum_bayar__$d[nim] $disabled>Set Belum bayar</button>
         </td>
       </tr>
     ";
@@ -126,7 +130,7 @@ if(mysqli_num_rows($q)>0){
 $tb_aktif = $tr=='' ? div_alert('info','Data pembayaran tidak ditemukan.') 
 : "<table class='table table-striped'>$tr</table>";
 
-$limit_info2 = $jumlah_bayar>10 ? "| <code>Limit 10</code> | Silahkan Filter!" : '';
+$limit_info2 = $jumlah_bayar>40 ? "| <code>Limit 40</code> | Silahkan Filter!" : '';
 
 
 
@@ -139,7 +143,7 @@ echo "
 <div class='row'>
   <div class='col-sm-6'>
     <div class='wadah'>
-      <h3>List Mahasiswa Aktif</h3>
+      <h3>List Mahasiswa Aktif :: Belum Bayar</h3>
       <div class='small mb1'>$jumlah_non mhs aktif ditemukan. $limit_info</div>
       $form_filter
       $tb_non
@@ -188,7 +192,7 @@ echo "
         url:link_ajax,
         success:function(a){
           if(a.trim()=='sukses'){
-            let di = aksi=='set_lunas' ? `diaktifkan` : '<span class=red>dinonaktifkan</span>';
+            let di = aksi=='set_lunas' ? `di SET LUNAS` : '<span class=red>di SET BELUM BAYAR</span>';
             $('#tr__'+nim).html(`<td colspan=3>Mahasiswa dengan nim: ${nim} telah ${di}.</td>`);
           }else{
             alert(a);

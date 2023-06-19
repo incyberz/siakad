@@ -55,6 +55,7 @@ if($last_use_second>1){
     $form = "$preview<a href='https://api.whatsapp.com/send?phone=$no_wa_tujuan&text=$text_wa$link_akses' class='btn btn-primary btn-block mt-2 '>Kirim via Whatsapp</a><div class='mt-2 kecil miring abu'>Jika kamu memakai laptop, maka kamu memerlukan Whatsapp Web atau Whatsapp Desktop.</div>";
 
     }else if(isset($_POST['btn_kirim_verif'])){
+    $no_wa_tujuan = $no_baak;
     $text_wa = $_POST['text_wa'];
     $link_verif = urlencode($_POST['link_verif']);
     $s = "UPDATE tb_mhs SET last_use_wa_gateway=CURRENT_TIMESTAMP WHERE id=$id_mhs";
@@ -98,7 +99,6 @@ if($last_use_second>1){
 
         $form = "
           <form method=post>
-            <span class=debug>selisih: $selisih</span>
             <input class=debug name=text_wa value='$text_wa'>
             <input class=debug name=link_verif value='$link_verif'>
             <button class='btn btn-primary btn-block' name=btn_kirim_verif>Kirim Verifikasi</button>

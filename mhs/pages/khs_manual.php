@@ -2,7 +2,7 @@
 <style>.mobile{display:none}@media(max-width:575px){.mobile{display:inline}}</style>
 <style>.desktop{display:inline}@media(max-width:575px){.desktop{display:none}}</style>
 <?php
-$test_mode=1;
+$test_mode=0;
 $disabled_pdf = '';
 function hm2angka($a){
   switch (strtolower($a)) {

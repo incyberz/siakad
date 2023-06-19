@@ -1,6 +1,6 @@
 <?php 
 $fitur = [
-  "akademik/?manage_mhs",
+  "akademik/?",
   "akademik/?krs",
   "akademik/?khs",
   "akademik/?manage_jadwal",
@@ -9,7 +9,7 @@ $fitur = [
   "akademik/?manage_mhs",
   "akademik/?master&p=dosen",
   "akademik/?master&p=tendik",
-  "keuangan",
+  "akademik/?pembayaran_home",
   "inventory",
   "perpus"
 ];

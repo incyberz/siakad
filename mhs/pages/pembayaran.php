@@ -1,8 +1,9 @@
 <?php
 $s = "SELECT a.*,
+
 (
-  SELECT bisa_dicicil FROM tb_biaya_angkatan WHERE id_biaya=a.id  
-  ) as bisa_dicicil, 
+  SELECT nominal FROM tb_biaya_angkatan WHERE id_biaya=a.id and angkatan=$angkatan and id_prodi=$id_prodi 
+  ) as nominal, 
 (
   SELECT SUM(jumlah) FROM tb_bayar WHERE id_biaya=a.id and id_mhs=$id_mhs 
   ) as jumlah_bayar, 
@@ -16,11 +17,15 @@ $s = "SELECT a.*,
   SELECT tanggal_penagihan FROM tb_penagihan WHERE id_biaya=a.id AND id_mhs=$id_mhs 
   ) as tanggal_penagihan 
 FROM tb_biaya a 
-WHERE a.no is not null ORDER BY a.no";
+ORDER BY a.no";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+if(mysqli_num_rows($q)==0){
+  die(div_alert('danger',"Belum ada data biaya untuk angkatan $angkatan prodi $prodi"));
+}
 
 $tr_biaya="
 <thead>
+  <th>No</th>
   <th>Jenis Biaya</th>
   <th class=text-right>Jumlah & Status Bayar</th>
 </thead>
@@ -28,7 +33,8 @@ $tr_biaya="
 $i=0;
 while ($d=mysqli_fetch_assoc($q)) {
   $i++;
-  $nominal = number_format($d['nominal_default'],0);
+  $nominal = $d['nominal']=='' ? $d['nominal_default'] : $d['nominal'];
+  $nominal_show = number_format($nominal,0);
   $jumlah_bayar = $d['jumlah_bayar']==''?'':number_format($d['jumlah_bayar'],0);
   $sisa_bayar = $d['nominal_default']-$d['jumlah_bayar'];
 
@@ -50,9 +56,10 @@ while ($d=mysqli_fetch_assoc($q)) {
   $lunas_show = $d['status_bayar']==1?"<div><a class='tebal biru' href='?lihat_trx&id_biaya=$d[id]'>Lunas</a></div>":$lunas_show;
   $status_bayar = $jumlah_bayar==''?'':"$jumlah_bayar<div class='kecil miring abu'>$d[last_bayar]</div>$lunas_show";
   
+  $bisa_dicicil = 0; //zzz debug
   $form_bayar = "
   <form method=post action='?bayar'>
-    <input class=debug name=bisa_dicicil value='$d[bisa_dicicil]'>
+    <input class=debug name=bisa_dicicil value='$bisa_dicicil'>
     <input class=debug name=nama_biaya value='$d[nama]'>
     <input class=debug name=id_biaya value='$d[id]'>
     <input class=debug name=sisa_bayar value='$sisa_bayar'>
@@ -65,6 +72,7 @@ while ($d=mysqli_fetch_assoc($q)) {
 
   $tr_biaya.="
   <tr>
+    <td>$d[no]</td>
     <td>
       $d[nama]<span class=debug>$d[id]</span>
       <div class='kecil miring abu'>$d[jenis]</div>
@@ -81,7 +89,7 @@ while ($d=mysqli_fetch_assoc($q)) {
 
     <div class="section-title">
       <h2>Pembayaran</h2>
-      <p>Berikut adalah Data Pembayaran yang pernah Anda bayarkan:</p>
+      <p>Berikut adalah Data Tagihan untuk angkatan <b><u id=angkatan><?=$angkatan?></u></b> prodi <b><u><?=$prodi?></u></b> <span class=debug id=id_prodi><?=$id_prodi?></span>:</p>
     </div>
 
     <table class="table table-striped table-hover">

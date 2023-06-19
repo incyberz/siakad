@@ -8,5 +8,6 @@ $d=mysqli_fetch_assoc($q);
 $nama_user = $d['nama_user'];
 $login_as = $d['login_as'];
 $sub_domain = $d['sub_domain'];
+$admin_level = $d['id'];
 
 $img_pegawai = "img/pegawai/admin.jpg"; //zzz

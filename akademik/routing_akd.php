@@ -14,7 +14,7 @@ switch ($c[0]){
   case '':
   case 'dashboard': $konten = 'modul/dashboard/siakad_dashboard.php';break;
   case 'master': $konten = 'modul/master.php';break;
-  case 'manage': $konten = 'modul/manage.php';break;
+  case 'manage': $konten = 'modul/manage_home.php';break;
  
   case 'manage_kalender': $konten = 'modul/kalender/manage_kalender.php';break;
   case 'manage_semester': $konten = 'modul/semester/manage_semester.php';break;
@@ -38,7 +38,7 @@ switch ($c[0]){
   case 'assign_mk': $konten = 'modul/kurikulum/assign_mk.php';break;
 
 
-  case 'khs': $konten = 'modul/khs/manage_khs.php';break;
+  case 'khs': $konten = 'modul/khs/khs_home.php';break;
   case 'input_khs': $konten = 'modul/khs/input_khs.php';break;
   case 'import_khs': $konten = 'modul/khs/import_khs.php';break;
   case 'input_khs_manual': $konten = 'modul/khs/input_khs_manual.php';break;
@@ -63,6 +63,7 @@ switch ($c[0]){
   case 'manage_komponen_biaya': $konten = 'modul/pembayaran/manage_komponen_biaya.php';break;
   case 'manage_biaya_angkatan': $konten = 'modul/pembayaran/manage_biaya_angkatan.php';break;
   case 'penagihan': $konten = 'modul/pembayaran/penagihan.php';break;
+  case 'penagihan_biaya': $konten = 'modul/pembayaran/penagihan_biaya.php';break;
   case 'penagihan_semester': $konten = 'modul/pembayaran/penagihan_semester.php';break;
   case 'penagihan_lainnya': $konten = 'modul/pembayaran/penagihan_lainnya.php';break;
 }

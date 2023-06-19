@@ -1,5 +1,5 @@
 <?php 
-$debug_mode = 0;
+$dm = 0;
 $msg = "<table class='table table-hover table-bordered table-striped'>
   <thead><th style='color:red'>Error. Can't get data table.</th></thead></table>";
 if (!isset($_GET['id_angkatan']))die("$msg #1");

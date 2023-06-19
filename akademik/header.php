@@ -99,7 +99,7 @@ while ($d = mysqli_fetch_array($q)) {
           <span class="profile-ava">
             <img width="30px" height="30px" alt="" src="<?=$img_pegawai?>">
           </span>
-          <span class="username"><?=$nama_user?></span>
+          <span class="username"><?=$nama_user?> - <?=$login_as?><span class="debug"><?=$admin_level?></span></span>
           <b class="caret"></b>
         </a>
         <ul class="dropdown-menu extended logout">

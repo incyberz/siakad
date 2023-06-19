@@ -1,5 +1,5 @@
 <?php 
-$debug_mode = 0;
+$dm = 0;
 $msg = "Error @AJAX. Missing index field";
 if (!isset($_GET['id_kurikulum']))die("$msg #1");
 if (!isset($_GET['id_bk']))die("$msg #2");

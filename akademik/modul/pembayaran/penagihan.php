@@ -3,12 +3,12 @@
 
 <div class="row">
   <div class="col-md-4">
-    <a href="?penagihan_maba" class='btn btn-info btn-block'>Penagihan Biaya Awal MABA</a>
+    <a href="?penagihan_biaya" class='btn btn-info btn-block'>Penagihan Biaya</a>
   </div>
-  <div class="col-md-4">
+  <!-- <div class="col-md-4">
     <a href="?penagihan_semester" class='btn btn-info btn-block'>Penagihan Biaya Semester</a>
-  </div>
-  <div class="col-md-4">
+  </div> -->
+  <!-- <div class="col-md-4">
     <a href="?penagihan_lainnya" class='btn btn-info btn-block'>Penagihan Lainnya</a>
-  </div>
+  </div> -->
 </div>

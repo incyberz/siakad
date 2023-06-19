@@ -16,6 +16,8 @@ $status_mhs=$undef;
 # ========================================================
 $s = "SELECT a.*,
 (
+  SELECT singkatan FROM tb_prodi WHERE id=a.id_prodi) as prodi,
+(
   SELECT nama FROM tb_prodi WHERE id=a.id_prodi) as nama_prodi,
 (
   SELECT jenjang FROM tb_prodi WHERE id=a.id_prodi) as jenjang,
@@ -64,6 +66,8 @@ if(!file_exists($img_bg)) $img_bg = "uploads/bg_na.jpg";
 $id_mhs = $d_mhs['id'];
 $nama_mhs = $d_mhs['nama'];
 $angkatan = $d_mhs['angkatan'];
+$id_prodi = $d_mhs['id_prodi'];
+$prodi = $d_mhs['prodi'];
 $nama_mhs = ucwords(strtolower($nama_mhs));
 $no_wa = $d_mhs['no_wa']!=''?$d_mhs['no_wa']:'';
 $no_wa_show = $no_wa==''?$undef:substr($no_wa,0,4).'***'.substr($no_wa,strlen($no_wa)-3,3);

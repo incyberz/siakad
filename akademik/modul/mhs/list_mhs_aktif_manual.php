@@ -1,5 +1,10 @@
 <h1>List Mahasiswa Aktif <span class=debug>Manual</span></h1>
 
+<?php $izin = ($admin_level==3||$admin_level==6||$admin_level==7) ? 1 : 0;
+if(!$izin) echo div_alert('danger','Maaf, hanya Bagian Akademik yang mempunyai akses penuh pada Menu ini.');
+$disabled = $izin ? '' : 'disabled';
+?>
+
 <?php
 $null = '<span class="red miring kecil">null</span>';
 
@@ -37,7 +42,7 @@ $jumlah_non = mysqli_num_rows($q);
 $s = "SELECT a.*,(
   SELECT singkatan FROM tb_prodi WHERE id=a.id_prodi 
 ) as nama_prodi 
-$from ORDER BY a.nama LIMIT 10 ";
+$from ORDER BY a.nama LIMIT 40 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $tr = '';
 if(mysqli_num_rows($q)>0){
@@ -57,7 +62,7 @@ if(mysqli_num_rows($q)>0){
         <div><b>Semester</b> : $semester</div>
         </td>
         <td>
-          <button class='btn btn-success btn-sm btn_aksi' id=set_aktif__$d[nim]>Set Aktif</button>
+          <button class='btn btn-success btn-sm btn_aksi' id=set_aktif__$d[nim] $disabled>Set Aktif</button>
         </td>
       </tr>
     ";
@@ -66,7 +71,7 @@ if(mysqli_num_rows($q)>0){
 $tb_non = $tr=='' ? div_alert('info','Mahasiswa non-aktif tidak ditemukan.') 
 : "<table class='table table-striped'>$tr</table>";
 
-$limit_info = $jumlah_non>10 ? "| <code>Limit 10</code> | Silahkan Filter!" : '';
+$limit_info = $jumlah_non>40 ? "| <code>Limit 40</code> | Silahkan Filter!" : '';
 
 
 
@@ -102,7 +107,7 @@ $jumlah_aktif = mysqli_num_rows($q);
 $s = "SELECT a.*,(
   SELECT singkatan FROM tb_prodi WHERE id=a.id_prodi 
 ) as nama_prodi 
-$from ORDER BY a.nama LIMIT 10 ";
+$from ORDER BY a.nama LIMIT 40 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $tr = '';
 if(mysqli_num_rows($q)>0){
@@ -122,7 +127,7 @@ if(mysqli_num_rows($q)>0){
         <div><b>Semester</b> : $semester</div>
         </td>
         <td>
-          <button class='btn btn-danger btn-sm btn_aksi' id=set_non__$d[nim]>Set Non-Aktif</button>
+          <button class='btn btn-danger btn-sm btn_aksi' id=set_non__$d[nim] $disabled>Set Non-Aktif</button>
         </td>
       </tr>
     ";
@@ -131,7 +136,7 @@ if(mysqli_num_rows($q)>0){
 $tb_aktif = $tr=='' ? div_alert('info','Mahasiswa Aktif tidak ditemukan.') 
 : "<table class='table table-striped'>$tr</table>";
 
-$limit_info2 = $jumlah_aktif>10 ? "| <code>Limit 10</code> | Silahkan Filter!" : '';
+$limit_info2 = $jumlah_aktif>40 ? "| <code>Limit 40</code> | Silahkan Filter!" : '';
 
 
 
