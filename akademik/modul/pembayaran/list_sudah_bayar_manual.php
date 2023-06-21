@@ -52,7 +52,11 @@ if(mysqli_num_rows($q)>0){
     $semester = $d['semester_manual']=='' ? $null : $d['semester_manual'];
     $tr .= "
       <tr id=tr__$d[nim]>
-        <td><span id='nama_mhs__$d[nim]'>$d[nama]</span><div class='kecil miring abu'>$d[nim]</div></td>
+        <td>
+          <span id='nama_mhs__$d[nim]'>$d[nama]</span>
+          <div class='kecil miring abu'>$d[nim]</div>
+          <a href='?login_as&nim=$d[nim]' target=_blank onclick='return confirm(\"Yakin mau mencoba Login As mahasiswa ini?\")'>$img_login_as</a>
+        </td>
         <td class=kecil>
         <div><b>Prodi</b> : $d[nama_prodi]</div>
         <div><b>Kelas</b> : $kelas</div>
@@ -114,7 +118,11 @@ if(mysqli_num_rows($q)>0){
     $semester = $d['semester_manual']=='' ? $null : $d['semester_manual'];
     $tr .= "
       <tr id=tr__$d[nim]>
-        <td><span id='nama_mhs__$d[nim]'>$d[nama]</span><div class='kecil miring abu'>$d[nim]</div></td>
+        <td>
+          <span id='nama_mhs__$d[nim]'>$d[nama]</span>
+          <div class='kecil miring abu'>$d[nim]</div>
+          <a href='?login_as&nim=$d[nim]' target=_blank onclick='return confirm(\"Yakin mau mencoba Login As mahasiswa ini?\")'>$img_login_as</a>
+        </td>
         <td class=kecil>
         <div><b>Prodi</b> : $d[nama_prodi]</div>
         <div><b>Kelas</b> : $kelas</div>
