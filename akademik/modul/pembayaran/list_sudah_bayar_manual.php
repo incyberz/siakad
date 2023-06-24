@@ -1,6 +1,9 @@
 <h1>Manage Status Pembayaran <span class=debug>Manual</span></h1>
 
-<?php $izin = ($admin_level==4) ? 1 : 0;
+<?php 
+$img_login_as = '<img src="../assets/img/icons/login_as.png" height=20px>';
+
+$izin = ($admin_level==4) ? 1 : 0;
 if(!$izin) echo div_alert('danger','Maaf, hanya Bagian Keuangan yang mempunyai akses penuh pada Menu ini.');
 $disabled = $izin ? '' : 'disabled';
 
@@ -54,8 +57,10 @@ if(mysqli_num_rows($q)>0){
       <tr id=tr__$d[nim]>
         <td>
           <span id='nama_mhs__$d[nim]'>$d[nama]</span>
-          <div class='kecil miring abu'>$d[nim]</div>
-          <a href='?login_as&nim=$d[nim]' target=_blank onclick='return confirm(\"Yakin mau mencoba Login As mahasiswa ini?\")'>$img_login_as</a>
+          <div class='kecil miring abu'>
+            $d[nim] 
+            <a href='?login_as&nim=$d[nim]' target=_blank onclick='return confirm(\"Yakin mau mencoba Login As mahasiswa ini?\")'>$img_login_as</a>
+          </div>
         </td>
         <td class=kecil>
         <div><b>Prodi</b> : $d[nama_prodi]</div>
@@ -120,8 +125,10 @@ if(mysqli_num_rows($q)>0){
       <tr id=tr__$d[nim]>
         <td>
           <span id='nama_mhs__$d[nim]'>$d[nama]</span>
-          <div class='kecil miring abu'>$d[nim]</div>
-          <a href='?login_as&nim=$d[nim]' target=_blank onclick='return confirm(\"Yakin mau mencoba Login As mahasiswa ini?\")'>$img_login_as</a>
+          <div class='kecil miring abu'>
+            $d[nim] 
+            <a href='?login_as&nim=$d[nim]' target=_blank onclick='return confirm(\"Yakin mau mencoba Login As mahasiswa ini?\")'>$img_login_as</a>
+          </div>
         </td>
         <td class=kecil>
         <div><b>Prodi</b> : $d[nama_prodi]</div>
