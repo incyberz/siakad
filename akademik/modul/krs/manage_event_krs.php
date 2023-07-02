@@ -1,6 +1,9 @@
 <?php
 $judul = 'Manage Event KRS';
 $undef = '<span style="color:#f77; font-style:italic">undefined</span>';
+$null = '<code class=miring>null</code>';
+$jumlah_mk = $null;
+$registran = '<span class="kecil miring">0 of 0</span>';
 
 
 if (isset($_POST['btn_set_krs_default'])) {
@@ -70,16 +73,78 @@ echo "<span class=debug>id_prodi: <span id=id_prodi>$id_prodi</span> | angkatan:
 
 
 # =====================================================
+# GET Jenjang dan jumlah_max_smt from prodi
+# =====================================================
+$s = "SELECT a.jenjang, b.jumlah_semester FROM tb_prodi a JOIN tb_jenjang b ON a.jenjang=b.jenjang WHERE a.id=$id_prodi";
+$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+if(mysqli_num_rows($q)==0) die('Data jenjang prodi tidak ditemukan.');
+$d = mysqli_fetch_assoc($q);
+$jenjang = $d['jenjang'];
+$jumlah_semester = $d['jumlah_semester'];
+
+
+# =====================================================
+# GET ID-kalender
+# =====================================================
+$id_kalender = '';
+$s = "SELECT id as id_kalender FROM tb_kalender WHERE angkatan='$angkatan' AND jenjang='$jenjang'";
+$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+if(mysqli_num_rows($q)==0){
+  $info_kalender = div_alert('info',"Perhatian! Anda wajib mengisi tanggal awal dan tanggal akhir KRS secara manual karena Kalender angkatan $angkatan jenjang $jenjang belum ada pada sistem SIAKAD.");
+}else{
+  $info_kalender = '';
+  $d = mysqli_fetch_assoc($q);
+  $id_kalender = $d['id_kalender'];
+
+  $rtanggal_awal_krs = [];
+  $rtanggal_akhir_krs = [];
+  $rtanggal_awal_smt = [];
+  $rtanggal_akhir_smt = [];
+
+  # =====================================================
+  # GET SEMESTERS DATA
+  # =====================================================
+  $s = "SELECT 
+  a.nomor as semester_ke, 
+  a.tanggal_awal as tanggal_awal_smt, 
+  a.tanggal_akhir as tanggal_akhir_smt, 
+  a.awal_krs, 
+  a.akhir_krs 
+  FROM tb_semester a WHERE a.id_kalender='$id_kalender'";
+  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  if(mysqli_num_rows($q)==0){
+    die('Data Semester belum lengkap. id_kalender: '.$id_kalender);
+  }else{
+    while ($d=mysqli_fetch_assoc($q)) {
+      $rtanggal_awal_smt[$d['semester_ke']] = $d['tanggal_awal_smt']; 
+      $rtanggal_akhir_smt[$d['semester_ke']] = $d['tanggal_akhir_smt']; 
+      $rtanggal_awal_krs[$d['semester_ke']] = $d['awal_krs']; 
+      $rtanggal_akhir_krs[$d['semester_ke']] = $d['akhir_krs']; 
+    }
+  }
+
+
+}
+
+// var_dump($rtanggal_awal_krs);
+
+# =====================================================
 # TAMPIL KRS DARI SMT 1 S.D 8
 # =====================================================
+include '../include/include_rprodi.php';
 $tanggal_awal_show = $undef;
 $tanggal_akhir_show = $undef;
 
-$s = "SELECT a.* 
+$s = "SELECT a.*,
+(SELECT count(1) FROM tb_krs_mk_manual WHERE id_krs_manual=a.id) as jumlah_mk,  
+(SELECT sum(bobot) FROM tb_krs_mk_manual b JOIN tb_mk_manual c ON b.id_mk_manual=c.id WHERE b.id_krs_manual=a.id) as sum_sks,  
+(SELECT count(1) FROM tb_mhs WHERE status_mhs=1 AND id_prodi=$id_prodi AND angkatan=$angkatan) as jumlah_mhs_aktif  
 FROM tb_krs_manual a 
 WHERE a.angkatan=$angkatan 
 AND a.id_prodi=$id_prodi 
 ORDER BY untuk_semester";
+
+echo "<pre>$s</pre>";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
 $tr_krs="
@@ -92,25 +157,72 @@ $tr_krs="
 </thead>
 ";
 $i=0;
-$null = '<code class=miring>null</code>';
+$rid_krs = [];
+$prodi = $rprodi[$id_prodi];
+$registran = "<a target=_blank href='?list_mhs_aktif&keyword=$prodi-$angkatan&keyword2=$prodi-$angkatan'>0 of 0</a>"; 
+$jumlah_mhs_aktif = 0;
+$tanggal_awal_smt = '';
+$tanggal_akhir_smt = '';
+$semester_aktif = 0;
 while ($d=mysqli_fetch_assoc($q)) {
   $i++;
-  $nominal = $d['nominal']=='' ? $d['nominal_default'] : $d['nominal'];
-  $def = $d['nominal']=='' ? '<code>(nominal default)</code>' : '<span class="biru consolas">(custom)</span>';
-  $besar_cicilan = $d['besar_cicilan']=='' ? $null : $d['besar_cicilan'];
   $id = $d['id'];
-  $idx = $angkatan."__$id_prodi"."__$id";
+  $jumlah_mhs_aktif = $d['jumlah_mhs_aktif'];
+  $rid_krs[$d['untuk_semester']] = $d['id'];
 
+  $jumlah_mk = $d['jumlah_mk']==0 ? $null : $d['jumlah_mk'].' MK ('.$d['sum_sks'].' SKS)';
+  $jumlah_registran = 0; //zzz
 
+  $d['tanggal_awal'] = $d['tanggal_awal']=='' ? $rtanggal_awal_krs[$i] : $d['tanggal_awal'];
+  $d['tanggal_akhir'] = $d['tanggal_akhir']=='' ? $rtanggal_akhir_krs[$i] : $d['tanggal_akhir'];
+
+  $selisih_awal = strtotime('now') - strtotime($rtanggal_awal_smt[$i]);
+  $selisih_akhir = strtotime('now') - strtotime($rtanggal_akhir_smt[$i]);
+
+  $border = '';
+  if($selisih_awal>=0 and $selisih_akhir<0){
+    $border = 'solid 3px blue';
+    $tanggal_awal_smt = $rtanggal_awal_smt[$i];
+    $tanggal_akhir_smt = $rtanggal_akhir_smt[$i];
+    $semester_aktif = $i;
+  }
 
   $tr_krs.="
-  <tr>
-    <td class= id=no__$id>$d[no]<span class=debug>$d[id]</span></td>
-    <td class= id=nama__$id>$d[nama] $def</td>
-    <td class='editable text-right consolas' id=nominal__$idx>$nominal</td>
-    <td class='editable text-right consolas' id=besar_cicilan__$idx>$besar_cicilan</td>
+  <tr style='border:$border'>
+    <td class= id=untuk_semester__$id>$d[untuk_semester]</td>
+    <td class='editable' id=tanggal_awal__$id>$d[tanggal_awal]</td>
+    <td class='editable' id=tanggal_akhir__$id>$d[tanggal_akhir]</td>
+    <td>
+      <a href=?manage_krs_mk_manual&id_krs_manual=$id>$jumlah_mk</a>
+    </td>
+    <td>$jumlah_registran</td>
   </tr>";
 }
+
+
+# =====================================================
+# AUTO-INSERT :: CEK KRS SEMESTER YANG BELUM ADA
+# =====================================================
+$values = '';
+for ($i=1; $i <= $jumlah_semester; $i++) { 
+  if(!isset($rid_krs[$i])){
+    $values .= "($angkatan,$id_prodi,$i),";
+    // echo "auto set untuk semester $i<br>";
+  }
+}
+
+if($values!=''){
+  $values .= '__';
+  $values = str_replace(',__','',$values);
+
+  $s = "INSERT INTO tb_krs_manual (angkatan, id_prodi, untuk_semester) VALUES $values";
+  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  echo '<script>location.reload()</script>';
+  exit;
+
+}
+
+
 
 $sum_nominal = 1; /// zzz test
 if($sum_nominal==0){
@@ -139,12 +251,18 @@ if($sum_nominal==0){
 
 
 ?>
+<style>th{text-align:left}</style>
 <h1><?=$judul ?></h1>
-
+<?=$info_kalender?>
 <p>
-  Berikut KRS untuk <a href="?event_krs"><b>Angkatan</b> : <?=$angkatan?></a>
-  <a href="?event_krs&angkatan=<?=$angkatan?>"><b>Prodi</b> : <?=$nama_prodi?></a>
+  Berikut KRS untuk <b><a href="?event_krs">Angkatan <?=$angkatan?></a></b>
+  prodi <b><a href="?event_krs&angkatan=<?=$angkatan?>"> <?=$nama_prodi?></a></b>
 </p>
+<ul>
+  <li>Jumlah mahasiswa aktif saat ini : <a href="?mhs_aktif" target=_blank><?=$jumlah_mhs_aktif?> mhs</a></li>
+  <li>Semester aktif: <a href="?manage_kalender&id_kalender=<?=$id_kalender?>" target=_blank>Semester <?=$semester_aktif?> dari <?=$tanggal_awal_smt?> s.d <?=$tanggal_akhir_smt?></a></li>
+</ul>
+<div class='kecil miring mb3'></div>
 <table class="table table-striped">
   <?=$tr_krs?>
 </table>

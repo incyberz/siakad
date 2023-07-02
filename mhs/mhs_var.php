@@ -63,25 +63,53 @@ if(!file_exists($img_profile)) $img_profile = "uploads/profile_na.jpg";
 if(!file_exists($img_bg)) $img_bg = "uploads/bg_na.jpg";
 
 
+# ========================================================
+# ID + NAMA MHS
+# ========================================================
 $id_mhs = $d_mhs['id'];
 $nama_mhs = $d_mhs['nama'];
+$nama_mhs = ucwords(strtolower($nama_mhs));
+
+# ========================================================
+# DATA PRODI + KALENDER AKADEMIK
+# ========================================================
+$status_mhs = $d_mhs['status_mhs'];
 $angkatan = $d_mhs['angkatan'];
 $id_prodi = $d_mhs['id_prodi'];
 $prodi = $d_mhs['prodi'];
-$nama_mhs = ucwords(strtolower($nama_mhs));
+$nama_prodi = $d_mhs['nama_prodi'];
+$jenjang = $d_mhs['jenjang'];
+
+
+$id_kalender = '';
+$id_kurikulum = '';
+if($angkatan!='' and $jenjang!=''){
+  $s = "SELECT a.id as id_kalender, 
+  (SELECT id FROM tb_kurikulum WHERE id_kalender=a.id AND id_prodi=$id_prodi) as id_kurikulum  
+  FROM tb_kalender a WHERE a.angkatan='$angkatan' AND a.jenjang='$jenjang'";
+  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  if(mysqli_num_rows($q)){
+    $d=mysqli_fetch_assoc($q);
+    $id_kalender = $d['id_kalender'];
+    $id_kurikulum = $d['id_kurikulum'];
+  }
+}
+
+# ========================================================
+# WHATSAPP
+# ========================================================
 $no_wa = $d_mhs['no_wa']!=''?$d_mhs['no_wa']:'';
 $no_wa_show = $no_wa==''?$undef:substr($no_wa,0,4).'***'.substr($no_wa,strlen($no_wa)-3,3);
 $link_wa = "https://api.whatsapp.com/send?phone=62$no_wa&text=Halo... saya $nama_mhs";
 $is_verified_no_wa = $d_mhs['is_verified_no_wa'];
 
 # ========================================================
-# STATUS AKADEMIK
+# STATUS AKADEMIK SHOW
 # ========================================================
-$status_mhs = $d_mhs['status_mhs'];
 $status_mhs_show = $status_mhs ? '<span class=blue>Aktif</span>' : '<span class="red bold">Tidak Aktif</span>';
-$angkatan = $d_mhs['angkatan']!=''?$d_mhs['angkatan']:$undef;
-$nama_prodi = $d_mhs['nama_prodi']!=''?$d_mhs['nama_prodi']:$undef;
-$jenjang = $d_mhs['jenjang']!=''?$d_mhs['jenjang']:$undef;
+$angkatan_show = $d_mhs['angkatan']!=''?$d_mhs['angkatan']:$undef;
+$nama_prodi_show = $d_mhs['nama_prodi']!=''?$d_mhs['nama_prodi']:$undef;
+$jenjang_show = $d_mhs['jenjang']!=''?$d_mhs['jenjang']:$undef;
 
 $is_depas = ($d_mhs['password']=='' || $d_mhs['password']==$nim) ? 1 : 0;
 

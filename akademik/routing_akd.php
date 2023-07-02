@@ -63,6 +63,7 @@ switch ($c[0]){
 
   case 'krs': $konten = 'modul/krs/krs_home.php';break;
   case 'event_krs': $konten = 'modul/krs/manage_event_krs.php';break;
+  case 'manage_krs_mk_manual': $konten = 'modul/krs/manage_krs_mk_manual.php';break;
 
 
   case 'khs': $konten = 'modul/khs/khs_home.php';break;

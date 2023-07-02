@@ -9,6 +9,7 @@ $tr_biaya="
   <th>Nama Biaya</th>
   <th>Jenis</th>
   <th>Nominal Default</th>
+  <th>Untuk Semester</th>
   <th>Keterangan</th>
   <th>Aksi</th>
 </thead>
@@ -29,6 +30,7 @@ while ($d=mysqli_fetch_assoc($q)) {
     <td class=editable id=nama__$id>$d[nama]</td>
     <td class=editable id=jenis__$id>$jenis</td>
     <td class=editable id=nominal_default__$id>$nominal_default</td>
+    <td class=editable id=untuk_semester__$id>$d[untuk_semester]</td>
     <td class=editable id=ket__$id>$ket</td>
     <td class='deletable btn_aksi' id=hapus__$id>Hapus<span class=debug>$d[id]</span></td>
   </tr>";
