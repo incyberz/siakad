@@ -49,7 +49,7 @@ while ($d = mysqli_fetch_assoc($q)) {
     <td>$d[nomor_semester]</td>
     <td class='text-center gradasi-$merah kecil miring'>$is_manage</td>
     <td>
-      <a class='btn btn-primary' href='?manage_semester&id_semester=$d[id_semester]'>Manage Semester</a>
+      <a class='btn btn-primary' href='?manage_semester&id_semester=$d[id_semester]'>Manage Semester<span class=debug>id:$d[id_semester]idk:$d[id_kurikulum]</span></a>
       <a class='btn btn-primary' href='?manage_kurikulum&id_kurikulum=$d[id_kurikulum]'>Manage Kurikulum MK</a>
     </td>
   </tr>";

@@ -7,7 +7,7 @@
       // }
       ?>
       <li class=proper><a href="?"><i class="icon_easel_alt"></i>Dashboard</a></li>
-      <li class=proper><a href="?master"><i class="icon_genius"></i>Master</a></li>
+      <li class=proper><a href="?manage_master"><i class="icon_genius"></i>Master</a></li>
       <li class=proper><a href="?manage"><i class="icon_genius"></i>Manage</a></li>
       <!-- <li class=proper><a href="?master&p=kalender"><i class="icon_genius"></i>Manage Kalender</a></li>
       <li class=proper><a href="?master&p=kurikulum"><i class="icon_genius"></i>Manage Kurikulum</a></li>
@@ -26,9 +26,13 @@
       <li class=proper><a href="?khs"><i class="icon_genius"></i>KHS</a></li>
       <!-- <li class=proper><a onclick="belom()"><i class="icon_genius"></i><span class=merah>Transkrip</span></a></li> -->
 
-      <!-- <li class=proper><a href="?presensi"><i class="icon_genius"></i>Presensi</a></li> -->
-      <!-- <li class=proper><a href="../tmp/relasi.png" target="_blank"><i class="icon_genius"></i>Relasi DB</a></li> -->
-
+      <?php 
+      // if($id_role==8){ 
+      //   echo "
+      //     <li class=proper><a href='?pimpinan_home'><i class='icon_genius'></i>Pimpinan</a></li>
+      //   "; 
+      // } 
+      ?>
       
 
 

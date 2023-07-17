@@ -3,7 +3,7 @@
 # AKADEMIK INDEX
 # ========================================================
 session_start();
-$dm=1;
+$dm=0;
 $menit_sks = 50;
 $ta_aktif=2023;
 
@@ -73,6 +73,22 @@ include 'routing_akd.php';
   <style>
     h3{color: darkblue}
   </style>
+  <style>.no_manage,.no_master{
+    color: white;
+    background: blue;
+    display: inline-block;
+    width: 40px;
+    height: 31px;
+    font-size: 20px;
+    border-radius: 10%
+  }.no_master{
+    background: #17a;
+    font-size: 18px;
+    padding-top: 3px;
+  }.ket_manage,.ket_master{
+    font-size: 10px
+  }</style>
+
 </head>
 
 <body>

@@ -6,7 +6,7 @@ while ($dopt=mysqli_fetch_assoc($q)) {
   if(in_array($dopt['id'],$arr_id_prodi)) continue;
   $option_prodi .= "<option value='$dopt[id]'>$dopt[nama]</option>";
 }
-echo $option_prodi=='' ? div_alert('info',"Semua Prodi sudah terpasang pada Kurikulum.<hr><a href='?master&p=prodi&aksi=tambah' target=_blank>Tambah Prodi</a>") : "
+echo $option_prodi=='' ? div_alert('info',"Semua Prodi sudah terpasang pada Kurikulum, silahkan klik pada salah satu Manage Kurikulum diatas.") : "
 
 <div class='wadah'>
   <h3>Buat Kurikulum Baru</h3>

@@ -22,7 +22,9 @@ if($page==''){
   # ==============================================================
   # SHOW MANAGE MASTER PAGE
   # ==============================================================
-  include 'master_home.php';
+  // include 'master_home.php';
+  // new patch :: redirect to manage
+  die('<script>location.replace("?manage")</script>'); 
 
 }else{
 

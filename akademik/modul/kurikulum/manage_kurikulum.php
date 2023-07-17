@@ -12,9 +12,131 @@
   }
 </style>
 <?php
+include 'include/include_rid_prodi.php';
 
-$id_kurikulum = isset($_GET['id_kurikulum']) ? $_GET['id_kurikulum'] : '';
-if($id_kurikulum<1) die('<script>location.replace("?master&p=kurikulum")</script>');
+$id_kurikulum = $_GET['id_kurikulum'] ?? '';
+if($id_kurikulum==''){
+  $angkatan = $_GET['angkatan'] ?? '';
+  $jenjang = $_GET['jenjang'] ?? '';
+  include 'include/include_rangkatan.php';
+  include 'include/include_rjenjang.php';
+
+
+  if($angkatan=='' || $jenjang==''){
+    echo "<div class=mb2>Untuk angkatan: </div>";
+    foreach ($rangkatan as $key => $angkatan) {
+      echo "<div class=wadah><h3 class=mb2>Angkatan $angkatan</h3>";
+      // echo " <a class='btn btn-info' href='?manage_kalender&angkatan=$angkatan'>$angkatan</a>";
+      foreach ($rjenjang as $key => $jenjang) {
+        $btn_type = $jenjang=='D3' ? 'success' : 'info';
+
+        $s = "SELECT id as id_kalender,
+        (SELECT count(1) FROM tb_semester WHERE id_kalender=a.id) jumlah_semester, 
+        (SELECT count(1) FROM tb_kurikulum WHERE id_kalender=a.id) jumlah_kurikulum 
+        FROM tb_kalender a WHERE a.jenjang='$jenjang' AND a.angkatan=$angkatan";
+        $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+        $jumlah_kalender = mysqli_num_rows($q);
+        if($jumlah_kalender){
+          $d=mysqli_fetch_assoc($q);
+          $jumlah_semester = $d['jumlah_semester'];
+          $id_kalender = $d['id_kalender'];
+          $link = '';
+          if($jumlah_semester==$rjumlah_semester[$jenjang]){
+            $aclass = '';
+            $err = '';
+            $s = "SELECT id as id_prodi,singkatan FROM tb_prodi WHERE jenjang='$jenjang'";
+            $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+            while ($d=mysqli_fetch_assoc($q)) {
+
+              $s2 = "SELECT a.id as id_kurikulum,
+              (SELECT count(1) FROM tb_kurikulum_mk WHERE id_kurikulum=a.id) jumlah_mk,  
+              (
+                SELECT (sum(m.bobot_teori) + sum(m.bobot_praktik)) as jumlah_sks 
+                FROM tb_mk m 
+                JOIN tb_kurikulum_mk n ON m.id=n.id_mk 
+                JOIN tb_kurikulum o ON n.id_kurikulum=o.id 
+                WHERE o.id=a.id 
+
+              ) jumlah_sks   
+              FROM tb_kurikulum a 
+              JOIN tb_kalender b ON a.id_kalender=b.id
+              WHERE b.jenjang='$jenjang' 
+              AND b.angkatan=$angkatan 
+              AND a.id_prodi=$d[id_prodi] 
+              ";
+              $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
+
+              $jumlah_kurikulum = mysqli_num_rows($q2);
+
+              if($jumlah_kurikulum==1){
+                $d2 = mysqli_fetch_assoc($q2);
+
+                $jumlah_mk = $d2['jumlah_mk'];
+                if($jumlah_mk){
+                  $gr = 'hijau';
+                  $jumlah_mk_show = "<div class='mt1 kecil miring'>$jumlah_mk MK :: $d2[jumlah_sks] SKS</div>";
+                }else{
+                  $gr = 'merah';
+                  $jumlah_mk_show = "<div class='mt1 kecil miring red'>Belum ada MK pada kurikulum ini.</div>";
+                }
+
+                $link .= "
+                <div class='wadah mt2 mb2 gradasi-$gr'>
+                  <a class='btn btn-$btn_type' href='?manage_kurikulum&id_kurikulum=$d2[id_kurikulum]'>
+                    Kurikulum $d[singkatan]-$angkatan-$jenjang <span class=debug>$d2[id_kurikulum]</span>
+                  </a> 
+                  $jumlah_mk_show 
+                </div> 
+                ";
+              }elseif($jumlah_kurikulum==0){
+                $link .= "
+                <div class='wadah mt2 mb2 gradasi-merah'>
+                  <a class='btn btn-danger' href='?manage_kalender&angkatan=$angkatan&jenjang=$jenjang'>
+                    Buat Kurikulum $d[singkatan]-$angkatan-$jenjang <span class=debug></span>
+                  </a>
+                  <div class='kecil miring red'>Kurikulum $d[singkatan]-$angkatan-$jenjang belum ada. Silahkan buat pada Manage Kalender (opsi paling bawah).</div>
+                </div>
+                ";
+              }else{
+                $link .= '<div class="wadah gradasi-merah">';
+                $prodi = $rprodi[$d['id_prodi']];
+                $link .= div_alert('danger',"<h4>Multiple Kurikulum Terdeteksi</h4>Kurikulum angkatan $angkatan jenjang $jenjang prodi $prodi Lebih dari satu. Silahkan hapus salah satu!<div class='kecil miring abu mt1'>Jika tidak bisa dihapus silahkan hubungi DB-Admin!</div>");
+                while ($d2=mysqli_fetch_assoc($q2)) {
+                  $disabled = $d2['jumlah_mk'] ? 'disabled' : '';
+                  $link .= "
+                  <form method=post>
+                    <button class='btn btn-danger' value=$d2[id_kurikulum] name=btn_hapus_kurikulum $disabled>Hapus Kurikulum | $d2[jumlah_mk] MK | id:$d2[id_kurikulum]</button> 
+                  </form>
+                  ";
+                }
+                $link .= '</div>';
+              }
+
+            }
+          }else{
+            $aclass = ' class="btn btn-danger" ';
+            $err = "<div class='kecil miring red'>Jumlah semester pada Kalender tidak sama dengan Jumlah Semester Jenjang $jenjang. Silahkan Manage Kalender terlebih dahulu!</div>";
+          }
+
+          $link_manage_kalender = "<div class='mb2'><a href='?manage_kalender&angkatan=$angkatan&jenjang=$jenjang' $aclass>Kalender $angkatan-$jenjang <span class=debug>id:$id_kalender</span></a>$err</div>";
+
+          $gradasi = $jenjang=='D3' ? 'hijau' : 'biru';
+
+          echo "
+          <div class='wadah gradasi-$gradasi'>
+            $link_manage_kalender
+            $link
+          </div>
+          ";
+        }else{ // end mysqli_num_rows true
+          echo " <a class='btn btn-primary' href='?manage_kalender&angkatan=$angkatan&jenjang=$jenjang'>AutoCreate Kalender $angkatan-$jenjang</a>";
+        }
+      }
+      echo '</div>';
+    }
+    exit;
+  }
+}
 
 include 'include/akademik_icons.php';
 
@@ -24,7 +146,7 @@ include 'include/akademik_icons.php';
 # ==============================================================
 $s = "SELECT 
 b.nama as nama_prodi, 
-a.nama as nama_kurikulum, 
+CONCAT('Kurikulum ',c.jenjang,'-',c.angkatan) as nama_kurikulum, 
 c.angkatan,
 d.nama as jenjang,
 a.basis, 
@@ -42,6 +164,7 @@ JOIN tb_prodi b ON b.id=a.id_prodi
 JOIN tb_kalender c ON c.id=a.id_kalender  
 JOIN tb_jenjang d ON d.jenjang=c.jenjang  
 WHERE a.id='$id_kurikulum'";
+// echo "<pre>$s</pre>";
 $q = mysqli_query($cn, $s)or die(mysqli_error($cn));
 if(!mysqli_num_rows($q)) die('Data kurikulum tidak ditemukan.');
 $d = mysqli_fetch_assoc($q);
@@ -93,6 +216,8 @@ JOIN tb_kurikulum c ON c.id_kalender=b.id
 WHERE c.id='$id_kurikulum' 
 ORDER BY a.nomor 
 ";
+// echo "<pre>$s</pre>";
+
 $q = mysqli_query($cn, $s)or die(mysqli_error($cn));
 
 $jumlah_semester_real = mysqli_num_rows($q);
@@ -132,7 +257,6 @@ while ($d=mysqli_fetch_assoc($q)) {
   ";
   $q2 = mysqli_query($cn, $s2)or die(mysqli_error($cn));
   $jumlah_mk = mysqli_num_rows($q2);
-  echo "<span class=debug>jumlah_mk__$d[id_semester]: <span id='jumlah_mk__$d[id_semester]'>$jumlah_mk</span></span> ";
 
   $tr = '';
   $jumlah_teori[$d['id_semester']] = 0;
@@ -153,14 +277,17 @@ while ($d=mysqli_fetch_assoc($q)) {
     $onclick = $d2['telah_terjadwal'] ? " onclick='return confirm(\"MK ini sudah dijadwalkan. Apakah ingin Manage Jadwal kembali?\")' " : '';
     $merah = ($d2['bobot_teori'] + $d2['bobot_praktik'])==0 ? ' style="color:red; font-weight:bold" ' : '';
     $jadwal = "<span><a $onclick href='?manage_jadwal&id_kurikulum_mk=$d2[id_kurikulum_mk]'>$img_aksi_next</a></span>";
+
+    $editable = $d2['jumlah_assign_mk'] > 1 ? '' : 'editable';
+
     $tr.="
     <tr id='tr__$d2[id_mk]'>
-      <td>$j</td>
-      <td class='editable' id='kode__mk__$d2[id_mk]'>$d2[kode_mk]</td>
-      <td class='editable' id='nama__mk__$d2[id_mk]' $merah>$d2[nama_mk]</td>
-      <td class='editable' id='bobot_teori__mk__$d2[id_mk]' $merah>$d2[bobot_teori]</td>
-      <td class='editable' id='bobot_praktik__mk__$d2[id_mk]' $merah>$d2[bobot_praktik]</td>
-      <td class='editable' id='prasyarat__mk__$d2[id_mk]'>$d2[prasyarat]</td>
+      <td>$j<span class=debug>$d2[id_mk]</span></td>
+      <td class='$editable' id='kode__mk__$d2[id_mk]'>$d2[kode_mk]</td>
+      <td class='$editable' id='nama__mk__$d2[id_mk]' $merah>$d2[nama_mk]</td>
+      <td class='$editable' id='bobot_teori__mk__$d2[id_mk]' $merah>$d2[bobot_teori]</td>
+      <td class='$editable' id='bobot_praktik__mk__$d2[id_mk]' $merah>$d2[bobot_praktik]</td>
+      <td class='$editable' id='prasyarat__mk__$d2[id_mk]'>$d2[prasyarat]</td>
       <td>
         <table class=tb_aksi>
           <tr>
@@ -236,7 +363,7 @@ while ($d=mysqli_fetch_assoc($q)) {
 $total_sks = $total_praktik + $total_teori;
 
 $merah = $total_mk==$total_mk_terjadwal ? '' : 'merah';
-$ket = $total_mk==$total_mk_terjadwal ? '' : "<div class='merah miring '>Terdapat MK yang belum dijadwalkan dengan Dosen Pengampunya. Silahkan klik <code>Tombol Next</code> $img_aksi[next] pada tiap MK!<br><a href='?manage_jadwal_dosen&id_kurikulum=$id_kurikulum' class='btn btn-primary'>Manage Jadwal Dosen</a></div>";
+$ket = $total_mk==$total_mk_terjadwal ? $total_mk.' MK' : "<div class='merah miring '>Terdapat ".($total_mk-$total_mk_terjadwal)." MK yang belum dijadwalkan dengan Dosen Pengampunya.<div class=mt1><a href='?manage_jadwal_dosen&id_kurikulum=$id_kurikulum' class='btn btn-primary'>Manage Jadwal Dosen</a></div></div>";
 
 if($total_sks==0){
   $persen_praktik=0;
@@ -248,7 +375,7 @@ if($total_sks==0){
 
 $tr_rekap = "
 <tr><td class=upper>Total MK</td><td>$total_mk MK</td></tr>
-<tr><td class=upper>Total MK Terjadwal</td><td class='$merah gradasi-$merah'>$total_mk_terjadwal Jadwal dari $total_mk total$ket</td></tr>
+<tr><td class=upper>MK Terjadwal</td><td class='$merah gradasi-$merah'>$ket</td></tr>
 <tr><td class=upper>Total Teori</td><td>$total_teori SKS ($persen_teori%)</td></tr>
 <tr><td class=upper>Total Praktik</td><td>$total_praktik SKS ($persen_praktik%)</td></tr>
 <tr class='tebal biru gradasi-kuning'><td class=upper>Total SKS</td><td>$total_sks SKS</td></tr>
@@ -398,7 +525,7 @@ $back_to
           kolom_acuan2 = 'id_mk';
           acuan2 = id; //id_mk
           if(aksi=='hapus'){
-            link_ajax = `../ajax_global/ajax_global_drop_and_delete.php?tabel=tb_${tabel}&kolom_acuan=${kolom_acuan}&acuan=${acuan}&tabel2=${tabel2}&kolom_acuan2=${kolom_acuan2}&acuan2=${acuan2}&`;
+            link_ajax = `../ajax_global/ajax_global_drop_and_delete.php?tabel=${tabel}&kolom_acuan=${kolom_acuan}&acuan=${acuan}&tabel2=${tabel2}&kolom_acuan2=${kolom_acuan2}&acuan2=${acuan2}&`;
           }else if(aksi=='drop'){
             link_ajax = `../ajax_global/ajax_global_drop.php?tabel=tb_${tabel_semester}&kolom_acuan=${kolom_acuan}&acuan=${acuan}&tabel2=${tabel2}&kolom_acuan2=${kolom_acuan2}&acuan2=${acuan2}&`;
           }

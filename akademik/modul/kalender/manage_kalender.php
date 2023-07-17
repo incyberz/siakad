@@ -1,9 +1,139 @@
+<h1>MANAGE KALENDER</h1>
+<p>Pada menu ini Anda dapat Seting Kalender dan Penanggalan tiap Semesternya.</p>
 <?php
-$id_kalender = isset($_GET['id_kalender']) ? $_GET['id_kalender'] : '';
-if($id_kalender<1) die('<script>location.replace("?master&p=kalender")</script>');
+if(isset($_POST['btn_delete_kalender'])){
+  $z = parse_url($_SERVER['REQUEST_URI']);
+  $uq = $z['query'];
+  $s = "DELETE FROM tb_kalender WHERE id='$_POST[btn_delete_kalender]'";
+  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  echo div_alert('success', 'Delete Kalender berhasil.');
+  echo "<script>location.replace('?$uq')</script>";  
+  exit;
+}
+
+$id_kalender = $_GET['id_kalender'] ?? '';
+if($id_kalender==''){
+  $angkatan = $_GET['angkatan'] ?? '';
+  $jenjang = $_GET['jenjang'] ?? '';
+  include 'include/include_rangkatan.php';
+  include 'include/include_rjenjang.php';
+  if($angkatan=='' || $jenjang==''){
+    echo "<div class=mb2>Untuk angkatan: </div>";
+    foreach ($rangkatan as $key => $angkatan) {
+      echo "<div class=wadah><div class=mb2>Angkatan $angkatan</div>";
+      // echo " <a class='btn btn-info' href='?manage_kalender&angkatan=$angkatan'>$angkatan</a>";
+      foreach ($rjenjang as $key => $jenjang) {
+        $info = $jenjang=='D3' ? 'success' : 'info';
+
+        $s = "SELECT id as id_kalender,
+        (SELECT count(1) FROM tb_semester WHERE id_kalender=a.id) jumlah_semester 
+        FROM tb_kalender a WHERE a.jenjang='$jenjang' AND a.angkatan=$angkatan";
+        $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+        if(mysqli_num_rows($q)>1){
+          div_alert('danger',"Duplikat Kalender untuk angkatan $angkatan jenjang $jenjang.");
+          echo "<div class='wadah mt2 gradasi-merah'><div class=mb2><h4><b>Multiple Kalender Terdeteksi</b></h4>Kalender angkatan $angkatan jenjang $jenjang lebih dari satu. Silahkan delete salah satu Kalender! : <div class='kecil miring abu'>Jika tidak dapat dihapus hubungi DB-Admin! (terdapat table-relation security)</div></div>";
+          while ($d=mysqli_fetch_assoc($q)) {
+            $disabled = $d['jumlah_semester'] ? 'disabled' : '';
+            echo "<form method=post><button class='btn btn-danger' name=btn_delete_kalender value='$d[id_kalender]' onclick='return confirm(\"Yakin untuk menghapus Kalender ini?\")' $disabled>Delete Kalender | id=$d[id_kalender] | $d[jumlah_semester] semester</button></form> ";
+          }
+          echo '</div>';
+          exit;
+        }
+        if(mysqli_num_rows($q)){
+          $d=mysqli_fetch_assoc($q);
+          $jumlah_semester = $d['jumlah_semester'];
+          $bred = $jumlah_semester==$rjumlah_semester[$jenjang] ? '' : 'style="border: solid 2px red"';
+
+          echo " <a class='btn btn-$info' href='?manage_kalender&angkatan=$angkatan&jenjang=$jenjang' $bred>$angkatan-$jenjang <span class=debug>id:$d[id_kalender]</span></a>";
+        }else{
+          echo " <a class='btn btn-primary' href='?manage_kalender&angkatan=$angkatan&jenjang=$jenjang'>AutoCreate Kalender $angkatan-$jenjang</a>";
+        }
+      }
+      echo '</div>';
+    }
+    exit;
+  }
+
+  $s = "SELECT id as id_kalender FROM tb_kalender WHERE angkatan=$angkatan AND jenjang='$jenjang'";
+  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  if(mysqli_num_rows($q)==0){
+    // auto insert kalender
+    $auto_mode = isset($_POST['btn_auto_create_kalender']) ? 1 : 0;
+
+    $s = "SELECT jumlah_semester FROM tb_jenjang WHERE jenjang='$jenjang'";
+    $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+    $d = mysqli_fetch_assoc($q);
+    $jumlah_semester = $d['jumlah_semester'];
+
+    $tanggal_mulai = "$angkatan-09-01";
+    $jumlah_bulan_per_semester = 5;
+    $nama = "Kalender $jenjang-$angkatan";
+
+    if($auto_mode){
+
+      $jumlah_semester = $_POST['jumlah_semester'];
+      $tanggal_mulai = $_POST['tanggal_mulai'];
+      $jumlah_bulan_per_semester = $_POST['jumlah_bulan_per_semester'];
+
+      $s = "INSERT INTO tb_kalender (
+      angkatan,
+      jenjang,
+      tanggal_mulai,
+      jumlah_semester,
+      jumlah_bulan_per_semester,
+      nama
+      ) VALUES (
+      '$angkatan',
+      '$jenjang',
+      '$tanggal_mulai',
+      '$jumlah_semester',
+      '$jumlah_bulan_per_semester',
+      '$nama'
+      )";
+      // echo $s; exit;
+      $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+      echo "<script>location.replace('?manage_kalender&angkatan=$angkatan&jenjang=$jenjang')</script>";
+    }else{
+      // mode manual :: kalender blm ada.
+      $form = "
+      <form method=post>
+        <div class=form-group>
+          <label>Jumlah Semester</label>
+          <input class=form-control name=jumlah_semester value=$jumlah_semester>
+          <div class='kecil miring abu mt1'>Jumlah semester untuk jenjang $jenjang adalah $jumlah_semester semester.</div>
+        </div>
+
+        <div class=form-group>
+          <label>Jumlah Bulan per Semester</label>
+          <input class=form-control name=jumlah_bulan_per_semester value=$jumlah_bulan_per_semester>
+          <div class='kecil miring abu mt1'>Jika percepatan maka 5 bulan per semester, jika kalender biasa maka 6 bulan per semester</div>
+        </div>
+
+        <div class=form-group>
+          <label>Tanggal Mulai</label>
+          <input class=form-control name=tanggal_mulai value=$tanggal_mulai>
+          <div class='kecil miring abu mt1'>Tanggal mulai adalah tahun ajaran baru untuk angkatan <b>$angkatan</b>, biasanya awal September $angkatan. </div>
+        </div>
+
+        <button class='btn btn-primary' name=btn_auto_create_kalender>Auto Create Kalender</button>
+      </form>
+      ";
+      echo div_alert('danger',"Kalender $angkatan-$jenjang belum ada.<hr>$form");
+      
+    }
+    exit;
+
+
+  }elseif(mysqli_num_rows($q)>1){
+    die(div_alert('danger',"Terdapat dua kalender yang sama untuk angkatan $angkatan jenjang $jenjang."));
+  }else{
+    $d = mysqli_fetch_assoc($q);
+    $id_kalender = $d['id_kalender'];
+  }
+}
+
 include 'manage_kalender_tambah_kurikulum_process.php';
 ?>
-<h1>MANAGE KALENDER</h1>
 <style>
   .ids-kalender h2{margin-top:0; color: darkblue; }
   .kalender {}

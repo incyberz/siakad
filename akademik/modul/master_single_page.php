@@ -29,7 +29,7 @@ while ($d=mysqli_fetch_assoc($q)) {
 # PAGE TITLE
 # ==============================================================
 $param = $aksi=='' ? '' : "&p=$page";
-$btn_back = "<a href='?master$param'><i class=icon_house_alt></i></a> | ";
+$btn_back = "<a href='?manage_master'><i class=icon_house_alt></i></a> | ";
 $aksi_title = $aksi=='' ? 'MASTER' : $aksi; 
 $page_title = "<h1 class='judul-page upper'>$btn_back $aksi_title ".str_replace('_',' ',$page). '</h1>';
 

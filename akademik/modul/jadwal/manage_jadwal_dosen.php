@@ -23,7 +23,7 @@ include 'include/option_dosen.php';
 # GET KURIKULUM DATA
 # ==============================================================
 $s = "SELECT 
-a.nama as nama_kurikulum, 
+CONCAT('Kurikulum ',c.jenjang,'-',c.angkatan) as nama_kurikulum, 
 c.jumlah_semester,
 b.id as id_prodi, 
 c.id as id_kalender, 

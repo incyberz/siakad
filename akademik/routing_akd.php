@@ -16,6 +16,7 @@ switch ($c[0]){
   case 'master': $konten = 'modul/master.php';break;
   case 'manage': $konten = 'modul/manage_home.php';break;
  
+  case 'manage_master': $konten = 'modul/master/manage_master.php';break;
   case 'manage_kalender': $konten = 'modul/kalender/manage_kalender.php';break;
   case 'manage_semester': $konten = 'modul/semester/manage_semester.php';break;
   case 'manage_kurikulum': $konten = 'modul/kurikulum/manage_kurikulum.php';break;
@@ -55,7 +56,7 @@ switch ($c[0]){
 
   case 'manage_komponen_biaya': $konten = 'modul/pembayaran/manage_komponen_biaya.php';break;
   case 'manage_biaya_angkatan': $konten = 'modul/pembayaran/manage_biaya_angkatan.php';break;
-  case 'penagihan': $konten = 'modul/pembayaran/penagihan.php';break;
+  case 'penagihan': $konten = 'modul/pembayaran/manage_penagihan.php';break;
   case 'penagihan_biaya': $konten = 'modul/pembayaran/penagihan_biaya.php';break;
   case 'penagihan_semester': $konten = 'modul/pembayaran/penagihan_semester.php';break;
   case 'penagihan_lainnya': $konten = 'modul/pembayaran/penagihan_lainnya.php';break;
@@ -70,8 +71,17 @@ switch ($c[0]){
   case 'input_khs': $konten = 'modul/khs/input_khs.php';break;
   case 'import_khs': $konten = 'modul/khs/import_khs.php';break;
   case 'input_khs_manual': $konten = 'modul/khs/input_khs_manual.php';break;
+  case 'ubah_nilai_khs': $konten = 'modul/khs/ubah_nilai_khs.php';break;
   case 'export_khs': $konten = 'modul/khs/export_khs.php';break;
   case 'verifikasi_draft_khs': $konten = 'modul/khs/verifikasi_draft_khs.php';break;
+  case 'manage_mk_manual': $konten = 'modul/khs/manage_mk_manual.php';break;
+
+
+  case 'super_delete_prodi': $konten = 'modul/super_user/super_delete_prodi.php';break;
+  case 'super_delete_angkatan': $konten = 'modul/super_user/super_delete_angkatan.php';break;
+  case 'super_delete_prodi': $konten = 'modul/super_user/super_delete_prodi.php';break;
+  case 'super_delete_kurikulum': $konten = 'modul/super_user/super_delete_kurikulum.php';break;
+  case 'delete_empty_mk': $konten = 'modul/super_user/delete_empty_mk.php';break;
 
 }
 

@@ -18,6 +18,8 @@ mhs_old
 tendik
 uploads
 
+*.sql
+
 *.zip
 *.rar
 *.txt

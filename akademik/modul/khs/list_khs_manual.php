@@ -59,7 +59,7 @@ if($jumlah_data>0){
         $nilai / $hm
         <div class='kecil consolas'>$d[date_created]</div>
       </td>
-      <td><a href='?input_khs_manual&nim=$d[nim]&id_mk_manual=$d[id_mk_manual]' onclick='return confirm(\"Anda yakin untuk mengubah nilai ini?\")'>Ubah</a></td>
+      <td><a href='?ubah_nilai_khs&nim=$d[nim]&id_mk_manual=$d[id_mk_manual]' onclick='return confirm(\"Anda yakin untuk mengubah nilai ini?\")'>Ubah</a></td>
     </tr>
     ";
   }

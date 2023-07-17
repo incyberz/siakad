@@ -24,7 +24,7 @@ include 'include/akademik_icons.php';
 # ==============================================================
 $s = "SELECT 
 b.nama as nama_prodi, 
-a.nama as nama_kurikulum, 
+CONCAT('Kurikulum ',c.jenjang,'-',c.angkatan) as nama_kurikulum, 
 c.angkatan,
 d.nama as jenjang,
 a.basis, 
