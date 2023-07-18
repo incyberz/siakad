@@ -26,10 +26,10 @@ $s = "SELECT a.*,
   SELECT tanggal_penagihan FROM tb_penagihan WHERE id_mhs=a.id AND id_biaya=$id_biaya  
 ) as tanggal_penagihan,  
 (
-  SELECT tanggal_bayar FROM tb_bayar WHERE id_mhs=a.id AND id_biaya=$id_biaya  
+  SELECT tanggal FROM tb_bayar WHERE id_mhs=a.id AND id_biaya=$id_biaya  
 ) as tanggal_bayar,  
 (
-  SELECT status FROM tb_bayar WHERE id_mhs=a.id AND id_biaya=$id_biaya  
+  SELECT verif_status FROM tb_bayar WHERE id_mhs=a.id AND id_biaya=$id_biaya  
 ) as status_bayar   
 FROM tb_mhs a 
 WHERE status_mhs = 1  

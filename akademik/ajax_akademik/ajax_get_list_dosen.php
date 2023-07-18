@@ -1,7 +1,7 @@
 <style>ol{padding:0 0 0 17px}</style>
 <?php
-include '../../conn.php';
 include 'session_security.php';
+include '../../conn.php';
 
 $keyword = isset($_GET['keyword']) ? $_GET['keyword'] : die(erid('keyword'));
 $id_bulan = isset($_GET['id_bulan']) ? $_GET['id_bulan'] : die(erid('id_bulan'));

@@ -3,7 +3,7 @@
 # AKADEMIK INDEX
 # ========================================================
 session_start();
-$dm=0;
+$dm=1;
 $menit_sks = 50;
 $ta_aktif=2023;
 

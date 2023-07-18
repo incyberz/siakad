@@ -1,6 +1,6 @@
 <?php
-include '../../conn.php';
 include 'session_security.php';
+include '../../conn.php';
 
 $id = isset($_GET['id']) ? $_GET['id'] : die(erid('id'));
 $val = isset($_GET['val']) ? $_GET['val'] : die(erid('val'));

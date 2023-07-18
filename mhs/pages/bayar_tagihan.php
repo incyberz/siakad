@@ -1,10 +1,11 @@
 <style>.li_trx{border:solid 1px #ccc; border-radius:5px; padding:5px; margin-bottom:5px; margin-left:-15px}</style>
 <?php
+$judul = 'Bayar Tagihan';
 if(isset($_POST['btn_upload'])){ 
 
-  if($_POST['jumlah_bayar']%10000!=0){
-    die(div_alert('danger','Nominal uang harus kelipatan 10.000. Silahkan coba kembali.<hr><a href=?pembayaran>Kembali</a>'));
-  }
+  // if($_POST['jumlah_bayar']%10000!=0){
+  //   die(div_alert('danger','Nominal uang harus kelipatan 10.000. Silahkan coba kembali.<hr><a href=?pembayaran>Kembali</a>'));
+  // }
   $s = "SELECT auto_increment FROM information_schema.tables 
   WHERE table_schema = '$db_name' 
   AND table_name = 'tb_bayar'
@@ -16,7 +17,7 @@ if(isset($_POST['btn_upload'])){
   $path_upload = '../uploads/bukti_bayar';
   if(move_uploaded_file($_FILES['bukti_bayar']['tmp_name'],"$path_upload/$new_id_bayar.jpg")){
     $s = "INSERT INTO tb_bayar 
-    (id,id_biaya,id_mhs,jumlah) VALUES 
+    (id,id_biaya,id_mhs,nominal) VALUES 
     ($new_id_bayar,$_POST[id_biaya],$id_mhs,$_POST[jumlah_bayar])";
     $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
     
@@ -32,16 +33,19 @@ $nama_biaya = isset($_POST['nama_biaya'])?$_POST['nama_biaya']:die(erid('nama_bi
 $sisa_bayar = isset($_POST['sisa_bayar'])?$_POST['sisa_bayar']:die(erid('sisa_bayar'));
 $bisa_dicicil = isset($_POST['bisa_dicicil'])?$_POST['bisa_dicicil']:die(erid('bisa_dicicil'));
 
+$last_3digit_nim = substr($nim,5,3);
+$sisa_bayar_show = number_format($sisa_bayar + $last_3digit_nim,0);
+
 $info_cicilan = $bisa_dicicil ? "<span class='kecil miring hijau'>)* Biaya ini dapat Anda cicil.</span>":"<span class='kecil miring darkred'>)* Biaya ini tidak dapat dicicil.</span>";
 $input_bayar = $bisa_dicicil 
-? "<input id=jumlah_bayar name=jumlah_bayar type='number' class='form-control' min=50000 max=$sisa_bayar value=$sisa_bayar required>" 
-: "<input class='form-control' value=$sisa_bayar disabled><input class=debug name=jumlah_bayar value=$sisa_bayar>";
+? "<input id=jumlah_bayar name=jumlah_bayar type='number' class='form-control' min=50000 max=$sisa_bayar value='$sisa_bayar' required>" 
+: "<input class='form-control' value='$sisa_bayar_show' disabled style='font-size:200%'><input class=debug name=jumlah_bayar value='$sisa_bayar'>";
 
 # ==============================================
 # CICILAN PEMBAYARAN SEBELUMNYA
 # ==============================================
 $s = "SELECT a.*,
-(SELECT nama FROM tb_user WHERE id=a.verified_by) as nama_petugas 
+(SELECT nama FROM tb_user WHERE id=a.verif_by) nama_petugas  
 FROM tb_bayar a 
 WHERE a.id_biaya=$id_biaya AND a.id_mhs=$id_mhs";
 echo "<div class=debug>$s</div>";
@@ -62,7 +66,7 @@ if(mysqli_num_rows($q)>0){
   <div class="container">
 
     <div class="section-title">
-      <h2>Transaksi Pembayaran</h2>
+      <h2><?=$judul?></h2>
       <p><a href='?pembayaran'>Kembali</a> | Silahkan Anda upload Bukti Bayar <u><?=$nama_biaya?></u>!</p>
     </div>
     
@@ -74,6 +78,7 @@ if(mysqli_num_rows($q)>0){
         <input class="debug" name=id_biaya value=<?=$id_biaya?>>
         <label for="jumlah_bayar">Jumlah yang harus Anda bayar:</label> 
         <?=$input_bayar?>
+        <div class='miring kecil'>Untuk mempermudah verifikasi silahkan tambahkan nominal bayar dengan 3 digit terakhir NIM Anda.</div>
         <?=$info_cicilan?>
         <div class="form-group">
           <label for="bukti_bayar">Bukti Bayar</label>

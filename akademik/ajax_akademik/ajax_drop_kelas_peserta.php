@@ -1,6 +1,6 @@
 <?php 
-include '../../conn.php';
 include 'session_security.php';
+include '../../conn.php';
 
 # ================================================
 # GET VARIABLES

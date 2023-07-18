@@ -52,11 +52,10 @@ switch ($c[0]){
   case 'pembayaran_manual': $konten = 'modul/pembayaran/pembayaran_manual.php';break;
   case 'rekap_pembayaran_manual': $konten = 'modul/pembayaran/rekap_pembayaran_manual.php';break;
   case 'manage_pembayaran': $konten = 'modul/pembayaran/manage_pembayaran.php';break;
-  case 'list_sudah_bayar': $konten = 'modul/pembayaran/list_sudah_bayar.php';break;
-
   case 'manage_komponen_biaya': $konten = 'modul/pembayaran/manage_komponen_biaya.php';break;
   case 'manage_biaya_angkatan': $konten = 'modul/pembayaran/manage_biaya_angkatan.php';break;
-  case 'penagihan': $konten = 'modul/pembayaran/manage_penagihan.php';break;
+  case 'manage_penagihan': $konten = 'modul/pembayaran/manage_penagihan.php';break;
+  case 'list_sudah_bayar': $konten = 'modul/pembayaran/list_sudah_bayar.php';break;
   case 'penagihan_biaya': $konten = 'modul/pembayaran/penagihan_biaya.php';break;
   case 'penagihan_semester': $konten = 'modul/pembayaran/penagihan_semester.php';break;
   case 'penagihan_lainnya': $konten = 'modul/pembayaran/penagihan_lainnya.php';break;

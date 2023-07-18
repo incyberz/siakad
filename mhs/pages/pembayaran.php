@@ -5,13 +5,13 @@ $s = "SELECT a.*,
   SELECT nominal FROM tb_biaya_angkatan WHERE id_biaya=a.id and angkatan=$angkatan and id_prodi=$id_prodi 
   ) as nominal, 
 (
-  SELECT SUM(jumlah) FROM tb_bayar WHERE id_biaya=a.id and id_mhs=$id_mhs 
+  SELECT SUM(nominal) FROM tb_bayar WHERE id_biaya=a.id and id_mhs=$id_mhs 
   ) as jumlah_bayar, 
 (
-  SELECT tanggal_bayar FROM tb_bayar WHERE id_biaya=a.id AND id_mhs=$id_mhs ORDER BY tanggal_bayar DESC LIMIT 1
+  SELECT tanggal FROM tb_bayar WHERE id_biaya=a.id AND id_mhs=$id_mhs ORDER BY tanggal DESC LIMIT 1
   ) as last_bayar, 
 (
-  SELECT status FROM tb_bayar WHERE id_biaya=a.id AND id_mhs=$id_mhs ORDER BY tanggal_bayar DESC LIMIT 1
+  SELECT verif_status FROM tb_bayar WHERE id_biaya=a.id AND id_mhs=$id_mhs ORDER BY tanggal DESC LIMIT 1
   ) as status_bayar, 
 (
   SELECT tanggal_penagihan FROM tb_penagihan WHERE id_biaya=a.id AND id_mhs=$id_mhs 
@@ -36,7 +36,7 @@ while ($d=mysqli_fetch_assoc($q)) {
   $nominal = $d['nominal']=='' ? $d['nominal_default'] : $d['nominal'];
   $nominal_show = number_format($nominal,0);
   $jumlah_bayar = $d['jumlah_bayar']==''?'':number_format($d['jumlah_bayar'],0);
-  $sisa_bayar = $d['nominal_default']-$d['jumlah_bayar'];
+  $sisa_bayar = $nominal-$d['jumlah_bayar'];
 
   $form_wa_petugas = "
     <form method=post action='?wa'>
@@ -58,7 +58,7 @@ while ($d=mysqli_fetch_assoc($q)) {
   
   $bisa_dicicil = 0; //zzz debug
   $form_bayar = "
-  <form method=post action='?bayar'>
+  <form method=post action='?bayar_tagihan'>
     <input class=debug name=bisa_dicicil value='$bisa_dicicil'>
     <input class=debug name=nama_biaya value='$d[nama]'>
     <input class=debug name=id_biaya value='$d[id]'>

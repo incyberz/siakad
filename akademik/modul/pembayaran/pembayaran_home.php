@@ -8,8 +8,8 @@ if(!$izin) echo div_alert('danger','Maaf, hanya Bagian Keuangan yang berhak meng
   <?php
   $rmanage[0] = ['Komponen Biaya','manage_komponen_biaya'];
   $rmanage[1] = ['Biaya per Angkatan','manage_biaya_angkatan'];
-  $rmanage[2] = ['Penagihan','penagihan'];
-  $rmanage[3] = ['Pembayaran','pembayaran'];
+  $rmanage[2] = ['Penagihan','manage_penagihan'];
+  $rmanage[3] = ['Pembayaran','manage_pembayaran'];
 
 
   for ($i=0; $i < count($rmanage); $i++) { 

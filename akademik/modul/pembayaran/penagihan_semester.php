@@ -21,7 +21,7 @@ ORDER BY a.angkatan DESC, a.jenjang
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
 if(mysqli_num_rows($q)==0){
-  $tb = div_alert('danger', "Belum ada Kurikulum untuk angkatan $angkatan prodi $rnama_prodi[$id_prodi] pada SIAKAD. Jika ingin penagihan secara manual silahkan menuju Penagihan Semester Manual <hr> <a class='btn btn-primary' href='?penagihan_biaya&angkatan=$angkatan&id_prodi=$id_prodi&id_biaya=$id_biaya'>Penagihan Semester Manual</a>");
+  $tb = div_alert('danger', "Belum ada Kurikulum untuk angkatan $angkatan prodi $rnama_prodi[$id_prodi] pada SIAKAD. Jika ingin manage_penagihan secara manual silahkan menuju Penagihan Semester Manual <hr> <a class='btn btn-primary' href='?penagihan_biaya&angkatan=$angkatan&id_prodi=$id_prodi&id_biaya=$id_biaya'>Penagihan Semester Manual</a>");
 }else{
   $tb="
   <p>Berikut adalah Kurikulum Akademik yang masih aktif.</p>
