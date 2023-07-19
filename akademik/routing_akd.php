@@ -59,6 +59,7 @@ switch ($c[0]){
   case 'penagihan_biaya': $konten = 'modul/pembayaran/penagihan_biaya.php';break;
   case 'penagihan_semester': $konten = 'modul/pembayaran/penagihan_semester.php';break;
   case 'penagihan_lainnya': $konten = 'modul/pembayaran/penagihan_lainnya.php';break;
+  case 'history_pembayaran': $konten = 'modul/pembayaran/history_pembayaran.php';break;
 
 
   case 'krs': $konten = 'modul/krs/krs_home.php';break;

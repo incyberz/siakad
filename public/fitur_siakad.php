@@ -1,13 +1,20 @@
 <?php 
-$sub_domain=''; // zzz old code
-for ($i=0; $i < count($fitur); $i++) $link_fitur[$i] = $is_login ? $fitur[$i] : "#hero";
+$rfitur = [
+  [[3,4,6,7,8],'akademik/?','Data Mhs',1],
+  [[3,4,6,7,8],'akademik/?krs','KRS Online',2],
+  [[3,6,7,8],'akademik/?khs','KHS Online',3],
+  [[3,6,7,8],'akademik/?manage_jadwal','Jadwal Kuliah',4],
+  [[3,6,7,8],'akademik/?master&p=dosen','Data Dosen',8],
+  [[3,6,7,8],'akademik/?master&p=user','Data Tendik',9],
+  [[4,8],'akademik/?pembayaran_home','Keuangan',10],
+];
+
+
+//$sub_domain=''; // zzz old code
+for ($i=0; $i < count($rfitur); $i++) {
+  $link_fitur[$i] = $is_login ? $rfitur[$i][1] : "#hero";
+}
 ?>
-<style>
-  .fitur { transition: transform .2s;}
-  .fitur:hover { transform: scale(1.5);}
-  .fitur_siakad2 { transition: transform .2s;}
-  .fitur_siakad2:hover { transform: scale(1.5);}
-</style>
 
 <section id="fitur_siakad" class="clients" style="margin-top: 150px">
   <div class="container">
@@ -16,7 +23,7 @@ for ($i=0; $i < count($fitur); $i++) $link_fitur[$i] = $is_login ? $fitur[$i] : 
     <div class="section-title" data-aos="zoom-in">
       <h2>Fitur</h2>
       <?php if($is_login){
-        echo "<div>Selamat datang $nama_user! Anda login sebagai $login_as. <hr>Anda dapat mengakses fitur-fitur berikut:</div>";
+        echo "<div>Selamat datang <b class=darkblue>$nama_user</b>! Anda login sebagai <b class=darkblue>$login_as</b>. <hr>Anda dapat mengakses fitur-fitur berikut:</div>";
       } else{
         echo "<p>Selamat datang Pengunjung! Untuk mengakses fitur SIAKAD silahkan login terlebih dahulu.</p>";
       }
@@ -28,29 +35,26 @@ for ($i=0; $i < count($fitur); $i++) $link_fitur[$i] = $is_login ? $fitur[$i] : 
     <nav class="">
       <div class="row">
         
-        <?php for ($i=0; $i < count($fitur); $i++) { 
-          $j = $i+1; 
-          $nama_fitur_alt = $nama_fitur[$i];
-          $clink_fitur = $link_fitur[$i];
+        <?php 
+        for ($i=0; $i < count($rfitur); $i++) { 
+          $nama_fitur_alt = $rfitur[$i][2];
+          $no_fitur = $rfitur[$i][3];
 
-          // echo "<h1>".$sub_domain."==".substr($fitur[$i],0,strlen($sub_domain))."</h1>";
-          if($sub_domain==substr($fitur[$i],0,strlen($sub_domain))){
-            $link_fitur[$i] = '';
-          }else{
-            continue;
-          }
-          
-          
+          $arr_level = $rfitur[$i][0];
+          if(!in_array($admin_level,$arr_level)) continue;
 
           echo "
-          <div class='col-lg-2 col-md-4 col-6'>
-            <a href='$clink_fitur' class='fitur'>
-              <img src='assets/img/fitur-siakad/fitur-$j.png' class='img-fluid' alt='$nama_fitur_alt' data-aos='zoom-in'>
+          <div class='col-md-4 col-6'>
+            <div class='wadah gradasi-hijau' data-aos='fade-up'>
+            <a href='$link_fitur[$i]' class='fitur'>
+              <img src='assets/img/fitur-siakad/fitur-$no_fitur.png' class='img-fluid' alt='$nama_fitur_alt'>
             </a>
+            </div>
           </div>
           ";
 
-        } ?>
+        } 
+        ?>
 
 
 

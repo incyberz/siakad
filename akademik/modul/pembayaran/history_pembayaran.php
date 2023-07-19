@@ -1,5 +1,5 @@
-<h1>Manage Pembayaran</h1>
-<p>Berikut adalah pembayaran yang harus Anda verifikasi:</p>
+<h1>History Pembayaran</h1>
+<p>Berikut adalah pembayaran yang sudah Anda verifikasi:</p>
 <style>.bukti_bayar{
   display:block;
   margin: 5px 0 10px 0;
@@ -20,13 +20,15 @@ b.nim,
 c.nominal_default, 
 c.nama as nama_biaya,
 b.angkatan, 
-b.id_prodi, 
+b.id_prodi,
+d.nama as verifikator, 
 (SELECT nominal FROM tb_biaya_angkatan WHERE angkatan=b.angkatan and id_prodi=b.id_prodi and id_biaya=c.id) nominal_angkatan,
 a.tanggal as tanggal_bayar 
 FROM tb_bayar a 
 JOIN tb_mhs b ON a.id_mhs=b.id 
 JOIN tb_biaya c ON a.id_biaya=c.id  
-WHERE verif_status is null 
+JOIN tb_user d ON a.verif_by=d.id  
+WHERE verif_status is not null 
 ";
 
 echo "<pre class=debug>$s</pre>";
@@ -49,7 +51,15 @@ while ($d=mysqli_fetch_assoc($q)) {
   $sisa_tagihan = $nominal_tagihan - $d['nominal_bayar'];
   $sisa_tagihan_show = number_format($sisa_tagihan,0);
   $sisa_tagihan_show = $sisa_tagihan==0 ? "<span class=green>$sisa_tagihan_show (lunas)</span>" : "<span class=red>$sisa_tagihan_show (belum lunas)</span>" ;
-
+  $verif_status = $d['verif_status']==1 
+  ? "
+  <div class='kecil green'>Verified <img src='../assets/img/icons/check.png' height=20px /></div>
+  " 
+  : "
+  <div class='kecil red'>Rejected <img src='../assets/img/icons/reject.png' height=20px /><div class='miring abu'>alasan: $d[alasan_reject]</div></div>
+  ";
+  $verif_status .= "<div class=kecil>by <a href='?user_detail&id=$d[verif_by]' target=_blank>$d[verifikator]</a> at $d[verif_date]</div>";
+  
   $tr.= "
   <tr>
     <td>$i</td>
@@ -75,8 +85,7 @@ while ($d=mysqli_fetch_assoc($q)) {
       <div>Sisa tagihan: $sisa_tagihan_show</div>
     </td>
     <td>
-      <button class='btn btn-success btn-sm mb1 mt1 btn_aksi' id=verif__$d[id]>Verifikasi</button>
-      <button class='btn btn-danger btn-sm mb1 mt1 btn_aksi' id=reject__$d[id]>Reject</button>
+      $verif_status
     </td>
   </tr>
   ";
@@ -88,7 +97,7 @@ $thead = "
   <th>Dari</th>
   <th>Bukti</th>
   <th class=darkblue>Info Nominal</th>
-  <th>Aksi</th>
+  <th>Status</th>
 </thead>
 ";
 
@@ -119,26 +128,6 @@ echo $table;
         
         
         $(this).hide();
-      }else if(aksi=='verif' || aksi=='reject'){
-        let verif_status = aksi=='verif' ? 1 : -1;
-        let alasan_reject = '';
-        if(aksi=='reject'){
-          alasan_reject = prompt('Alasan reject:');
-          if(!alasan_reject) return;
-          alasan_reject = alasan_reject.trim();
-          if(alasan_reject.length==0) return;
-        }
-
-        let link_ajax = `ajax_akademik/ajax_verif_bukti_bayar.php?aksi=${aksi}&verif_status=${verif_status}&alasan_reject=${alasan_reject}&id_bayar=${id}`;
-        console.log(link_ajax);
-
-        $.ajax({
-          url:link_ajax,
-          success:function(a){
-            alert(a);
-          }
-        })
-
       }else{
         alert(`Aksi : ${aksi} belum terdapat handler.`)
         return;

@@ -6,22 +6,26 @@ include 'keuangan_only.php';
 # ================================================
 # GET VARIABLES
 # ================================================
-$aksi = isset($_GET['aksi']) ? $_GET['aksi'] : die(erid("aksi"));
-$nim = isset($_GET['nim']) ? $_GET['nim'] : die(erid("nim"));
-// $kolom = isset($_GET['kolom']) ? $_GET['kolom'] : die(erid("kolom"));
+$aksi = $_GET['aksi'] ?? die(erid("aksi"));
+$verif_status = $_GET['verif_status'] ?? die(erid('verif_status'));
+$alasan_reject = $_GET['alasan_reject'] ?? die(erid('alasan_reject'));
+$id_bayar = $_GET['id_bayar'] ?? die(erid('id_bayar'));
 
-if ($nim=='') die("Error @ajax. Index nim masih kosong.");
-if ($aksi=='') die("Error @ajax. Index aksi masih kosong.");
+$alasan_reject = str_replace('\'','`',$alasan_reject);
+$alasan_reject = str_replace('"','`',$alasan_reject);
+$alasan_reject = $alasan_reject=='' ? 'NULL' : " '$alasan_reject' ";
 
-if($aksi=='set_aktif' || $aksi=='set_non'){
-  $status_mhs = $aksi=='set_aktif' ? 1 : 0;
-  $s = "UPDATE tb_mhs SET status_mhs = '$status_mhs' WHERE nim='$nim'";
-}elseif($aksi=='set_lunas' || $aksi=='set_belum_bayar' ){
-  $is_lunas = $aksi=='set_lunas' ? 1 : 0;
-  $s = "UPDATE tb_mhs SET status_bayar_manual='$is_lunas' WHERE nim='$nim'";
+if($aksi=='verif' || $aksi=='reject'){
+  $s = "UPDATE tb_bayar SET 
+  verif_date = CURRENT_TIMESTAMP, 
+  verif_by = '$id_user $nama_user', 
+  verif_status = '$verif_status', 
+  alasan_reject = $alasan_reject 
+  WHERE id='$id_bayar'";
 }else{
   die("aksi '$aksi' belum didefinisikan pada ajax.");
 }
 
+// die($s);
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 die('sukses');

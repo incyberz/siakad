@@ -10,6 +10,7 @@ if(!$izin) echo div_alert('danger','Maaf, hanya Bagian Keuangan yang berhak meng
   $rmanage[1] = ['Biaya per Angkatan','manage_biaya_angkatan'];
   $rmanage[2] = ['Penagihan','manage_penagihan'];
   $rmanage[3] = ['Pembayaran','manage_pembayaran'];
+  $rmanage[4] = ['History Pembayaran','history_pembayaran'];
 
 
   for ($i=0; $i < count($rmanage); $i++) { 

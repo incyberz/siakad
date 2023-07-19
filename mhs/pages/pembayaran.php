@@ -11,8 +11,11 @@ $s = "SELECT a.*,
   SELECT tanggal FROM tb_bayar WHERE id_biaya=a.id AND id_mhs=$id_mhs ORDER BY tanggal DESC LIMIT 1
   ) as last_bayar, 
 (
+  SELECT alasan_reject FROM tb_bayar WHERE id_biaya=a.id AND id_mhs=$id_mhs ORDER BY tanggal DESC LIMIT 1
+  ) as alasan_reject, 
+(
   SELECT verif_status FROM tb_bayar WHERE id_biaya=a.id AND id_mhs=$id_mhs ORDER BY tanggal DESC LIMIT 1
-  ) as status_bayar, 
+  ) as verif_status, 
 (
   SELECT tanggal_penagihan FROM tb_penagihan WHERE id_biaya=a.id AND id_mhs=$id_mhs 
   ) as tanggal_penagihan 
@@ -50,12 +53,27 @@ while ($d=mysqli_fetch_assoc($q)) {
     </form>
   ";
 
-
-  $lunas_show = $jumlah_bayar==''?'':"<div><a class='tebal red' href='?lihat_trx&id_biaya=$d[id]'>Belum Lunas (sisa ".number_format($sisa_bayar).')</a></div>';
-  $lunas_show = $sisa_bayar==0?"<div><a class='tebal darkred' href='?lihat_trx&id_biaya=$d[id]'>Sedang Proses Verifikasi</a> $form_wa_petugas</div>":$lunas_show;
-  $lunas_show = $d['status_bayar']==1?"<div><a class='tebal biru' href='?lihat_trx&id_biaya=$d[id]'>Lunas</a></div>":$lunas_show;
-  $status_bayar = $jumlah_bayar==''?'':"$jumlah_bayar<div class='kecil miring abu'>$d[last_bayar]</div>$lunas_show";
   
+  
+  if($jumlah_bayar==''){
+    $lunas_show = '';
+    $verif_status = '';
+  }else{
+    if($d['verif_status']==''){
+      $lunas_show = "<div><a class='tebal darkred' href='?lihat_trx&id_biaya=$d[id]'>Sedang Proses Verifikasi</a> $form_wa_petugas</div>";
+    }else if($d['verif_status']==1){
+      // sudah verifikasi OK
+      if($sisa_bayar==0){
+        $lunas_show = "<div><a class='tebal biru' href='?lihat_trx&id_biaya=$d[id]'>Lunas</a></div>";
+      }else{
+        $lunas_show = "<div><a class='tebal red' href='?lihat_trx&id_biaya=$d[id]'>Belum Lunas (sisa ".number_format($sisa_bayar).')</a></div>';
+      }
+    }else if($d['verif_status']==-1){
+      $lunas_show = "<div><a class='tebal merah' href='?lihat_trx&id_biaya=$d[id]'>Rejected :: $d[alasan_reject]</a></div>";
+    }
+    $verif_status = "$jumlah_bayar<div class='kecil miring abu'>$d[last_bayar]</div>$lunas_show";
+  }
+
   $bisa_dicicil = 0; //zzz debug
   $form_bayar = "
   <form method=post action='?bayar_tagihan'>
@@ -79,7 +97,7 @@ while ($d=mysqli_fetch_assoc($q)) {
       Rp $nominal
       <span class=debug>tanggal_penagihan: $d[tanggal_penagihan]</span>
     </td>
-    <td class=text-right>$status_bayar$link_bayar</td>
+    <td class=text-right>$verif_status$link_bayar</td>
   </tr>";
 }
 ?>
