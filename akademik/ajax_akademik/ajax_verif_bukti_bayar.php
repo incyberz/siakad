@@ -18,7 +18,7 @@ $alasan_reject = $alasan_reject=='' ? 'NULL' : " '$alasan_reject' ";
 if($aksi=='verif' || $aksi=='reject'){
   $s = "UPDATE tb_bayar SET 
   verif_date = CURRENT_TIMESTAMP, 
-  verif_by = '$id_user $nama_user', 
+  verif_by = '$id_user', 
   verif_status = '$verif_status', 
   alasan_reject = $alasan_reject 
   WHERE id='$id_bayar'";

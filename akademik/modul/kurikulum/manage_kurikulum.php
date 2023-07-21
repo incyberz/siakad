@@ -253,7 +253,8 @@ while ($d=mysqli_fetch_assoc($q)) {
   JOIN tb_semester c ON b.id_semester=c.id  
   JOIN tb_kurikulum d ON b.id_kurikulum=d.id  
   WHERE c.id='$d[id_semester]' 
-  AND d.id_prodi=$id_prodi
+  AND d.id_prodi=$id_prodi 
+  ORDER BY a.nama,a.kode 
   ";
   $q2 = mysqli_query($cn, $s2)or die(mysqli_error($cn));
   $jumlah_mk = mysqli_num_rows($q2);

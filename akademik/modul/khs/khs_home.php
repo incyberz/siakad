@@ -6,9 +6,9 @@ if(!$izin) echo div_alert('danger','Maaf, hanya Bagian Akademik yang berhak meng
 <div class="master-home">
 
   <?php
-  $rmanage[0] = ['input KHS SIAKAD','input_khs'];
-  $rmanage[1] = ['import KHS','import_khs'];
-  $rmanage[2] = ['Verifikasi Draft KHS','verifikasi_draft_khs'];
+  $rmanage[0] = ['manage nilai KHS','manage_khs'];
+  // $rmanage[1] = ['import KHS','import_khs'];
+  // $rmanage[2] = ['Verifikasi Draft KHS','verifikasi_draft_khs'];
 
 
   for ($i=0; $i < count($rmanage); $i++) { 

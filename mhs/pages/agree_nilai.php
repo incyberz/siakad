@@ -8,7 +8,7 @@ if(isset($_POST['btn_setuju'])){
   $id_nilai = $_POST['id_nilai'];
   $back = " | <a href='?komplain_nilai&id_nilai=$id_nilai'>Kembali</a>";
 
-  $s = "UPDATE tb_nilai_manual SET tanggal_disetujui_mhs=CURRENT_TIMESTAMP WHERE id=$id_nilai";
+  $s = "UPDATE tb_nilai_manual SET tanggal_disetujui_mhs=CURRENT_TIMESTAMP WHERE id='$id_nilai'";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 
   echo div_alert('success','Update Status Nilai sukses.');
@@ -27,7 +27,7 @@ $s = "SELECT a.*, b.dosen_manual, b.nama as nama_mk, b.id_dosen,
 
 FROM tb_nilai_manual a 
 JOIN tb_mk_manual b ON a.id_mk_manual=b.id  
-WHERE a.id=$id_nilai";
+WHERE a.id='$id_nilai'";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $d = mysqli_fetch_assoc($q);
 
@@ -38,7 +38,7 @@ if($d['sedang_komplain']){
 
   FROM tb_komplain_nilai a 
   JOIN tb_dosen b ON a.id_dosen=b.id  
-  WHERE a.id_nilai=$id_nilai";
+  WHERE a.id_nilai='$id_nilai'";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   $d=mysqli_fetch_assoc($q);
 

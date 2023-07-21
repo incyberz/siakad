@@ -28,6 +28,7 @@ if($id_kalender==''){
         $s = "SELECT id as id_kalender,
         (SELECT count(1) FROM tb_semester WHERE id_kalender=a.id) jumlah_semester 
         FROM tb_kalender a WHERE a.jenjang='$jenjang' AND a.angkatan=$angkatan";
+        // echo "<h1 class=debug>$s</h1>";
         $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
         if(mysqli_num_rows($q)>1){
           div_alert('danger',"Duplikat Kalender untuk angkatan $angkatan jenjang $jenjang.");
@@ -54,7 +55,9 @@ if($id_kalender==''){
     exit;
   }
 
+  $jenjang = $_GET['jenjang'] ?? die(erid('jenjang'));
   $s = "SELECT id as id_kalender FROM tb_kalender WHERE angkatan=$angkatan AND jenjang='$jenjang'";
+  echo "<pre class=debug>$s</pre>";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   if(mysqli_num_rows($q)==0){
     // auto insert kalender
@@ -163,8 +166,10 @@ a.jumlah_bulan_per_semester
 FROM tb_kalender a 
 JOIN tb_jenjang b ON b.jenjang=a.jenjang  
 WHERE a.id='$id_kalender'";
+
 $q = mysqli_query($cn, $s)or die(mysqli_error($cn));
-if(!mysqli_num_rows($q)) die('Data kalender tidak ditemukan.');
+if(mysqli_num_rows($q)==0) die('Data kalender tidak ditemukan.');
+if(mysqli_num_rows($q)>1) die('Duplikat kalender ditemukan.');
 $d = mysqli_fetch_assoc($q);
 $jumlah_semester = $d['jumlah_semester'];
 $nama_kalender = $d['nama_kalender'];

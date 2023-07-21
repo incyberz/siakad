@@ -68,13 +68,14 @@ switch ($c[0]){
 
 
   case 'khs': $konten = 'modul/khs/khs_home.php';break;
-  case 'input_khs': $konten = 'modul/khs/input_khs.php';break;
+  case 'manage_khs': $konten = 'modul/khs/manage_khs.php';break;
   case 'import_khs': $konten = 'modul/khs/import_khs.php';break;
   case 'input_khs_manual': $konten = 'modul/khs/input_khs_manual.php';break;
   case 'ubah_nilai_khs': $konten = 'modul/khs/ubah_nilai_khs.php';break;
   case 'export_khs': $konten = 'modul/khs/export_khs.php';break;
   case 'verifikasi_draft_khs': $konten = 'modul/khs/verifikasi_draft_khs.php';break;
   case 'manage_mk_manual': $konten = 'modul/khs/manage_mk_manual.php';break;
+  case 'drop_kurikulum_mk': $konten = 'modul/khs/drop_kurikulum_mk.php';break;
 
 
   case 'super_delete_prodi': $konten = 'modul/super_user/super_delete_prodi.php';break;

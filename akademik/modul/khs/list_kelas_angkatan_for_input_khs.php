@@ -32,7 +32,7 @@
       <td>$d[tahun_ajar]</td>
       <td>$d[jumlah_mhs] Mhs</td>
       <td>
-        <a href='?input_khs&kelas=$d[kelas]' class='btn btn-info btn-sm proper'>Input KHS</a> 
+        <a href='?manage_khs&kelas=$d[kelas]' class='btn btn-info btn-sm proper'>Input KHS</a> 
       </td>
     </tr>";
   }

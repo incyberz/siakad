@@ -8,7 +8,13 @@ $skip_ubah_password=0;
 if($skip_ubah_password){
   echo '<div class="red tebal">Perhatian! Mode Pass Ubah Password is ON.</div>';
 }else{
-  $parameter = ($is_depas && $parameter!='logout') ? 'ubah_password' : $parameter;
+  if($is_depas && $parameter!='logout'){
+    if(isset($_SESSION['siakad_username'])){
+      echo '<div class="red tebal">Perhatian! Ubah Password di skip karena sedang Login As.</div>';
+    }else{
+      $parameter = 'ubah_password';
+    }
+  }
 }
 
 // redirect to home mahasiswa non-aktif

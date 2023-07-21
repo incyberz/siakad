@@ -27,14 +27,29 @@ if(isset($_POST['btn_ajukan'])){
 $form = $undef;
 $id_nilai = isset($_GET['id_nilai']) ? $_GET['id_nilai'] : die(erid('id_nilai'));
 
-$s = "SELECT a.*, b.dosen_manual, b.nama as nama_mk, b.id_dosen, 
-(SELECT nama FROM tb_dosen WHERE id=b.id_dosen) as nama_dosen, 
-(SELECT no_wa FROM tb_dosen WHERE id=b.id_dosen) as no_wa_dosen, 
+$s = "SELECT a.*, c.nama as nama_mk,  
+(
+  SELECT ds.id FROM tb_dosen ds 
+  JOIN tb_jadwal jd ON ds.id=jd.id_dosen 
+  WHERE jd.id_kurikulum_mk=b.id
+) as id_dosen, 
+(
+  SELECT ds.nama FROM tb_dosen ds 
+  JOIN tb_jadwal jd ON ds.id=jd.id_dosen 
+  WHERE jd.id_kurikulum_mk=b.id
+) as nama_dosen, 
+(
+  SELECT ds.no_wa FROM tb_dosen ds 
+  JOIN tb_jadwal jd ON ds.id=jd.id_dosen 
+  WHERE jd.id_kurikulum_mk=b.id
+) as no_wa_dosen, 
 (SELECT 1 FROM tb_komplain_nilai WHERE id_nilai=a.id) as sedang_komplain 
 
-FROM tb_nilai_manual a 
-JOIN tb_mk_manual b ON a.id_mk_manual=b.id  
-WHERE a.id=$id_nilai";
+FROM tb_nilai a 
+JOIN tb_kurikulum_mk b ON a.id_kurikulum_mk=b.id  
+JOIN tb_mk c ON b.id_mk=c.id  
+WHERE a.id='$id_nilai'";
+// echo "<pre class=debug>$s</pre>";
 $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
 $d = mysqli_fetch_assoc($q);
 
@@ -44,7 +59,7 @@ if($d['sedang_komplain']){
   (SELECT no_wa FROM tb_dosen where id=a.id_dosen) as no_wa_dosen 
 
   FROM tb_komplain_nilai a 
-  WHERE a.id_nilai=$id_nilai";
+  WHERE a.id_nilai='$id_nilai'";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   $d=mysqli_fetch_assoc($q);
 
@@ -90,7 +105,7 @@ if($d['sedang_komplain']){
   }
 
   if($d['id_dosen']==''){
-    $form = div_alert('danger', 'Maaf Anda belum bisa komplain, Data Dosen pada Nilai Mata Kuliah ini belum ada.');
+    $form = div_alert('danger', 'Maaf Anda belum bisa komplain via Whatsapp Gateway. Data Dosen dan nomor Whatsapp-nya belum ditambahkan pada Jadwal MK ini oleh Petugas.');
   }elseif($d['no_wa_dosen']==''){
     $form = div_alert('danger', "Maaf, Data Dosen dengan nama <u>$d[nama_dosen]</u> belum mempunyai data Nomor Whatsapp pada SIAKAD.");
   }elseif($d['hm']=='A'){
