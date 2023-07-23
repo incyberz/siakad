@@ -1,7 +1,7 @@
 <?php 
 $rfitur = [
   [[3,4,6,7,8],'akademik/?','Data Mhs',1],
-  [[3,4,6,7,8],'akademik/?krs','KRS Online',2],
+  [[3,4,6,7,8],'akademik/?ambil_krs','KRS Online',2],
   [[3,6,7,8],'akademik/?khs','KHS Online',3],
   [[3,6,7,8],'akademik/?manage_jadwal','Jadwal Kuliah',4],
   [[3,6,7,8],'akademik/?master&p=dosen','Data Dosen',8],

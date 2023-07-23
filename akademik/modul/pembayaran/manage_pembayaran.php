@@ -74,7 +74,7 @@ while ($d=mysqli_fetch_assoc($q)) {
       <div><span class='biru tebal'>Nominal Bayar: <span style=font-size:150%>$nominal_bayar_show</span></span></div>
       <div>Sisa tagihan: $sisa_tagihan_show</div>
     </td>
-    <td>
+    <td id=td_aksi__$d[id]>
       <button class='btn btn-success btn-sm mb1 mt1 btn_aksi' id=verif__$d[id]>Verifikasi</button>
       <button class='btn btn-danger btn-sm mb1 mt1 btn_aksi' id=reject__$d[id]>Reject</button>
     </td>
@@ -122,7 +122,10 @@ echo $table;
       }else if(aksi=='verif' || aksi=='reject'){
         let verif_status = aksi=='verif' ? 1 : -1;
         let alasan_reject = '';
-        if(aksi=='reject'){
+        if(aksi=='verif'){
+          let y = confirm('Apakah Bukti Bayar sudah sesuai valid?\n\nCek kembali Jenis Biaya, Nominal Tagihan, dan Nominal bayarnya! Jika sudah yakin tekan OK.');
+          if(!y) return;
+        }else if(aksi=='reject'){
           alasan_reject = prompt('Alasan reject:');
           if(!alasan_reject) return;
           alasan_reject = alasan_reject.trim();
@@ -135,7 +138,16 @@ echo $table;
         $.ajax({
           url:link_ajax,
           success:function(a){
-            alert(a);
+            // alert(a);
+            if(a.trim()=='sukses'){
+              if(aksi=='verif'){
+                $('#td_aksi__'+id).html('<span class="green">Verifikasi sukses</span>');
+              }else if(aksi=='reject'){
+                $('#td_aksi__'+id).html('<span class="green"><span class=red>Reject</span> sukses dg alasan: <i class=darkred>'+alasan_reject+'</i></span>');
+              }else{
+                alert('Perhatian! Sukses AJAX tanpa handler aksi apapun.');
+              }
+            }
           }
         })
 

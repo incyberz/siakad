@@ -1,7 +1,7 @@
 <?php 
 // $fitur = [
 //   "akademik/?",
-//   "akademik/?krs",
+//   "akademik/?ambil_krs",
 //   "akademik/?khs",
 //   "akademik/?manage_jadwal",
 //   "akademik/?master",

@@ -173,8 +173,8 @@ if(mysqli_num_rows($q)>0){
     $divs.=$div[$i];
     $dmks.=$dmk[$i].'<hr>';
     $disabled_pdf_smt = $count_mk_smt[$i]==$count_nilai_verified_smt[$i]?'': 'disabled';
-    if($test_mode){
-      echo "<div class='red bold italic'>Debug Mode Cetak KHS is ON.</div>";
+    if($test_mode or isset($_SESSION['siakad_username'])){
+      echo "<div class='red bold italic'>Debug Mode Cetak KHS smt-$i is ON.</div>";
       $disabled_pdf_smt='';
     }
     $btn_smt.= "<button class='btn btn-primary mr-2' $disabled_pdf_smt name=dw_$i>$i</button>";
@@ -198,7 +198,10 @@ if($test_mode){
   $disabled_pdf = '';
 }
 $info_disabled = $count_nilai==$count_nilai_verified ? '' : "<div class='kecil red miring'>Semua nilai harus terverifikasi (Anda setujui) agar dapat cetak KHS.";
-
+if(isset($_SESSION['siakad_username'])){
+  $disabled_pdf = '';
+  $info_disabled .= ' <span class="biru tebal consolas">[Login As Mode]</span>';
+}
 ?>
 
 

@@ -60,11 +60,13 @@ switch ($c[0]){
   case 'penagihan_semester': $konten = 'modul/pembayaran/penagihan_semester.php';break;
   case 'penagihan_lainnya': $konten = 'modul/pembayaran/penagihan_lainnya.php';break;
   case 'history_pembayaran': $konten = 'modul/pembayaran/history_pembayaran.php';break;
+  case 'manage_syarat_biaya': $konten = 'modul/pembayaran/manage_syarat_biaya.php';break;
+  
 
-
-  case 'krs': $konten = 'modul/krs/krs_home.php';break;
-  case 'event_krs': $konten = 'modul/krs/manage_event_krs.php';break;
+  case 'ambil_krs': $konten = 'modul/krs/krs_home.php';break;
+  case 'manage_krs': $konten = 'modul/krs/manage_krs.php';break;
   case 'manage_krs_mk_manual': $konten = 'modul/krs/manage_krs_mk_manual.php';break;
+  case 'test_krs': $konten = 'modul/krs/test_krs.php';break;
 
 
   case 'khs': $konten = 'modul/khs/khs_home.php';break;

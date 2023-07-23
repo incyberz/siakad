@@ -33,7 +33,8 @@ $nama_biaya = isset($_POST['nama_biaya'])?$_POST['nama_biaya']:die(erid('nama_bi
 $sisa_bayar = isset($_POST['sisa_bayar'])?$_POST['sisa_bayar']:die(erid('sisa_bayar'));
 $bisa_dicicil = isset($_POST['bisa_dicicil'])?$_POST['bisa_dicicil']:die(erid('bisa_dicicil'));
 
-$last_3digit_nim = substr($nim,5,3);
+// $last_3digit_nim = substr($nim,5,3);
+$last_3digit_nim = 0; // zzz fitur suspend
 $sisa_bayar_show = number_format($sisa_bayar + $last_3digit_nim,0);
 
 $info_cicilan = $bisa_dicicil ? "<span class='kecil miring hijau'>)* Biaya ini dapat Anda cicil.</span>":"<span class='kecil miring darkred'>)* Biaya ini tidak dapat dicicil.</span>";
@@ -78,7 +79,7 @@ if(mysqli_num_rows($q)>0){
         <input class="debug" name=id_biaya value=<?=$id_biaya?>>
         <label for="jumlah_bayar">Jumlah yang harus Anda bayar:</label> 
         <?=$input_bayar?>
-        <div class='miring kecil'>Untuk mempermudah verifikasi silahkan tambahkan nominal bayar dengan 3 digit terakhir NIM Anda.</div>
+        <!-- <div class='miring kecil'>Untuk mempermudah verifikasi silahkan tambahkan nominal bayar dengan 3 digit terakhir NIM Anda.</div> -->
         <?=$info_cicilan?>
         <div class="form-group">
           <label for="bukti_bayar">Bukti Bayar</label>

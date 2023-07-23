@@ -23,7 +23,7 @@ if (isset($_POST['btn_set_krs_default'])) {
   $s = str_replace(',__','',$s);
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   echo div_alert('success', 'Set Nominal Default success. Redirecting ...');
-  echo "<script>location.replace('?event_krs&angkatan=$angkatan&id_prodi=$id_prodi')</script>";
+  echo "<script>location.replace('?manage_krs&angkatan=$angkatan&id_prodi=$id_prodi')</script>";
   exit;
 
 }
@@ -40,7 +40,7 @@ if($angkatan==''){
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   $link='';
   while ($d=mysqli_fetch_assoc($q)) {
-    $link .= "<a class='btn btn-info btn-sm' href='?event_krs&angkatan=$d[angkatan]'>$d[angkatan]</a> ";
+    $link .= "<a class='btn btn-info btn-sm' href='?manage_krs&angkatan=$d[angkatan]'>$d[angkatan]</a> ";
   }
   echo "<h4>Seting Event KRS untuk Angkatan:</h4><div class=wadah>$link</div>";
   exit;
@@ -57,7 +57,7 @@ if($id_prodi==''){
   while ($d=mysqli_fetch_assoc($q)) {
     $d['nama'] = strtoupper($d['nama']);
     $primary = $d['jenjang']=='S1' ? 'primary' : 'success';
-    echo "<div><a class='btn btn-$primary mb2 mt2 btn-blocks' href='?event_krs&angkatan=$angkatan&id_prodi=$d[id]'>$d[jenjang]-$d[nama]</a></div> ";
+    echo "<div><a class='btn btn-$primary mb2 mt2 btn-blocks' href='?manage_krs&angkatan=$angkatan&id_prodi=$d[id]'>$d[jenjang]-$d[nama]</a></div> ";
   }
   exit;
 }else{
@@ -255,8 +255,8 @@ if($sum_nominal==0){
 <h1><?=$judul ?></h1>
 <?=$info_kalender?>
 <p>
-  Berikut KRS untuk <b><a href="?event_krs">Angkatan <?=$angkatan?></a></b>
-  prodi <b><a href="?event_krs&angkatan=<?=$angkatan?>"> <?=$nama_prodi?></a></b>
+  Berikut KRS untuk <b><a href="?manage_krs">Angkatan <?=$angkatan?></a></b>
+  prodi <b><a href="?manage_krs&angkatan=<?=$angkatan?>"> <?=$nama_prodi?></a></b>
 </p>
 <ul>
   <li>Jumlah mahasiswa aktif saat ini : <a href="?mhs_aktif" target=_blank><?=$jumlah_mhs_aktif?> mhs</a></li>

@@ -22,6 +22,8 @@ $s = "SELECT a.*,
 (
   SELECT jenjang FROM tb_prodi WHERE id=a.id_prodi) as jenjang,
 (
+  SELECT jumlah_semester FROM tb_jenjang j JOIN tb_prodi p ON p.jenjang=j.jenjang WHERE p.id=a.id_prodi) as jumlah_semester,
+(
   SELECT p.id 
   FROM tb_semester p 
   JOIN tb_kalender q ON p.id_kalender=q.id 
@@ -79,6 +81,7 @@ $id_prodi = $d_mhs['id_prodi'];
 $prodi = $d_mhs['prodi'];
 $nama_prodi = $d_mhs['nama_prodi'];
 $jenjang = $d_mhs['jenjang'];
+$jumlah_semester = $d_mhs['jumlah_semester'];
 
 
 $id_kalender = '';

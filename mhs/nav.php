@@ -12,7 +12,7 @@
   <ul id="navigasi">
     <li class="active"><a href="?"><i class="bx bx-home"></i> <span>Home</span></a></li>
     <li><a href="?pembayaran"><i class="bx bx-file-blank"></i> <span>Pembayaran</span></a></li>
-    <li><a href="?krs"><i class="bx bx-file-blank"></i> <span>KRS</span></a></li>
+    <li><a href="?ambil_krs"><i class="bx bx-file-blank"></i> <span>KRS</span></a></li>
     <li><a href="?jadwal"><i class="bx bx-calendar"></i> <span>Jadwal Kuliah</span></a></li>
     <li><a href="?presensi"><i class="bx bx-book-open"></i> Presensi</a></li>
     <li><a href="?khs"><i class="bx bx-calendar-star"></i> Nilai / KHS</a></li>

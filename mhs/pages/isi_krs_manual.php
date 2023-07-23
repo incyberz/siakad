@@ -25,7 +25,7 @@ if (isset($_POST['btn_set_krs_default'])) {
   $s = str_replace(',__','',$s);
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   echo div_alert('success', 'Set Nominal Default success. Redirecting ...');
-  echo "<script>location.replace('?event_krs&angkatan=$angkatan&id_prodi=$id_prodi')</script>";
+  echo "<script>location.replace('?manage_krs&angkatan=$angkatan&id_prodi=$id_prodi')</script>";
   exit;
 
 }

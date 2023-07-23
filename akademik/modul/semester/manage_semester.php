@@ -3,6 +3,7 @@ $id_semester = isset($_GET['id_semester']) ? $_GET['id_semester'] : '';
 $judul = '<h1>MANAGE KURIKULUM SEMESTER</h1>';
 
 include 'manage_semester_settings_apply.php';
+include 'manage_semester_custom_tanggal_process.php';
 
 if($id_semester==''){
   include 'modul/kurikulum/list_kurikulum_semester.php';
