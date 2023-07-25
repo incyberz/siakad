@@ -98,7 +98,7 @@ $info_keuangan = "
     Jika mahasiswa sudah membayar biaya-biaya diatas maka diperbolehkan untuk Pengambilan KRS.
     <div class='wadah mt2'>
       <div class=mb2>Jika ingin mengelola syarat <u>per angkatan atau per prodi</u>, silahkan Manage Syarat Biaya!</div>
-      <a class='btn btn-info btn-sm' href='?manage_syarat_biaya&untuk=KRS'>Manage Syarat Biaya KRS</a>
+      <a class='btn btn-info btn-sm' href='?manage_syarat_biaya&event=KRS'>Manage Syarat Biaya KRS</a>
     </div>
   </div> 
 </div>

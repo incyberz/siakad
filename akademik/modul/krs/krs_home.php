@@ -7,6 +7,7 @@ if(!$izin) echo div_alert('danger','Maaf, hanya Bagian Akademik yang berhak meng
 
   <?php
   $rmanage[0] = ['manage KRS','manage_krs'];
+  $rmanage[1] = ['manage Syarat biaya','manage_syarat_biaya'];
 
   for ($i=0; $i < count($rmanage); $i++) { 
     $href = $izin ? '?'.$rmanage[$i][1] : '#';
