@@ -173,7 +173,7 @@ while ($d=mysqli_fetch_assoc($q)) {
       Rp $nominal
       <span class=debug>tanggal_penagihan: $d[tanggal_penagihan]</span>
     </td>
-    <td class=text-right>$verif_status$link_bayar</td>
+    <td class=text-right><div class=mb1>$link_bayar</div>$verif_status</td>
   </tr>";
 }
 

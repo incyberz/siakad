@@ -32,7 +32,7 @@ JOIN tb_kurikulum_mk b ON a.id_kurikulum_mk=b.id
 JOIN tb_mk c ON b.id_mk=c.id 
 JOIN tb_semester d ON b.id_semester=d.id 
 WHERE a.nim='$nim' 
-ORDER BY d.nomor";
+ORDER BY d.nomor, c.nama";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
 $tb_tmp=div_alert('Danger','Data Nilai tidak ditemukan (Anda belum KRS atau Petugas Akademik belum input nilai).');
@@ -80,7 +80,7 @@ if(mysqli_num_rows($q)>0){
     $total_nm_smt[$d['semester']]+=$am*$d['bobot'];
 
     $ipks[$d['semester']] = $total_nm_smt[$d['semester']]/$total_sks_smt[$d['semester']];
-    $kode_mk = $d['kode_mk']==''?'':$d['kode_mk'].' :: ';
+    $kode_mk = $d['kode_mk']==''?'': " | $d[kode_mk]";
 
     $img_wa_complain = '<img src="../assets/img/icons/wa_complain.png" height=25px />';
     $img_sedang_complain = '<img src="../assets/img/icons/load.png" height=25px />';
@@ -98,7 +98,7 @@ if(mysqli_num_rows($q)>0){
         <div class=row>
           <div class='col-sm-1 kecil desktop'>$i</div>
           <div class='col-sm-5'>
-            $kode_mk$d[nama_mk]
+            $d[nama_mk] $kode_mk
             <span class=debug>id_nilai: $d[id]</span>
           </div>
           <div class='col-sm-6 kecil'>

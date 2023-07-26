@@ -422,7 +422,7 @@ $disabled_pdf = $total_mk==$total_mk_terjadwal ? '' : 'disabled';
 $btn_cetak = "<button class='btn btn-primary' $disabled_pdf>$img_aksi[pdf] Cetak PDF</button>";
 $form_cetak_pdf = $total_mk==$total_mk_terjadwal 
 ? div_alert('success',"Semua MK sudah terjadwal. Silahkan Anda boleh mencetak Kurikulum PDF.<hr>
-<form method=post target=_blank action='../pdf/kurikulum.php'>
+<form method=post target=_blank action='../pdf/pdf_kurikulum.php'>
   <input class=debug name=id_kurikulum value=$id_kurikulum>
   $btn_cetak
   <span class='btn btn-secondary'>$link_cek_all_sesi</span>
@@ -430,6 +430,17 @@ $form_cetak_pdf = $total_mk==$total_mk_terjadwal
 ") 
 : div_alert('danger',"Masih ada MK yang belum Anda jadwalkan.<hr>$btn_cetak <a href='?manage_jadwal_dosen&id_kurikulum=$id_kurikulum' class='btn btn-primary'>Manage Jadwal Dosen</a>");
 
+if(1){
+  $disabled_pdf='';
+  echo '<span class=red>Perhatian! Cetak PDF bypass.</span>';
+  $form_cetak_pdf = div_alert('success',"Semua MK sudah terjadwal. Silahkan Anda boleh mencetak Kurikulum PDF.<hr>
+    <form method=post target=_blank action='../pdf/pdf_kurikulum.php'>
+      <input class=debug name=id_kurikulum value=$id_kurikulum>
+      <button class='btn btn-primary'>$img_aksi[pdf] Cetak PDF (by-pass)</button>
+      <span class='btn btn-secondary'>$link_cek_all_sesi</span>
+    </form>  
+  ");
+}
 
 
 # ==============================================================

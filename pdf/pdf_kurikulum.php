@@ -1,7 +1,7 @@
 <?php
 // session_start();
 $id_kurikulum = isset($_POST['id_kurikulum']) ? $_POST['id_kurikulum'] : die('Page ini tidak dapat diakses secara langsung.');
-include "../../conn.php";
+include "../conn.php";
 
 
 # ==============================================================
@@ -73,7 +73,6 @@ ORDER BY a.nomor
 $q = mysqli_query($cn, $s)or die(mysqli_error($cn));
 
 $jumlah_semester_real = mysqli_num_rows($q);
-
 
 $semesters = '';
 $rnomor_semester = [];
@@ -219,7 +218,9 @@ $pdf->Cell(0,5,"BASIS $basis",0,1,'C');
 $pdf->Cell(200, $lhhz, " ", 0, 1); // spacer hz
 // 4 SEMESTER
 $semester_ke=0;
-for ($i=1; $i <=4 ; $i++) { 
+$jumlah_rows_kiri_kanan = round($jumlah_semester_real/2,0,PHP_ROUND_HALF_UP);
+
+for ($i=1; $i <=$jumlah_rows_kiri_kanan ; $i++) { 
   $total_teori_kiri = $r_total_teori[$semester_ke];
   $total_praktik_kiri = $r_total_praktik[$semester_ke];
   $total_sks_kiri = $r_total_sks[$semester_ke];

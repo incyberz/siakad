@@ -115,7 +115,7 @@ if($d['sedang_komplain']){
           <input class=cek_setuju type=checkbox name=cek_setuju id=cek_setuju>
         </div>
         <div class='form-group hideit' id=blok_setuju2>
-          <label for=cek_setuju2>Saya tidak akan mengajukan komplain nilai.</label>
+          <label for=cek_setuju2>Saya tidak akan mengajukan komplain nilai ini, kecuali dengan mengikuti <a href='?ujian_perbaikan&id_nilai=$d[id]' target=_blank>Prosedur Ujian Perbaikan (UP)</a>.</label>
           <input class=cek_setuju type=checkbox name=cek_setuju2 id=cek_setuju2>
         </div>
       </div>

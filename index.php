@@ -4,7 +4,7 @@
 # ========================================================
 session_start();
 // echo '<pre class=debug>'; var_dump($_SESSION); echo '</pre>';
-$dm=0;
+$dm=1;
 $now = date('Y-m-d H:i:s');
 $today = date('Y-m-d');
 

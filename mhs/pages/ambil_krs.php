@@ -30,7 +30,7 @@ if($id_semester==''){
     
     $s2 = "SELECT a.id as id_semester, a.nomor as no_smt,
     (SELECT count(1) FROM tb_kurikulum_mk WHERE id_semester=a.id) jumlah_mk,
-    (SELECT tanggal FROM tb_krs WHERE id_semester=a.id) tanggal_krs,
+    (SELECT tanggal FROM tb_krs WHERE id_semester=a.id and id_mhs=$id_mhs) tanggal_krs,
     a.tanggal_awal as tanggal_awal_smt, 
     a.tanggal_akhir as tanggal_akhir_smt 
     FROM tb_semester a 

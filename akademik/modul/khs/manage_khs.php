@@ -116,7 +116,8 @@ c.nomor as no_smt,
 d.kode as kode_mk,
 d.nama as nama_mk,
 (d.bobot_teori + d.bobot_praktik) bobot, 
-(SELECT CONCAT(na,'|',hm) FROM tb_nilai WHERE id_kurikulum_mk=a.id and nim='$nim') data_nilai
+(SELECT CONCAT(na,'|',hm,'|',id) FROM tb_nilai WHERE id_kurikulum_mk=a.id and nim='$nim') data_nilai,
+(SELECT tanggal_disetujui_mhs FROM tb_nilai WHERE id_kurikulum_mk=a.id and nim='$nim') tanggal_disetujui_mhs
 FROM tb_kurikulum_mk a 
 JOIN tb_kurikulum b ON a.id_kurikulum=b.id 
 JOIN tb_semester c ON a.id_semester=c.id 
@@ -137,9 +138,10 @@ while ($d=mysqli_fetch_assoc($q)) {
   $bg = $d['no_smt']%2==0 ? "style='background:#fdf;$border'" : "style='$border'";
   $data_nilai = $d['data_nilai']=='' ? [$null,$null] : explode('|',$d['data_nilai']);
 
+  $id_nilai = '';
   if($d['no_smt']>$semester_mhs){
-    $editable = 'editable';
-    $status = '<span class="kecil miring abu">perhatian! mhs blm masuk smt ini</span>';
+    $editable = '';
+    $status = '<span class="kecil miring abu">mhs blm masuk smt ini</span>';
   }else{
     if($d['data_nilai']==''){
       if(strpos('salt'.strtoupper($d['kode_mk']),'MBKM')){
@@ -150,13 +152,22 @@ while ($d=mysqli_fetch_assoc($q)) {
         $status = "<code>belum input nilai</code> | <a href='?drop_kurikulum_mk&id_kurikulum_mk=$d[id_kurikulum_mk]' target=_blank><span class='merah kecil'>Drop MK</span></a>";
       }
     }else{
-      $status = '<code>belum disetujui mhs</code>';
-      $editable = 'editable';
+
+      $id_nilai = $data_nilai[2];
+
+      if($d['tanggal_disetujui_mhs']==''){
+        $status = '<code>belum disetujui mhs</code>';
+        $editable = 'editable';
+      }else{
+        $status = '<span class="consolas small green">sudah disetujui mhs</span>';
+        $editable = '';
+      }
     }
   }
 
   $nama_mk = strtoupper($d['nama_mk']);
   $kode_mk = strtoupper($d['kode_mk']);
+
 
   $tr.="
   <tr $bg>
@@ -164,8 +175,10 @@ while ($d=mysqli_fetch_assoc($q)) {
     <td>$d[no_smt]</td>
     <td>$nama_mk | $kode_mk<span class=debug> id:$d[id_kurikulum_mk]</span></td>
     <td>$d[bobot]</td>
-    <td class='$editable'>$data_nilai[0]</td>
-    <td class='$editable'>$data_nilai[1]</td>
+    <td class='debug' id=nilai2__$id_nilai>$data_nilai[0]</td>
+    <td class='$editable' id=nilai__$id_nilai>$data_nilai[0]</td>
+    <td class='debug' id=hm2__$id_nilai>$data_nilai[1]</td>
+    <td class='$editable' id=hm__$id_nilai>$data_nilai[1]</td>
     <td>$status</td>
   </tr>
   ";
@@ -179,7 +192,9 @@ $thead = '
   <th>Smt</th>
   <th>MK</th>
   <th>Bobot</th>
+  <th class=debug>Debug</th>
   <th>Nilai</th>
+  <th class=debug>Debug</th>
   <th>Huruf</th>
   <th>Status</th>
 </thead>
@@ -196,3 +211,62 @@ $ket = "
 ";
 
 echo "<table class='table'>$thead$tr</table>$ket";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+?>
+<script>
+  $(function(){
+    $('.editable').click(function(){
+      let tid = $(this).prop('id');
+      let rid = tid.split('__');
+      let id = rid[1];
+      console.log(tid,id);
+    })
+  })
+</script>
