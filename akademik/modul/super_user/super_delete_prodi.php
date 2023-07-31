@@ -32,7 +32,7 @@ foreach ($rsub as $key => $tb) {
     echo "<div>$s</div>";
     $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
     while ($d=mysqli_fetch_assoc($q)) {
-      $tb2 = 'tb_kelas_angkatan_detail';
+      $tb2 = 'tb_kelas_ta_detail';
       $s2 = "DELETE FROM $tb2 WHERE id_mhs=$d[id]";
       echo "<div>$s2</div>";
       $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
@@ -132,21 +132,21 @@ foreach ($rsub as $key => $tb) {
       echo "<div>SQL2: kelas: $kelas</div>";
 
       // delete kelas angkatan detail
-      $s2 = "SELECT id as id_kelas_angkatan FROM tb_kelas_angkatan WHERE kelas='$kelas' ";
+      $s2 = "SELECT id as id_kelas_ta FROM tb_kelas_ta WHERE kelas='$kelas' ";
       echo "<div class=red>SQL SELECT: $s2</div>";
       $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
       while ($d2=mysqli_fetch_assoc($q2)) {
-        $id_kelas_angkatan = $d2['id_kelas_angkatan'];
-        echo "<div>SQL3: id_kelas_angkatan: $id_kelas_angkatan</div>";
+        $id_kelas_ta = $d2['id_kelas_ta'];
+        echo "<div>SQL3: id_kelas_ta: $id_kelas_ta</div>";
 
-        $s3 = "DELETE FROM tb_kelas_angkatan_detail WHERE id_kelas_angkatan=$id_kelas_angkatan";
+        $s3 = "DELETE FROM tb_kelas_ta_detail WHERE id_kelas_ta=$id_kelas_ta";
         echo "<div class='red kecil miring'>SQL3: $s3</div>";
         $q3 = mysqli_query($cn,$s3) or die(mysqli_error($cn));
         echo "<div class='green mb2 kecil miring'>Delete kelas_angkatan_detail success.</div>";
       }
 
 
-      $s2 = "DELETE FROM tb_kelas_angkatan WHERE kelas='$kelas'";
+      $s2 = "DELETE FROM tb_kelas_ta WHERE kelas='$kelas'";
       echo "<div>$s2</div>";
       $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
       echo "<div class='green mb2'>Delete kelas_angkatan success.</div>";

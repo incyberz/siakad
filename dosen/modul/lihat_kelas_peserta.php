@@ -76,7 +76,7 @@ d.kelas
 FROM tb_kelas_peserta a 
 JOIN tb_kurikulum_mk b on b.id=a.id_kurikulum_mk  
 JOIN tb_jadwal c on b.id=c.id_kurikulum_mk  
-JOIN tb_kelas_angkatan d on d.id=a.id_kelas_angkatan   
+JOIN tb_kelas_ta d on d.id=a.id_kelas_ta   
 WHERE c.id=$id_jadwal ";
 // echo $s2;
 $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
@@ -94,8 +94,8 @@ if(mysqli_num_rows($q2)==0){
     c.folder_uploads, 
     c.gender 
 
-    FROM tb_kelas_angkatan a 
-    JOIN tb_kelas_angkatan_detail b on a.id=b.id_kelas_angkatan  
+    FROM tb_kelas_ta a 
+    JOIN tb_kelas_ta_detail b on a.id=b.id_kelas_ta  
     JOIN tb_mhs c on b.id_mhs=c.id   
     WHERE a.kelas='$d2[kelas]' ";
     // echo $s2;

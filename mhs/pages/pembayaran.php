@@ -2,13 +2,15 @@
 // auto penagihan biaya semester
 $tnow = strtotime('now');
 
+$today = date('Y-m-d');
 $s = "SELECT a.* 
 FROM tb_semester a 
 JOIN tb_kalender b ON a.id_kalender=b.id 
-WHERE a.tanggal_awal<'$now' AND a.tanggal_akhir>'$now' 
+WHERE a.tanggal_awal<='$today' AND a.tanggal_akhir>='$today' 
 AND b.jenjang='$jenjang' AND b.angkatan=$angkatan";
+echo "<pre class=debug>$s</pre>";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-if(mysqli_num_rows($q)==0) echo div_alert('warning', 'Tidak ada semester aktif untuk Anda.');
+if(mysqli_num_rows($q)==0) die(div_alert('warning', "Maaf, Tidak ada lagi semester aktif untuk Anda. Silahkan lakukan perpanjangan studi atau silahkan lapor petugas jika ada kesalahan.")) ;
 if(mysqli_num_rows($q)>1) echo div_alert('danger', 'Duplikat semester aktif ditemukan. Segera lapor Petugas!');
 if(mysqli_num_rows($q)==1){
   $d=mysqli_fetch_assoc($q);
@@ -53,7 +55,7 @@ $sql_untuk_semester = $untuk_semester=='' ? '1' : "a.untuk_semester=$untuk_semes
 $s = "SELECT a.*,
 
 (
-  SELECT nominal FROM tb_biaya_angkatan WHERE id_biaya=a.id and angkatan=$angkatan and id_prodi=$id_prodi 
+  SELECT nominal FROM tb_biaya_angkatan WHERE shift='$shift' and id_biaya=a.id and angkatan=$angkatan and id_prodi=$id_prodi 
   ) as nominal, 
 (
   SELECT SUM(nominal) FROM tb_bayar WHERE id_biaya=a.id and id_mhs=$id_mhs 
@@ -81,7 +83,7 @@ if(mysqli_num_rows($q)==0){
 $tr_biaya="
 <thead>
   <th class=hideatm>No</th>
-  <th>Jenis Biaya</th>
+  <th class=proper>Jenis Biaya kelas $shift</th>
   <th class=text-right>Status Bayar</th>
 </thead>
 ";
@@ -179,7 +181,7 @@ while ($d=mysqli_fetch_assoc($q)) {
 
 $smt = $untuk_semester==''?'': "<span class='biru tebal'>Semester $untuk_semester</span> | <a href='?pembayaran'>Lihat Semua Biaya</a>";
 
-$berikut = "<p>Berikut adalah Data Tagihan untuk <b><u>$prodi-$angkatan</u></b> $smt :</p>";
+$berikut = "<p>Berikut adalah Data Tagihan untuk <b><u>$prodi-$angkatan</u></b> kelas $shift $smt :</p>";
 ?>
 <style>
   @media (max) {

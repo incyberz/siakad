@@ -21,7 +21,7 @@ c.nominal_default,
 c.nama as nama_biaya,
 b.angkatan, 
 b.id_prodi, 
-(SELECT nominal FROM tb_biaya_angkatan WHERE angkatan=b.angkatan and id_prodi=b.id_prodi and id_biaya=c.id) nominal_angkatan,
+(SELECT nominal FROM tb_biaya_angkatan WHERE angkatan=b.angkatan and id_prodi=b.id_prodi and id_biaya=c.id and shift=a.shift) nominal_angkatan,
 a.tanggal as tanggal_bayar 
 FROM tb_bayar a 
 JOIN tb_mhs b ON a.id_mhs=b.id 
@@ -39,7 +39,7 @@ while ($d=mysqli_fetch_assoc($q)) {
   // $d['nominal_angkatan'] = ''; //zzz debug
   $prodi = $rprodi[$d['id_prodi']];
   $nominal_tagihan = $d['nominal_angkatan']=='' ? $d['nominal_default'] : $d['nominal_angkatan'];
-  $nominal_angkatan_info = $d['nominal_angkatan']=='' ? "<span class=red>Perhatian! Masih memakai nominal default.</span>" : "<span class='green miring'>Nominal tagihan sudah sesuai dengan angkatan $d[angkatan] prodi $prodi.</span>";
+  $nominal_angkatan_info = $d['nominal_angkatan']=='' ? "<span class=red>Perhatian! Masih memakai nominal default.</span>" : "<span class='green miring'>angkatan $d[angkatan] prodi $prodi kelas $d[shift].</span>";
   $nominal_tagihan_show = number_format($nominal_tagihan,0);
   $nominal_bayar_show = number_format($d['nominal_bayar'],0);
 

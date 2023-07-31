@@ -73,22 +73,51 @@ $jumlah_mhs_aktif_prodi_show .= $unprodi_show;
 # =======================================================
 # SEMESTER AKTIF
 # =======================================================
-$s = "SELECT a.*, b.* FROM tb_semester a 
-JOIN tb_kalender b ON a.id_kalender=b.id 
-WHERE '$now' >= a.tanggal_awal AND '$now' < a.tanggal_akhir";
-// echo "<span class=debug>$s</span>";
+// $s = "SELECT a.*, b.* FROM tb_semester a 
+// JOIN tb_kalender b ON a.id_kalender=b.id 
+// WHERE '$now' >= a.tanggal_awal AND '$now' < a.tanggal_akhir";
+// // echo "<span class=debug>$s</span>";
+// $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+// $li = '';
+// while ($d=mysqli_fetch_assoc($q)) {
+// 	$tanggal_akhir = date('d M Y',strtotime($d['tanggal_akhir']));
+// 	$selisih_hari = (strtotime($d['tanggal_akhir'])-strtotime('today'))/(24*60*60);
+// 	$id = "<span class=debug>$d[id]</span>";
+// 	$li .= "<li>Semester $d[nomor] $d[jenjang]-$d[angkatan] hingga $tanggal_akhir ($selisih_hari hari lagi) $id</li>";
+// }
+
+// $ul = $li=='' ? "<div class=red>Belum ada semester aktif pada SIAKAD.</div>" 
+// : "<ul>$li</ul>";
+$today = date('Y-m-d');
+$s = "SELECT *,
+(
+	SELECT nomor FROM tb_semester s 
+	JOIN tb_kalender k ON s.id_kalender=k.id 
+	WHERE k.angkatan=a.angkatan 
+	AND k.jenjang='S1' 
+	AND s.tanggal_awal <= '$today' 
+	AND s.tanggal_akhir >= '$today' 
+	
+	) semester  
+FROM tb_angkatan a";
+echo "<pre class=debug>$s</pre>";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-$li = '';
-while ($d=mysqli_fetch_assoc($q)) {
-	$tanggal_akhir = date('d M Y',strtotime($d['tanggal_akhir']));
-	$selisih_hari = (strtotime($d['tanggal_akhir'])-strtotime('today'))/(24*60*60);
-	$id = "<span class=debug>$d[id]</span>";
-	$li .= "<li>Semester $d[nomor] $d[jenjang]-$d[angkatan] hingga $tanggal_akhir ($selisih_hari hari lagi) $id</li>";
+$ul = div_alert('info','Belum ada angkatan.');
+if(mysqli_num_rows($q)){
+	$ul = '';
+	while ($d=mysqli_fetch_assoc($q)) {
+		if($d['semester']=='') continue;
+		$ul.="<br>~ Angkatan $d[angkatan] ~ Semester $d[semester] <span class=debug>~ Last Semester Aktif $d[last_semester_aktif]</span>";
+		if($d['semester']!=$d['last_semester_aktif']){
+			$s2 = "UPDATE tb_mhs SET semester_manual=$d[semester] WHERE angkatan=$d[angkatan]";
+			$q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
+			$ul.= "<div class='consolas green small ml4'>Updating semester tiap mahasiswa angkatan $d[angkatan] success.</div>";
+			$s2 = "UPDATE tb_angkatan SET last_semester_aktif=$d[semester] WHERE angkatan=$d[angkatan]";
+			$q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
+			$ul.= "<div class='consolas green small ml4'>Updating last_semester_aktif angkatan $d[angkatan] success.</div>";
+		}
+	}
 }
-
-$ul = $li=='' ? "<div class=red>Belum ada semester aktif pada SIAKAD.</div>" 
-: "<ul>$li</ul>";
-
 ?>
 
 

@@ -1,3 +1,4 @@
+<h1>Manage Biaya Angkatan</h1>
 <?php
 if (isset($_POST['btn_set_biaya_default'])) {
   $angkatan = $_POST['angkatan'];
@@ -25,9 +26,9 @@ if (isset($_POST['btn_set_biaya_default'])) {
 
 
 # =====================================================
-# START 
+# WAJIB ADA ANGKATAN
 # =====================================================
-$angkatan = isset($_GET['angkatan']) ? $_GET['angkatan'] : '';
+$angkatan = $_GET['angkatan'] ?? '';
 if($angkatan==''){
   $s = "SELECT angkatan FROM tb_angkatan";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
@@ -39,7 +40,10 @@ if($angkatan==''){
   exit;
 }
 
-$id_prodi = isset($_GET['id_prodi']) ? $_GET['id_prodi'] : '';
+# =====================================================
+# WAJIB ADA ID_PRODI
+# =====================================================
+$id_prodi = $_GET['id_prodi'] ?? '';
 if($id_prodi==''){
   echo "<div>Untuk angkatan $angkatan prodi:</div>";
   $s = "SELECT id,nama,jenjang FROM tb_prodi";
@@ -47,24 +51,49 @@ if($id_prodi==''){
   while ($d=mysqli_fetch_assoc($q)) {
     $d['nama'] = strtoupper($d['nama']);
     $primary = $d['jenjang']=='S1' ? 'primary' : 'success';
-    echo "<div><a class='btn btn-$primary mb2 mt2 btn-blocks' href='?manage_biaya_angkatan&angkatan=$angkatan&id_prodi=$d[id]'>$d[jenjang]-$d[nama]</a></div> ";
+    echo "<div><a class='btn btn-$primary mb2 mt2 ' href='?manage_biaya_angkatan&angkatan=$angkatan&id_prodi=$d[id]'>$d[jenjang]-$d[nama]</a></div> ";
   }
   exit;
-}else{
-  $s = "SELECT nama,jenjang FROM tb_prodi where id=$id_prodi";
-  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  if(mysqli_num_rows($q)==0) die('Data prodi tidak ditemukan.');
-  $d = mysqli_fetch_assoc($q);
-  $nama_prodi = "$d[jenjang]-$d[nama]";
 }
 
-echo "<span class=debug>id_prodi: <span id=id_prodi>$id_prodi</span> | angkatan: <span id=angkatan>$angkatan</span></span><h1>Manage Biaya Angkatan</h1>";
+$s = "SELECT a.nama,a.jenjang,a.singkatan, b.id as id_kurikulum  
+FROM tb_prodi a 
+JOIN tb_kurikulum b ON b.id_prodi=a.id 
+JOIN tb_kalender c ON b.id_kalender=c.id 
+where a.id=$id_prodi 
+AND c.angkatan=$angkatan 
+";
+$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+if(mysqli_num_rows($q)==0) die('Data prodi tidak ditemukan.');
+if(mysqli_num_rows($q)>1) die('Duplikat data kurikulum terdeteksi.');
+$d = mysqli_fetch_assoc($q);
+$nama_prodi = "$d[jenjang]-$d[nama]";
+$prodi = "$d[singkatan]";
+$id_kurikulum = "$d[id_kurikulum]";
+
+# =====================================================
+# WAJIB ADA SHIFT
+# =====================================================
+$shift = $_GET['shift'] ?? '';
+if($shift==''){
+  echo "<div>Untuk angkatan $angkatan prodi $prodi shift:</div>";
+  $s = "SELECT shift FROM tb_shift";
+  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  while ($d=mysqli_fetch_assoc($q)) {
+    $shift = $d['shift'];
+    $primary = $shift=='pagi' ? 'success' : 'primary';
+    echo "<div><a class='btn btn-$primary mb2 mt2 proper' href='?manage_biaya_angkatan&angkatan=$angkatan&id_prodi=$id_prodi&shift=$shift'>kelas $shift</a></div> ";
+  }
+  exit;
+}
+
+echo "<span class=debug>id_prodi: <span id=id_prodi>$id_prodi</span> | angkatan: <span id=angkatan>$angkatan</span></span>";
 
 
 
 $s = "SELECT a.*,
-(SELECT nominal FROM tb_biaya_angkatan WHERE id_biaya=a.id and angkatan=$angkatan and id_prodi=$id_prodi) as nominal, 
-(SELECT besar_cicilan FROM tb_biaya_angkatan WHERE id_biaya=a.id and angkatan=$angkatan and id_prodi=$id_prodi) as besar_cicilan 
+(SELECT nominal FROM tb_biaya_angkatan WHERE id_biaya=a.id and angkatan=$angkatan and id_prodi=$id_prodi and shift='$shift') as nominal, 
+(SELECT besar_cicilan FROM tb_biaya_angkatan WHERE id_biaya=a.id and angkatan=$angkatan and id_prodi=$id_prodi and shift='$shift') as besar_cicilan 
 FROM tb_biaya a ORDER BY no";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
@@ -72,7 +101,7 @@ $tr_biaya="
 <thead>
   <th>No</th>
   <th>Komponen Biaya</th>
-  <th>Nominal</th>
+  <th class=proper>Nominal $shift</th>
   <th>Besar Cicilan</th>
 </thead>
 ";
@@ -97,41 +126,24 @@ while ($d=mysqli_fetch_assoc($q)) {
   </tr>";
 }
 
-$sum_nominal = 1; /// zzz test
-if($sum_nominal==0){
-  // set to default
-  $autoset = "
-  <div class=wadah>
-    <div class=mb2>
-      <div class='alert alert-info tebal'>Data Biaya angkatan: $angkatan id_prodi: $id_prodi masih kosong.</div> 
-      <div class='wadah biru tebal'>Silahkan Set Biaya Default kemudian edit nominal satu-persatu sesuai SK tiap angkatan!</div> 
-    </div>
-    <form method=post>
-      <input class=debug name=angkatan value=$angkatan>
-      <input class=debug name=id_prodi value=$id_prodi>
-      <button class='btn btn-info' name=btn_set_biaya_default onclick='return confirm(\"Set Semua Nominal Biaya ke Default?\")'>Set Biaya Default</button>
-    </form>
-  </div>";
-  die($autoset);
-  $reset = '';
-}else{
-  // reset to default
-  $reset = "<div class=wadah>Anda sudah setting biaya angkatan $angkatan prodi $nama_prodi secara manual. <hr><a href='#' class='btn btn-danger'>Reset Semua Biaya ke Default</a></div>";
-  $reset = ''; // aborted fitur
-  $autoset = '';
-}
 
-
+echo "
+<p>Berikut adalah Nominal Biaya untuk 
+  <a href='?manage_biaya_angkatan'><b><u>Angkatan $angkatan</u></b></a> prodi 
+  <a href='?manage_biaya_angkatan&angkatan=$angkatan'><b><u>$nama_prodi</u></b></a> kelas 
+  <a href='?manage_biaya_angkatan&angkatan=$angkatan&id_prodi=$id_prodi'><b><u class=proper id=shift>$shift</u></b></a> 
+  <span class=consolas> | </span> 
+  <a href='?test_pembayaran&id_kurikulum=$id_kurikulum&shift=$shift' target=_blank onclick='return confirm(\"Ingin Login As Mhs untuk mengetes Seting Pembayaran ini?\")'><b><u class=proper>Test Pembayaran</u></b></a> 
+</p>
+";
 
 ?>
-<?=$autoset ?>
-<p>Berikut adalah Nominal Biaya untuk <a href="?manage_biaya_angkatan"><b><u>Angkatan <?=$angkatan?></u></b></a> prodi <a href="?manage_biaya_angkatan&angkatan=<?=$angkatan?>"><b><u><?=$nama_prodi?></u></b></a>.</p>
+
 <table class="table table-striped">
   <?=$tr_biaya?>
 </table>
 <div class="kecil miring abu">Jika besar cicilan = <code>null</code> maka pembayaran tidak dapat dicicil.</div>
 <div class="kecil miring abu">Biaya dengan <code>nominal default</code> artinya sama dengan nominal pada <a href='?manage_komponen_biaya' target=_blank>Komponen Biaya</a>.</div>
-<?=$reset?>
 
 
 
@@ -183,7 +195,9 @@ if($sum_nominal==0){
         return;
       }
       
-      let link_ajax = `ajax_akademik/ajax_set_biaya_angkatan.php?nominal=${isi_baru}&kolom=${kolom}&angkatan=${angkatan}&id_prodi=${id_prodi}&id_biaya=${id_biaya}`;
+      let shift = $('#shift').text();
+      let link_ajax = `ajax_akademik/ajax_set_biaya_angkatan.php?nominal=${isi_baru}&kolom=${kolom}&angkatan=${angkatan}&id_prodi=${id_prodi}&id_biaya=${id_biaya}&shift=${shift}`;
+      console.log(link_ajax);
       // return;
 
       $.ajax({

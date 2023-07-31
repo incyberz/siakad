@@ -136,9 +136,9 @@ while ($d=mysqli_fetch_assoc($q)) {
       $jumlah_kelas_show = "<span class='tebal'>$d[jumlah_kelas_peserta] kelas</span>";
       $s2 = "SELECT 
       b.kelas,
-      (SELECT count(1) from tb_kelas_angkatan_detail where id_kelas_angkatan=b.id) as jumlah_mhs  
+      (SELECT count(1) from tb_kelas_ta_detail where id_kelas_ta=b.id) as jumlah_mhs  
       from tb_kelas_peserta a 
-      JOIN tb_kelas_angkatan b ON a.id_kelas_angkatan=b.id  
+      JOIN tb_kelas_ta b ON a.id_kelas_ta=b.id  
       where a.id_kurikulum_mk=$d[id_kurikulum_mk]";
       $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
       $list_kelas = '__';

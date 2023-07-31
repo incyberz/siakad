@@ -11,8 +11,8 @@ a.nim,
 (
   SELECT 
   CONCAT(b.kelas,';',e.angkatan,';',f.id,';',f.nama,';',f.jenjang) 
-  FROM tb_kelas_angkatan b 
-  JOIN tb_kelas_angkatan_detail c on c.id_kelas_angkatan=b.id 
+  FROM tb_kelas_ta b 
+  JOIN tb_kelas_ta_detail c on c.id_kelas_ta=b.id 
   JOIN tb_mhs d on d.id=c.id_mhs 
   JOIN tb_kelas e on b.kelas=e.kelas 
   JOIN tb_prodi f ON e.id_prodi=f.id  
@@ -24,8 +24,8 @@ a.nim,
 (
   SELECT CONCAT(e.id,';',e.nama,';',e.id_kalender) FROM tb_kurikulum_mk z 
   JOIN tb_kelas_peserta b on z.id=b.id_kurikulum_mk 
-  JOIN tb_kelas_angkatan c on b.id_kelas_angkatan=c.id 
-  JOIN tb_kelas_angkatan_detail d on d.id_kelas_angkatan=c.id 
+  JOIN tb_kelas_ta c on b.id_kelas_ta=c.id 
+  JOIN tb_kelas_ta_detail d on d.id_kelas_ta=c.id 
   JOIN tb_kurikulum e on z.id_kurikulum=e.id 
   WHERE d.id_mhs= $id_mhs
   LIMIT 1

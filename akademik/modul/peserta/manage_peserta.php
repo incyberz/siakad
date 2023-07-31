@@ -1,97 +1,168 @@
-<h1>Manage Peserta Kelas Angkatan</h1>
+<h1>Manage Peserta</h1>
+<style>th{text-align:left}</style>
 <?php
-if(isset($_POST['btn_buat_sesi_default'])){
-  $id_dosen = $_POST['id_dosen'];
-  
-  $s = "INSERT INTO tb_sesi_kuliah (
-    kelas,
-    pertemuan_ke,
-    id_dosen,
-    nama
-    ) VALUES $values";
-  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-
-  echo div_alert('success',"Membuat $jumlah_sesi Sesi Kuliah Default berhasil.<hr><a href='?manage_sesi&kelas=$kelas'>Lanjutkan Proses</a>");
+$id_kelas_ta = $_GET['id_kelas_ta'] ?? '';
+$id_kurikulum = $_GET['id_kurikulum'] ?? '';
+if($id_kelas_ta=='' || $id_kurikulum==''){
+  echo div_alert('danger',"<h4>ID Kelas-TA atau ID Kurikulum belum terpilih.</h4> 
+  Silahkan ikuti langkah berikut: 
+  <ol>
+    <li>Masuk <a href='?manage_kelas' target=_blank>Manage Kelas</a></li>
+    <li>Pilih salah satu kurikulum</a></li>
+    <li>Pilih salah satu manage (Kelas TA)</a></li>
+    <li>Pilih salah satu Aksi : Manage Peserta Mhs</li>
+  </ol> 
+  ");
   exit;
-  
+}else{
+  echo "<span class=debug>id_kelas_ta:<span id=id_kelas_ta>$id_kelas_ta</span> | id_kurikulum:<span id=id_kurikulum>$id_kurikulum</span> | </span>";
 }
 
 
-$id_kelas_angkatan = isset($_GET['id_kelas_angkatan']) ? $_GET['id_kelas_angkatan'] : '';
 
-if($id_kelas_angkatan==''){
-  include 'modul/kelas/list_kelas.php';
-  exit;
-}
-
-$s = "SELECT * FROM tb_kelas_angkatan WHERE id=$id_kelas_angkatan";
+# ==============================================================
+# GET DATA KELAS TA
+# ==============================================================
+$tr = '';
+$s = "SELECT a.*,b.*,c.singkatan as prodi  
+FROM tb_kelas_ta a 
+JOIN tb_kelas b ON a.kelas=b.kelas 
+JOIN tb_prodi c ON b.id_prodi=c.id  
+WHERE a.id='$id_kelas_ta' 
+";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-$d=mysqli_fetch_assoc($q);
-$tahun_ajar=$d['tahun_ajar'];
-$kelas=$d['kelas'];
-
-echo "<div class=wadah >Assign Mahasiswa untuk Kelas : 
-<span id=kelas class='darkblue bold'>$kelas</span>
-<span id=id_kelas_angkatan class=debug>$id_kelas_angkatan</span> 
-pada Tahun Ajar 
-<span id=tahun_ajar class='darkblue bold'>$tahun_ajar</span>
-</div>";
-$s = "";
-// $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-
-
-
+if(mysqli_num_rows($q)==0){
+  die('Data kelas-TA tidak ditemukan.');
+}else{
+  $d=mysqli_fetch_assoc($q);
+  $kelas = $d['kelas'];
+  $angkatan = $d['angkatan'];
+  $id_prodi = $d['id_prodi'];
+  $prodi = $d['prodi'];
+  $shift = $d['shift'];
+  $id_jalur = $d['id_jalur'];
+  $tahun_ajar = $d['tahun_ajar'];
+  echo "<p>Proses assign Mahasiswa pada Grup Kelas-TA: <a href='?manage_kelas_ta&kelas=$kelas&id_kurikulum=$id_kurikulum'>$kelas ~ TA$tahun_ajar</a>.</p>";
+}
 
 
+# ==============================================================
+# GET DATA MHS AKTIF
+# ==============================================================
+$s = "SELECT a.id as id_mhs, a.*,
+(
+  SELECT kelas FROM tb_kelas_ta p 
+  JOIN tb_kelas_ta_detail q ON q.id_kelas_ta=p.id 
+  WHERE q.nim=a.nim 
+  AND tahun_ajar=$tahun_ajar 
+  ) kelas_ta  
+FROM tb_mhs a 
+WHERE a.status_mhs=1
+AND a.angkatan='$angkatan' 
+AND a.id_prodi='$id_prodi' 
+AND a.shift='$shift' 
+ORDER BY a.nama  
+";
+$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+if(mysqli_num_rows($q)==0){
+  $div_mhs = div_alert('danger','Belum ada Peserta Mhs. Silahkan assign dari tabel sebelah kiri');
+}else{
+  $i=0;
+  $tr = '';
+  while ($d=mysqli_fetch_assoc($q)) {
+    $i++;
+    $id_mhs = $d['id_mhs'];
+    $nim = $d['nim'];
+
+    if($d['kelas_ta']==''){
+      $td_add = "<td class='pointer blue btn_aksi' id=add__$nim>Add to $kelas</td>";
+    }elseif($d['kelas_ta']==$kelas){
+      $td_add = "<td class='abu kecil miring'>(on this class)</td>";
+    }else{
+      $td_add = "<td class='abu'>$d[kelas_ta]</td>";
+    }
+
+    $tr .= "
+    <tr id=tr_mhs__$nim>
+      <td>$d[nama] | $d[nim]</td>
+      $td_add
+    </tr>";
+  }
+  $div_mhs = "
+  <table class='table table-striped'>
+    <thead>
+      <th>Mahasiswa</th>
+      <th>Kelas / Aksi</th>
+    </thead>
+    $tr
+  </table>";
+}
+
+# ==============================================================
+# GET DATA PESERTA MHS
+# ==============================================================
+$s = "SELECT a.id as id_kelas_ta_detail, a.*,
+b.nama as nama_mhs, 
+b.nim 
+
+FROM tb_kelas_ta_detail a 
+JOIN tb_mhs b ON a.nim=b.nim 
+WHERE a.id_kelas_ta='$id_kelas_ta' 
+ORDER BY b.nama  
+";
+$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+if(mysqli_num_rows($q)==0){
+  $div_peserta = div_alert('danger','Belum ada Peserta Mhs. Silahkan assign dari tabel sebelah kiri');
+}else{
+  $i=0;
+  $tr = '';
+  while ($d=mysqli_fetch_assoc($q)) {
+    $i++;
+    $id_kelas_ta_detail = $d['id_kelas_ta_detail'];
+    $nim = $d['nim'];
+    $tr .= "
+    <tr id=tr_peserta__$nim>
+      <td>$d[nama_mhs] | $d[nim]</td>
+      <td class='pointer red btn_aksi' id=drop__$nim>Drop</td>
+    </tr>";
+  }
+  $div_peserta = "
+  <table class='table table-striped'>
+    <thead>
+      <th>Peserta Kelas</th>
+      <th>Aksi</th>
+    </thead>
+    $tr
+  </table>";
+}
 
 
 
-
-
-
-
-
-
-
-?>
-<style>.manage_peserta h3{margin:0 0 15px 0} th{text-align:left}</style>
-<div class="row manage_peserta">
-  <div class="col-lg-6">
-    <div class="wadah">
-      <!-- <h3>List Mahasiswa</h3> -->
-      <div class="subsistem">ajax get list peserta</div>
-
-      <style>.blok_filter{display:flex; flex-wrap:wrap; gap:15px}</style>
-      <div class='blok_filter mb2'>
-        <div>Search:</div>
-        <div>
-          <input id=keyword class="form-control">
-        </div>
-        <div class=>
-          <input id=punya_kelas type=checkbox> 
-          <label for="punya_kelas">Sudah Punya Kelas di TA-<?=$tahun_ajar?></label>
-        </div>
-        <span id=last_keyword class="debug">last_keyword</span>
-      </div>
-
-      <div id="blok_list_mhs"></div> 
-
-    </div>
+# =======================================================
+# FINAL OUTPUT
+# =======================================================
+echo "
+<div class='mygrid'>
+  <div class='wadah bg-white'>
+    <h4 class='tebal darkblue'>List Mhs Aktif</h4>
+    <div class='kecil miring abu mb2 proper'>Prodi $prodi-$angkatan ~ Kelas $shift</div>
+    $div_mhs
   </div>
-
-  <div class="col-lg-6">
-    <div class="wadah">
-      <?php include 'modul/peserta/list_peserta.php'; ?>
-    </div>
+  <div class='wadah bg-white'>
+    <h4 class='tebal darkblue'>List Peserta</h4>
+    <div class='kecil miring abu mb2 proper'>Pada kelas $kelas ~ TA$angkatan</div>
+    $div_peserta
   </div>
 </div>
-
-
-
-
-
-
-
+";  
+?>
+<style>.mygrid{
+  display:grid;grid-template-columns:auto auto;grid-gap:10px
+}.grid_mhs{
+  display:grid;grid-template-columns:auto 30%;grid-gap:10px
+}.btn_aksi:hover{
+  background: linear-gradient(#fcf,#faf) !important;
+}</style>
 
 
 
@@ -100,63 +171,34 @@ $s = "";
 
 <script>
   $(function(){
-    $("#keyword").keyup(function(){
-      let keyword = $("#keyword").val();
-      let last_keyword = $("#last_keyword").text();
-      let kelas = $("#kelas").text();
-      let tahun_ajar = $("#tahun_ajar").text();
-      let punya_kelas = $("#punya_kelas").prop("checked")==true ? 1 : 0;
-
-      // if(keyword==last_keyword) return;
-      let link_ajax = `ajax_akademik/ajax_get_list_peserta.php?keyword=${keyword}&kelas=${kelas}&punya_kelas=${punya_kelas}&tahun_ajar=${tahun_ajar}&`;
+    $('.btn_aksi').click(function(){
+      let tid = $(this).prop('id');
+      let rid = tid.split('__');
+      let mode = rid[0];
+      let nim = rid[1];
+      let id_kelas_ta = $('#id_kelas_ta').text();
       
-
+      let link_ajax = `ajax_akademik/ajax_assign_peserta_kelas.php?nim=${nim}&id_kelas_ta=${id_kelas_ta}&mode=${mode}`;
+      console.log(link_ajax);
       $.ajax({
         url:link_ajax,
         success:function(a){
-          $("#blok_list_mhs").html(a);
-          $("#last_keyword").text(keyword);
-        }
-      })
-    });
-    $("#keyword").keyup();
-
-    $("#punya_kelas").click(function(){$("#keyword").keyup()});
-
-
-    $(document).on("click",".btn_aksi",function(){
-      let tid = $(this).prop('id');
-      let rid = tid.split('__');
-      let aksi = rid[0];
-      let id_mhs = rid[1];
-      let id_kelas_angkatan_detail = rid[2];
-
-      let kelas_asal = $("#kelas_asal__"+id_mhs).text();
-      let kelas = $("#kelas").text();
-      let id_kelas_angkatan = $("#id_kelas_angkatan").text();
-
-      if(aksi=='move'){
-        let y = confirm(`Yakin untuk memindahkan kelas?\n\nDari: ${kelas_asal}\nKe: ${kelas}\n\nPerhatian! Pemindahan Kelas akan berdampak pada proses KRS, KHS, dan Pembayaran.`);
-        if(!y) return;
-      }
-
-      let link_ajax = `ajax_akademik/ajax_set_kelas_mhs.php?id_mhs=${id_mhs}&kelas=${kelas}&aksi=${aksi}&id_kelas_angkatan_detail=${id_kelas_angkatan_detail}&id_kelas_angkatan=${id_kelas_angkatan}&`;
-      // alert(link_ajax); return;
-      $.ajax({
-        url: link_ajax,
-        success: function(a){
+          // alert(a)
           if(a.trim()=='sukses'){
-            if(aksi=='drop'){
-              $("#tr2__"+id_mhs).fadeOut();
+            if(mode=='add'){
+              $('#add__'+nim).html('<span class="green italic kecil">success.</span>');
+              $('#add__'+nim).removeClass('btn_aksi');
+              $('#add__'+nim).removeClass('pointer');
+            }else if(mode=='drop'){
+              $('#tr_peserta__'+nim).fadeOut();
             }else{
-              $("#tr__"+id_mhs).fadeOut();
+              alert('Perhatian! AJAX sukses tanpa handler.');
             }
           }else{
-            alert(a);
+            alert(a)
           }
         }
       })
-
     })
   })
 </script>

@@ -3,7 +3,7 @@
 # AKADEMIK INDEX
 # ========================================================
 session_start();
-$dm=1;
+$dm=0;
 $menit_sks = 50;
 $ta_aktif=2023;
 
@@ -66,6 +66,7 @@ include 'routing_akd.php';
   <link href="css/style-responsive.css" rel="stylesheet" />
 
   <script src="js/jquery-1.8.3.min.js"></script>
+  <script src="../assets/js/siakad-functions.js"></script>
 
   <link href="css/admin_siakad.css" rel="stylesheet">
   <link href="css/akd.css" rel="stylesheet">

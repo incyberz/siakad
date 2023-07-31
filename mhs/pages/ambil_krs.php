@@ -146,7 +146,7 @@ if($id_semester==''){
   $info_mk = '';
   $pilihan_mk = '';
   if($d['jumlah_mk']<1){
-    $info_mk = div_alert('danger',"Belum ada MK pada Kurikulum ini. Silahkan tambahkan MK pada <a href='?manage_kurikulum'>Manage Kurikulum</a>");
+    $info_mk = div_alert('danger',"Belum ada MK pada Kurikulum ini. Silahkan laporkan ke Petugas!");
   }else{
   
     $s2 = "SELECT 

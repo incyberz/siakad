@@ -6,8 +6,8 @@
   $s = "SELECT 
   a.kelas,
   a.tahun_ajar,
-  (SELECT count(1) FROM tb_kelas_angkatan_detail WHERE id_kelas_angkatan=a.id ) as jumlah_mhs    
-  FROM tb_kelas_angkatan a 
+  (SELECT count(1) FROM tb_kelas_ta_detail WHERE id_kelas_ta=a.id ) as jumlah_mhs    
+  FROM tb_kelas_ta a 
 
   WHERE 1  
   ";

@@ -22,16 +22,7 @@ $s = "SELECT a.*,
 (
   SELECT jenjang FROM tb_prodi WHERE id=a.id_prodi) as jenjang,
 (
-  SELECT jumlah_semester FROM tb_jenjang j JOIN tb_prodi p ON p.jenjang=j.jenjang WHERE p.id=a.id_prodi) as jumlah_semester,
-(
-  SELECT p.id 
-  FROM tb_semester p 
-  JOIN tb_kalender q ON p.id_kalender=q.id 
-  WHERE p.tanggal_awal<='$today' AND p.tanggal_akhir>'$today' 
-  AND q.angkatan=a.angkatan 
-  ORDER BY p.tanggal_awal DESC 
-  LIMIT 1
-  ) as id_last_semester 
+  SELECT jumlah_semester FROM tb_jenjang j JOIN tb_prodi p ON p.jenjang=j.jenjang WHERE p.id=a.id_prodi) as jumlah_semester 
 
 FROM tb_mhs a 
 
@@ -82,6 +73,7 @@ $prodi = $d_mhs['prodi'];
 $nama_prodi = $d_mhs['nama_prodi'];
 $jenjang = $d_mhs['jenjang'];
 $jumlah_semester = $d_mhs['jumlah_semester'];
+$shift = $d_mhs['shift'];
 
 
 $id_kalender = '';
@@ -119,13 +111,7 @@ $is_depas = ($d_mhs['password']=='' || $d_mhs['password']==$nim) ? 1 : 0;
 # ========================================================
 # GET DATA SEMESTER
 # ========================================================
-$id_last_semester = $d_mhs['id_last_semester']!=''?$d_mhs['id_last_semester']:'';
-if($id_last_semester!=''){
-  $s = "SELECT * FROM tb_semester WHERE id=$id_last_semester";
-  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  $d_semester = mysqli_fetch_assoc($q);
-  $semester = $d_semester['nomor']; //nomor semester
-}
+$semester = $d_mhs['semester_manual'];
 
 
 
@@ -133,9 +119,9 @@ if($id_last_semester!=''){
 # GET DATA KELAS ANGKATAN
 # ========================================================
 $s = "SELECT b.kelas, b.tahun_ajar  
-FROM tb_kelas_angkatan_detail a 
-JOIN tb_kelas_angkatan b ON a.id_kelas_angkatan=b.id 
-WHERE a.id_mhs=$id_mhs 
+FROM tb_kelas_ta_detail a 
+JOIN tb_kelas_ta b ON a.id_kelas_ta=b.id 
+WHERE a.nim=$nim 
 ORDER BY b.tahun_ajar DESC 
 LIMIT 1 
 ";
@@ -146,4 +132,4 @@ if(mysqli_num_rows($q)>0){
   $kelas = $d_kelas['kelas'];
   $tahun_ajar = $d_kelas['tahun_ajar'];
 }
-$kelas_show = $kelas=$undef ? $undef : "$kelas pada TA $tahun_ajar";
+$kelas_show = $kelas==$undef ? $undef : "$kelas pada TA $tahun_ajar";

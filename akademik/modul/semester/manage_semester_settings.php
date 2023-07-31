@@ -31,7 +31,7 @@ $batas_awal_show = date('D, d M Y',strtotime($batas_awal));
     <div class="form-group">
       <label for="durasi_pembayaran">Durasi Pembayaran <small><i>(hari)</i></small></label>
       <select name="durasi_pembayaran" id="durasi_pembayaran" class="form-control">
-        <?php for ($i=1; $i <= 21 ; $i++) { 
+        <?php for ($i=1; $i <= 50 ; $i++) { 
           $selected = $i==14 ? 'selected' : '';
           echo "<option $selected>$i</option>";
         } ?>

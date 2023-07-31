@@ -1,9 +1,9 @@
 <?php
 $s = "SELECT 
 a.kelas,
-(SELECT count(1) FROM tb_kelas_angkatan_detail WHERE id_kelas_angkatan=a.id ) as jumlah_mhs    
-FROM tb_kelas_angkatan a 
-JOIN tb_kelas_peserta b on a.id=b.id_kelas_angkatan  
+(SELECT count(1) FROM tb_kelas_ta_detail WHERE id_kelas_ta=a.id ) as jumlah_mhs    
+FROM tb_kelas_ta a 
+JOIN tb_kelas_peserta b on a.id=b.id_kelas_ta  
 JOIN tb_kurikulum_mk c on c.id=b.id_kurikulum_mk 
 JOIN tb_jadwal d on c.id=d.id_kurikulum_mk 
 

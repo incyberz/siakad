@@ -25,6 +25,9 @@ switch ($c[0]){
   case 'manage_sesi': $konten = 'modul/sesi_kuliah/manage_sesi_kuliah.php';break;
   case 'cek_all_sesi': $konten = 'modul/sesi_kuliah/cek_all_sesi.php';break;
   case 'manage_kelas': $konten = 'modul/kelas/manage_kelas.php';break;
+  case 'manage_grup_kelas': $konten = 'modul/kelas/manage_grup_kelas.php';break;
+  case 'manage_kelas_ta': $konten = 'modul/kelas/manage_kelas_ta.php';break;
+  case 'tambah_grup_kelas': $konten = 'modul/kelas/tambah_grup_kelas.php';break;
   case 'manage_peserta': $konten = 'modul/peserta/manage_peserta.php';break;
 
 
@@ -61,6 +64,7 @@ switch ($c[0]){
   case 'penagihan_lainnya': $konten = 'modul/pembayaran/penagihan_lainnya.php';break;
   case 'history_pembayaran': $konten = 'modul/pembayaran/history_pembayaran.php';break;
   case 'manage_syarat_biaya': $konten = 'modul/pembayaran/manage_syarat_biaya.php';break;
+  case 'test_pembayaran': $konten = 'modul/pembayaran/test_pembayaran.php';break;
   
 
   case 'ambil_krs': $konten = 'modul/krs/krs_home.php';break;
@@ -78,6 +82,10 @@ switch ($c[0]){
   case 'verifikasi_draft_khs': $konten = 'modul/khs/verifikasi_draft_khs.php';break;
   case 'manage_mk_manual': $konten = 'modul/khs/manage_mk_manual.php';break;
   case 'drop_kurikulum_mk': $konten = 'modul/khs/drop_kurikulum_mk.php';break;
+  case 'history_nilai': $konten = 'modul/khs/history_nilai.php';break;
+
+
+  case 'manage_ujian_perbaikan': $konten = 'modul/ujian/manage_ujian_perbaikan.php';break;
 
 
   case 'super_delete_prodi': $konten = 'modul/super_user/super_delete_prodi.php';break;

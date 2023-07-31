@@ -100,7 +100,7 @@ for ($j=0; $j < count($Field); $j++) {
       # ===============================================
       # INPUT STRING
       # ===============================================
-      $text_length = 50; // zzz here
+      $text_length = 50; // zzz default
       if($text_length>100){
         // textarea
       }else{

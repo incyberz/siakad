@@ -1,29 +1,15 @@
-<?php $judul = "<h1>MANAGE JADWAL DOSEN</h1>"; ?>
-<style>
-  .ids-kurikulum h2{margin-top:0; color: darkblue; }
-  .kurikulum {}
-  .semester-ke {font-size:24px !important; color:darkblue !important; margin-bottom:10px}
-  .tb-semester-mk th{text-align:left}
-
-  .btn_tambah_semester {margin-bottom:10px}
-  .tb_aksi td{
-    padding:0 1px !important;
-    border: none !important;
-  }
-  th{text-align:left}
-</style>
+<style>th{text-align:left}.tb_semester{background:#ffffff77}</style>
 <?php
+$judul = "<h1>Manage Jadwal Dosen</h1><p>Proses assign Dosen Koordinator tiap MK dan rekap SKS Dosen.</p>";
+$id_kurikulum = $_GET['id_kurikulum'] ?? '';
+if(!$id_kurikulum || $id_kurikulum<1) die('<script>location.replace("?manage_jadwal")</script>');
 
-$id_kurikulum = isset($_GET['id_kurikulum']) ? $_GET['id_kurikulum'] : '';
-if($id_kurikulum<1) die('<script>location.replace("?master&p=kurikulum")</script>');
-$default_option = '';
-include 'include/option_dosen.php';
 
 # ==============================================================
 # GET KURIKULUM DATA
 # ==============================================================
 $s = "SELECT 
-CONCAT('Kurikulum ',c.jenjang,'-',c.angkatan) as nama_kurikulum, 
+CONCAT('Kurikulum ',c.jenjang,'-',b.singkatan,'-',c.angkatan) as nama_kurikulum, 
 c.jumlah_semester,
 b.id as id_prodi, 
 c.id as id_kalender, 
@@ -51,21 +37,8 @@ $back_to = "<div class=mb2>Back to :
 
 
 
-
-$trk='';
-foreach($d as $kolom=>$isi){
-  // if($kolom=='is_publish') {$isi = $isi==0 ? 'belum' : 'sudah'; $isi="<span class='abu miring'>-- $isi --</span>"; }
-  if($kolom=='jumlah_semester') continue;
-  $debug = substr($kolom,0,3)=='id_' ? 'debug' : '';
-  $kolom_caption = str_replace('_',' ',$kolom);
-  $isi = $isi=='' ? '<span class="abu miring">-- null --</span>' : $isi;
-  $trk.="<tr class=$debug><td class=upper>$kolom_caption</td><td id='$kolom'>$isi</td></td>";
-}
-
-
-
-
-
+$default_option = '';
+include 'include/option_dosen.php';
 # ==============================================================
 # TAMPIL SEMESTERS
 # ==============================================================
@@ -113,12 +86,18 @@ while ($d=mysqli_fetch_assoc($q)) {
   b.id as id_kurikulum_mk, 
   (SELECT count(1) FROM tb_kurikulum_mk WHERE id_mk=a.id) as jumlah_assign_mk, 
   (SELECT id_dosen FROM tb_jadwal WHERE id_kurikulum_mk=b.id) as id_dosen,
-  (SELECT d.nama FROM tb_jadwal c JOIN tb_dosen d on c.id_dosen=d.id WHERE c.id_kurikulum_mk=b.id) as nama_dosen,   
+  (
+    SELECT d.nama FROM tb_jadwal c 
+    JOIN tb_dosen d on c.id_dosen=d.id 
+    WHERE c.id_kurikulum_mk=b.id
+    ) as nama_dosen,    
   (
     SELECT e.nama FROM tb_jadwal c 
     JOIN tb_dosen d on c.id_dosen=d.id 
-    JOIN tb_prodi e on d.homebase=e.id
-    WHERE c.id_kurikulum_mk=b.id) as homebase   
+    JOIN tb_prodi e on d.homebase=e.id 
+    WHERE c.id_kurikulum_mk=b.id
+    ) as homebase     
+     
 
   FROM tb_mk a 
   JOIN tb_kurikulum_mk b ON a.id=b.id_mk 
@@ -155,9 +134,8 @@ while ($d=mysqli_fetch_assoc($q)) {
     $tr.="
     <tr id='tr__$d2[id_mk]'>
       <td>$j</td>
-      <td>$d2[kode_mk]</td>
       <td>
-        $d2[nama_mk]
+        $d2[nama_mk] | $d2[kode_mk]
         <span class=debug  id='$d2[id_kurikulum_mk]__$d2[id_dosen]'>$d2[id_dosen]</span> 
       </td>
       <td>
@@ -203,14 +181,11 @@ while ($d=mysqli_fetch_assoc($q)) {
   $semesters .= "
   <div class='col-lg-6' id='semester__$d[id_semester]'>
     <div class='$wadah'>
-      <div class='semester-ke'>
-        Semester $d[no_semester] $semester_aktif $semester_lampau
-      </div>
-      <p>Rentang Waktu: $tanggal_awal_show s.d $tanggal_akhir_show</p>
-      <table class='table tb-semester-mk'>
+      <h4 class=darkblue>Semester $d[no_semester] $semester_aktif $semester_lampau</h4>
+      <p class='kecil consolas miring'>$tanggal_awal_show s.d $tanggal_akhir_show</p>
+      <table class='table tb_semester'>
         <thead>
           <th>No</th>
-          <th>Kode</th>
           <th>Mata Kuliah</th>
           <th>Dosen Koordinator</th>
           <th>Aksi</th>
@@ -302,7 +277,7 @@ $tb_dosens = "
   </table>
 ";
 
-
+$bg_progres = $total_mk_terjadwal==$total_mk ? '' : 'gradasi-merah merah';
 
 # ==============================================================
 # FINAL OUTPUT SEMESTERS
@@ -313,14 +288,14 @@ $tb_dosens = "
 echo "
 $back_to
 $judul
-<div class='wadah ids-kurikulum'>
+<div class='wadah gradasi-hijau'>
+  <h4 class=darkblue>$nama_kurikulum</h4>
   <table class=table>
-    $trk
-    <tr><td>Total MK</td><td>$total_mk</td></tr>
-    <tr><td>Total Dosen</td><td>$total_dosen</td></tr>
+    <tr class='$bg_progres'><td>Progres Penjadwalan</td><td>$total_mk_terjadwal of $total_mk </td></tr>
+    <tr><td>Jumlah Dosen terlibat</td><td>$total_dosen dosen</td></tr>
   </table>
-  <div class=text-right><a href='?master&p=kurikulum&aksi=update&id=$id_kurikulum'>Update Identitas Kurikulum</a></div>
 </div>
+
 $kurikulum_semesters
 $back_to
 

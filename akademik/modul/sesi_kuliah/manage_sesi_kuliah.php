@@ -91,7 +91,7 @@ $s2 = "SELECT d.kelas
 FROM tb_kelas_peserta a 
 JOIN tb_kurikulum_mk b on b.id=a.id_kurikulum_mk  
 JOIN tb_jadwal c on b.id=c.id_kurikulum_mk  
-JOIN tb_kelas_angkatan d on d.id=a.id_kelas_angkatan   
+JOIN tb_kelas_ta d on d.id=a.id_kelas_ta   
 WHERE c.id=$id_jadwal ";
 $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
 if(mysqli_num_rows($q2)==0){

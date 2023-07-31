@@ -1,7 +1,7 @@
 <?php 
-$id_kelas_angkatan = isset($_GET['id_kelas_angkatan']) ? $_GET['id_kelas_angkatan'] : die(erid('id_kelas_angkatan'));
+$id_kelas_ta = isset($_GET['id_kelas_ta']) ? $_GET['id_kelas_ta'] : die(erid('id_kelas_ta'));
 ?>
-<div class=subsistem>List Peserta: <?=$id_kelas_angkatan?></div>
+<div class=subsistem>List Peserta: <?=$id_kelas_ta?></div>
 <?php
 
 $s = "SELECT 
@@ -11,10 +11,10 @@ b.nama as nama_mhs,
 c.kelas,
 a.id as id_kelas_angkatan_detail 
 
-FROM tb_kelas_angkatan_detail a 
+FROM tb_kelas_ta_detail a 
 JOIN tb_mhs b on b.id=a.id_mhs 
-JOIN tb_kelas_angkatan c on a.id_kelas_angkatan=c.id  
-WHERE c.id='$id_kelas_angkatan'
+JOIN tb_kelas_ta c on a.id_kelas_ta=c.id  
+WHERE c.id='$id_kelas_ta'
 ORDER BY b.nama    
 ";
 echo "<span class=debug>$s</span>";

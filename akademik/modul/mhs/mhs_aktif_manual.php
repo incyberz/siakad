@@ -9,7 +9,6 @@
 }.img_expand:hover{
   transform:scale(1.2);
 }.expand_v1{
-  /* zzz here */
   background: white;
 }</style>
 <?php

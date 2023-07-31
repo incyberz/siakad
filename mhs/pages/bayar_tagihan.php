@@ -17,8 +17,8 @@ if(isset($_POST['btn_upload'])){
   $path_upload = '../uploads/bukti_bayar';
   if(move_uploaded_file($_FILES['bukti_bayar']['tmp_name'],"$path_upload/$new_id_bayar.jpg")){
     $s = "INSERT INTO tb_bayar 
-    (id,id_biaya,id_mhs,nominal) VALUES 
-    ($new_id_bayar,$_POST[id_biaya],$id_mhs,$_POST[jumlah_bayar])";
+    (id,id_biaya,id_mhs,nominal,shift) VALUES 
+    ($new_id_bayar,$_POST[id_biaya],$id_mhs,$_POST[jumlah_bayar],'$shift')";
     $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
     
     die('<script>location.replace("?pembayaran")</script>');

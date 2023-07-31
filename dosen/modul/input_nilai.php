@@ -75,7 +75,7 @@ d.kelas
 FROM tb_kelas_peserta a  
 JOIN tb_kurikulum_mk b ON a.id_kurikulum_mk=b.id 
 JOIN tb_jadwal c ON b.id=c.id_kurikulum_mk 
-JOIN tb_kelas_angkatan d ON d.id=a.id_kelas_angkatan  
+JOIN tb_kelas_ta d ON d.id=a.id_kelas_ta  
 WHERE c.id=$id_jadwal ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 while ($d=mysqli_fetch_assoc($q)) {
@@ -89,7 +89,7 @@ while ($d=mysqli_fetch_assoc($q)) {
   $s2 = "SELECT 
   a.id,
   a.id_mhs,
-  b.id as id_kelas_angkatan,
+  b.id as id_kelas_ta,
   b.last_update_nilai_uts,
   b.last_update_nilai_uas,
   b.tanggal_approve_nilai_uts,
@@ -101,8 +101,8 @@ while ($d=mysqli_fetch_assoc($q)) {
     FROM tb_nilai z where z.id_kelas_angkatan_detail=a.id 
     ORDER BY date_created DESC LIMIT 1) as nilai
 
-  FROM tb_kelas_angkatan_detail a 
-  JOIN tb_kelas_angkatan b ON a.id_kelas_angkatan=b.id   
+  FROM tb_kelas_ta_detail a 
+  JOIN tb_kelas_ta b ON a.id_kelas_ta=b.id   
   JOIN tb_mhs c ON c.id=a.id_mhs    
   WHERE b.kelas='$kelas'";
   // echo "<pre class=debug>$s2</pre>";
@@ -114,7 +114,7 @@ while ($d=mysqli_fetch_assoc($q)) {
   while ($d2=mysqli_fetch_assoc($q2)) {
     $jumlah_mhs++;
     $id = $d2['id'];
-    $id_kelas_angkatan = $d2['id_kelas_angkatan'];
+    $id_kelas_ta = $d2['id_kelas_ta'];
     $last_update = $id_tipe_sesi==8 ? $d2['last_update_nilai_uts'] : $d2['last_update_nilai_uts'];
     $tanggal_approve = $id_tipe_sesi==8 ? $d2['tanggal_approve_nilai_uts'] : $d2['tanggal_approve_nilai_uts'];
 
@@ -160,7 +160,7 @@ while ($d=mysqli_fetch_assoc($q)) {
     <h3 class='darkblue mb-4'>$judul</h3>
     <form method=post>
       <span class=debug>id_tipe_sesi</span>: <input class=debug name=id_tipe_sesi value=$id_tipe_sesi>
-      <span class=debug>id_kelas_angkatan</span>: <input class=debug name=id_kelas_angkatan value=$id_kelas_angkatan>
+      <span class=debug>id_kelas_ta</span>: <input class=debug name=id_kelas_ta value=$id_kelas_ta>
       $tb_mhs 
       <div class='kecil miring mb2'>$disabled_info Last Update: $last_update_show</div>
       <button class='btn btn-$primary btn-block' name=btn_simpan id=btn_simpan__$kelas $disabled>Simpan Draft Nilai UTS</button>

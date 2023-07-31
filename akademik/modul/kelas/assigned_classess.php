@@ -1,12 +1,12 @@
 <?php
 $s = "SELECT 
-b.id as id_kelas_angkatan,
+b.id as id_kelas_ta,
 b.kelas,
 b.tahun_ajar,
 a.id as id_kelas_peserta,
-(SELECT count(1) FROM tb_kelas_angkatan_detail WHERE id_kelas_angkatan=b.id) as jumlah_mhs    
+(SELECT count(1) FROM tb_kelas_ta_detail WHERE id_kelas_ta=b.id) as jumlah_mhs    
 FROM tb_kelas_peserta a 
-JOIN tb_kelas_angkatan b on a.id_kelas_angkatan=b.id  
+JOIN tb_kelas_ta b on a.id_kelas_ta=b.id  
 JOIN tb_kurikulum_mk c on c.id=a.id_kurikulum_mk 
 JOIN tb_jadwal d on d.id_kurikulum_mk=c.id 
 JOIN tb_dosen e on e.id=d.id_dosen 
@@ -26,7 +26,7 @@ while ($d=mysqli_fetch_assoc($q)) {
   $red = $d['jumlah_mhs']==0 ? 'red':'';
   $tr .= "<tr id=tr__$d[id_kelas_peserta] class=$red>
     <td>$i</td>
-    <td><span id=$d[kelas]>$d[kelas]</span> | $d[jumlah_mhs] | <a href='?manage_peserta&id_kelas_angkatan=$d[id_kelas_angkatan]' target=_blank>Manage</a></td>
+    <td><span id=$d[kelas]>$d[kelas]</span> | $d[jumlah_mhs] | <a href='?manage_peserta&id_kelas_ta=$d[id_kelas_ta]' target=_blank>Manage</a></td>
     <td id=$d[tahun_ajar]>$d[tahun_ajar]</td>
     <td>
       <button class='btn btn-danger btn-sm btn_aksi' id='drop__$d[id_kelas_peserta]'>Drop</button>

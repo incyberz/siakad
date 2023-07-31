@@ -17,11 +17,11 @@ a.id as id_mhs,
 a.nim,
 a.nama as nama_mhs,
 (
-  SELECT b.kelas from tb_kelas_angkatan b 
-  JOIN tb_kelas_angkatan_detail c ON b.id=c.id_kelas_angkatan 
+  SELECT b.kelas from tb_kelas_ta b 
+  JOIN tb_kelas_ta_detail c ON b.id=c.id_kelas_ta 
   where c.id_mhs=a.id and b.tahun_ajar=$tahun_ajar) as kelas,  
 (
-  SELECT id from tb_kelas_angkatan_detail b 
+  SELECT id from tb_kelas_ta_detail b 
   where b.id_mhs=a.id) as id_kelas_angkatan_detail  
 
 FROM tb_mhs a 
