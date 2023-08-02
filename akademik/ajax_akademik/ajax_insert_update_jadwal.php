@@ -5,9 +5,10 @@ include '../../conn.php';
 # ================================================
 # GET VARIABLES
 # ================================================
-$id_kurikulum_mk = isset($_GET['id_kurikulum_mk']) ? $_GET['id_kurikulum_mk'] : die(erid("id_kurikulum_mk"));
-$new_id_dosen = isset($_GET['new_id_dosen']) ? $_GET['new_id_dosen'] : die(erid("new_id_dosen"));
-$id_dosen_span = isset($_GET['id_dosen_span']) ? $_GET['id_dosen_span'] : die(erid("id_dosen_span"));
+$id_kurikulum_mk = $_GET['id_kurikulum_mk'] ?? die(erid("id_kurikulum_mk"));
+$new_id_dosen = $_GET['new_id_dosen'] ?? die(erid("new_id_dosen"));
+$id_dosen_span = $_GET['id_dosen_span'] ?? die(erid("id_dosen_span"));
+$shift = $_GET['shift'] ?? die(erid("shift"));
 
 # ================================================
 # MAIN HANDLE
@@ -20,7 +21,7 @@ if(trim(strtoupper($new_id_dosen))=='NULL'){
   # ================================================
 
   if($id_dosen_span!=''){
-    $s = "SELECT id FROM tb_jadwal WHERE id_kurikulum_mk=$id_kurikulum_mk AND id_dosen=$id_dosen_span";
+    $s = "SELECT id FROM tb_jadwal WHERE id_kurikulum_mk=$id_kurikulum_mk AND id_dosen=$id_dosen_span AND shift='$shift'";
     $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
     if(mysqli_num_rows($q)>1) die('Tidak boleh ada Jadwal Ganda. Harap segera lapor ke Petugas!');
@@ -32,7 +33,7 @@ if(trim(strtoupper($new_id_dosen))=='NULL'){
     }
     
   }else{
-    $s = "INSERT INTO tb_jadwal (id_kurikulum_mk,id_dosen) VALUES ($id_kurikulum_mk,$new_id_dosen)";
+    $s = "INSERT INTO tb_jadwal (id_kurikulum_mk,id_dosen,shift) VALUES ($id_kurikulum_mk,$new_id_dosen,'$shift')";
   }
 }
 // die($s);

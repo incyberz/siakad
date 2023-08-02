@@ -1,15 +1,24 @@
-<style>th{text-align:left}.tb_semester{background:#ffffff77}</style>
+<h1>Manage Jadwal Dosen</h1>
+<p>Proses assign Dosen Koordinator tiap MK dan rekap SKS Dosen.</p>
 <?php
 $judul = "<h1>Manage Jadwal Dosen</h1><p>Proses assign Dosen Koordinator tiap MK dan rekap SKS Dosen.</p>";
-$id_kurikulum = $_GET['id_kurikulum'] ?? '';
-if(!$id_kurikulum || $id_kurikulum<1) die('<script>location.replace("?manage_jadwal")</script>');
+$id_kurikulum = $_GET['id_kurikulum'] ?? die('<script>location.replace("?manage_jadwal")</script>');
+$shift = $_GET['shift'] ?? '';
+if($shift==''){
+  $s = "SELECT * FROM tb_shift";
+  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  while ($d=mysqli_fetch_assoc($q)) {
+    echo "<a href='?manage_jadwal_dosen&id_kurikulum=$id_kurikulum&shift=$d[shift]' class='btn btn-info proper mr2'>kelas $d[shift]</a> ";
+  }
+  exit;
+}
 
 
 # ==============================================================
 # GET KURIKULUM DATA
 # ==============================================================
 $s = "SELECT 
-CONCAT('Kurikulum ',c.jenjang,'-',b.singkatan,'-',c.angkatan) as nama_kurikulum, 
+CONCAT(c.jenjang,'-',b.singkatan,'-',c.angkatan) as nama_kurikulum, 
 c.jumlah_semester,
 b.id as id_prodi, 
 c.id as id_kalender, 
@@ -27,14 +36,6 @@ $jumlah_semester = $d['jumlah_semester'];
 $nama_kurikulum = $d['nama_kurikulum'];
 $id_kalender = $d['id_kalender'];
 $id_prodi = $d['id_prodi'];
-
-$back_to = "<div class=mb2>Back to : 
-  <a href='?manage_kalender&id_kalender=$id_kalender' class=proper>Manage kalender</a> | 
-  <a href='?manage_kurikulum&id_kurikulum=$id_kurikulum' class=proper>Manage kurikulum</a> | 
-  <a href='?cek_all_sesi&id_kurikulum=$id_kurikulum' class=proper>Cek All Sesi</a>  
-</div>
-";
-
 
 
 $default_option = '';
@@ -85,17 +86,20 @@ while ($d=mysqli_fetch_assoc($q)) {
   a.bobot_praktik,
   b.id as id_kurikulum_mk, 
   (SELECT count(1) FROM tb_kurikulum_mk WHERE id_mk=a.id) as jumlah_assign_mk, 
-  (SELECT id_dosen FROM tb_jadwal WHERE id_kurikulum_mk=b.id) as id_dosen,
+  (SELECT id_dosen FROM tb_jadwal WHERE id_kurikulum_mk=b.id AND shift='$shift') as id_dosen,
+  (SELECT id FROM tb_jadwal WHERE id_kurikulum_mk=b.id AND shift='$shift') as id_jadwal,
   (
     SELECT d.nama FROM tb_jadwal c 
     JOIN tb_dosen d on c.id_dosen=d.id 
-    WHERE c.id_kurikulum_mk=b.id
+    WHERE c.id_kurikulum_mk=b.id 
+    AND c.shift='$shift'
     ) as nama_dosen,    
   (
     SELECT e.nama FROM tb_jadwal c 
     JOIN tb_dosen d on c.id_dosen=d.id 
     JOIN tb_prodi e on d.homebase=e.id 
     WHERE c.id_kurikulum_mk=b.id
+    AND c.shift='$shift'
     ) as homebase     
      
 
@@ -137,6 +141,7 @@ while ($d=mysqli_fetch_assoc($q)) {
       <td>
         $d2[nama_mk] | $d2[kode_mk]
         <span class=debug  id='$d2[id_kurikulum_mk]__$d2[id_dosen]'>$d2[id_dosen]</span> 
+        <div class='debug kecil' style='background:yellow'>id_dosen:$d2[id_dosen] | id_jadwal:$d2[id_jadwal] | id_kurikulum_mk:$d2[id_kurikulum_mk] | </div> 
       </td>
       <td>
         <select class='form-control select_id_dosen gradasi-merah' id='id_dosen__$d2[id_kurikulum_mk]__$d2[id_dosen]'>
@@ -179,7 +184,7 @@ while ($d=mysqli_fetch_assoc($q)) {
 
 
   $semesters .= "
-  <div class='col-lg-6' id='semester__$d[id_semester]'>
+  <div class='col-lg-12' id='semester__$d[id_semester]'>
     <div class='$wadah'>
       <h4 class=darkblue>Semester $d[no_semester] $semester_aktif $semester_lampau</h4>
       <p class='kecil consolas miring'>$tanggal_awal_show s.d $tanggal_akhir_show</p>
@@ -187,7 +192,7 @@ while ($d=mysqli_fetch_assoc($q)) {
         <thead>
           <th>No</th>
           <th>Mata Kuliah</th>
-          <th>Dosen Koordinator</th>
+          <th class=proper>Dosen ($shift)</th>
           <th>Aksi</th>
           </thead>
         
@@ -286,10 +291,8 @@ $bg_progres = $total_mk_terjadwal==$total_mk ? '' : 'gradasi-merah merah';
 // var_dump($rnama_mk);
 // echo "</pre>";
 echo "
-$back_to
-$judul
 <div class='wadah gradasi-hijau'>
-  <h4 class=darkblue>$nama_kurikulum</h4>
+  <h4 class='darkblue proper tebal'>Kurikulum <a href='?manage_jadwal'>$nama_kurikulum</a> kelas <a href='?manage_jadwal_dosen&id_kurikulum=$id_kurikulum' id=shift>$shift</a></h4>
   <table class=table>
     <tr class='$bg_progres'><td>Progres Penjadwalan</td><td>$total_mk_terjadwal of $total_mk </td></tr>
     <tr><td>Jumlah Dosen terlibat</td><td>$total_dosen dosen</td></tr>
@@ -297,13 +300,11 @@ $judul
 </div>
 
 $kurikulum_semesters
-$back_to
 
 <div class=wadah>
 <h3>Rekap SKS per Dosen</h3>
 $tb_dosens
 </div>
-$back_to
 ";
 
 
@@ -347,6 +348,7 @@ $back_to
       let id_dosen = rid[2];
       let id_dosen_span = $('#'+id_kurikulum_mk+'__'+id_dosen).text();
       let new_id_dosen = $('#id_dosen__'+id_kurikulum_mk+'__'+id_dosen).val();
+      let shift = $('#shift').text();
 
       if(new_id_dosen=='NULL'){
         let y = confirm('Apakah Anda ingin mengosongkan (menghapus) Jadwal untuk MK ini?');
@@ -357,7 +359,7 @@ $back_to
       }
       
       
-      let link_ajax = `ajax_akademik/ajax_insert_update_jadwal.php?id_kurikulum_mk=${id_kurikulum_mk}&new_id_dosen=${new_id_dosen}&id_dosen_span=${id_dosen_span}`;
+      let link_ajax = `ajax_akademik/ajax_insert_update_jadwal.php?id_kurikulum_mk=${id_kurikulum_mk}&new_id_dosen=${new_id_dosen}&id_dosen_span=${id_dosen_span}&shift=${shift}`;
       // console.log(id_kurikulum_mk,id_dosen,id_dosen_span,new_id_dosen,link_ajax); return;
 
       $.ajax({

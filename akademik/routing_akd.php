@@ -22,8 +22,14 @@ switch ($c[0]){
   case 'manage_kurikulum': $konten = 'modul/kurikulum/manage_kurikulum.php';break;
   case 'manage_jadwal': $konten = 'modul/jadwal/manage_jadwal.php';break;
   case 'manage_jadwal_dosen': $konten = 'modul/jadwal/manage_jadwal_dosen.php';break;
-  case 'manage_sesi': $konten = 'modul/sesi_kuliah/manage_sesi_kuliah.php';break;
+  case 'manage_awal_kuliah': $konten = 'modul/jadwal/manage_awal_kuliah.php';break;
+  case 'manage_ruang_dosen': $konten = 'modul/jadwal/manage_ruang_dosen.php';break;
+  
+  case 'manage_sesi': $konten = 'modul/sesi/manage_sesi.php';break;
+  case 'manage_sesi_detail': $konten = 'modul/sesi/manage_sesi_detail.php';break;
+  
   case 'cek_all_sesi': $konten = 'modul/sesi_kuliah/cek_all_sesi.php';break;
+  
   case 'manage_kelas': $konten = 'modul/kelas/manage_kelas.php';break;
   case 'manage_grup_kelas': $konten = 'modul/kelas/manage_grup_kelas.php';break;
   case 'manage_kelas_ta': $konten = 'modul/kelas/manage_kelas_ta.php';break;
@@ -96,12 +102,12 @@ switch ($c[0]){
 
 }
 
-$manage_kalender = '<a href="?manage_kalender" class="proper">manage kalender</a>';
-$manage_kurikulum = '<a href="?manage_kurikulum" class="proper">manage kurikulum</a>';
-$manage_jadwal = '<a href="?manage_jadwal" class="proper">manage jadwal</a>';
-$manage_sesi = '<a href="?manage_sesi" class="proper">manage sesi</a>';
-$manage_kelas = '<a href="?manage_kelas" class="proper">manage kelas</a>';
-$manage_peserta = '<a href="?manage_peserta" class="proper">manage peserta</a>';
-$manage_mhs = '<a href="?manage_mhs" class="proper">manage mhs</a>';
-$manage_presensi = '<a href="?manage_presensi" class="proper">manage presensi</a>';
-$dpnu = '<a href="?dpnu">Manage DPNU</a>';
+// $manage_kalender = '<a href="?manage_kalender" class="proper">manage kalender</a>';
+// $manage_kurikulum = '<a href="?manage_kurikulum" class="proper">manage kurikulum</a>';
+// $manage_jadwal = '<a href="?manage_jadwal" class="proper">manage jadwal</a>';
+// $manage_sesi = '<a href="?manage_sesi" class="proper">manage sesi</a>';
+// $manage_kelas = '<a href="?manage_kelas" class="proper">manage kelas</a>';
+// $manage_peserta = '<a href="?manage_peserta" class="proper">manage peserta</a>';
+// $manage_mhs = '<a href="?manage_mhs" class="proper">manage mhs</a>';
+// $manage_presensi = '<a href="?manage_presensi" class="proper">manage presensi</a>';
+// $dpnu = '<a href="?dpnu">Manage DPNU</a>';

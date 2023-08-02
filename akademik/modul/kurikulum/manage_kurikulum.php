@@ -1,4 +1,5 @@
-<?php $judul = "<h1>MANAGE KURIKULUM</h1>"; ?>
+<h1>MANAGE KURIKULUM</h1>
+<?php $judul = ''; ?>
 <style>
   .ids-kurikulum h2{margin-top:0; color: darkblue; }
   .kurikulum {}

@@ -26,5 +26,6 @@
 
   }
 
+  th{text-align:left !important}
 
 </style>

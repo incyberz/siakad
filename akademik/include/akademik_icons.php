@@ -1,7 +1,7 @@
 <style>
   .img_aksi{
-    height: 25px;
-    width: 25px;
+    height: 20px;
+    width: 20px;
     opacity: 60%;
     transition:.2s;
     cursor: pointer;
@@ -23,6 +23,8 @@ $aksi = [
 'detail',
 'check',
 'wa',
+'back',
+'prev',
 'next',
 'pdf',
 'csv',
@@ -30,5 +32,5 @@ $aksi = [
 ];
 
 foreach ($aksi as $key => $value) {
-  $img_aksi[$value] = "<img class='img_aksi' src='../assets/img/icons/aksi/$value.png'>";
+  $img_aksi[$value] = "<img class='img_aksi' src='../assets/img/icons/$value.png'>";
 }

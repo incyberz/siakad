@@ -65,7 +65,7 @@ ORDER BY a.nama
 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 if(mysqli_num_rows($q)==0){
-  $div_mhs = div_alert('danger','Belum ada Peserta Mhs. Silahkan assign dari tabel sebelah kiri');
+  $div_mhs = div_alert('danger',"Tidak ada mhs kelas $shift angkatan $angkatan prodi $prodi");
 }else{
   $i=0;
   $tr = '';
@@ -150,7 +150,7 @@ echo "
   </div>
   <div class='wadah bg-white'>
     <h4 class='tebal darkblue'>List Peserta</h4>
-    <div class='kecil miring abu mb2 proper'>Pada kelas $kelas ~ TA$angkatan</div>
+    <div class='kecil miring abu mb2 proper'>Pada kelas $kelas ~ TA$tahun_ajar</div>
     $div_peserta
   </div>
 </div>

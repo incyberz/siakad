@@ -12,17 +12,20 @@ if(!$izin) echo div_alert('danger','Maaf, hanya Bagian Akademik yang berhak meng
 <div class="master-home">
 
   <?php
-  $rmanage[0] = ['master','manage_master','Awal seting Data Master'];
-  $rmanage[1] = ['kalender','manage_kalender','Awal seting Kalender Induk'];
-  $rmanage[2] = ['semester','manage_kalender','Seting penanggalan semester'];
-  $rmanage[3] = ['kurikulum','manage_kurikulum','assign mk ke kurikulum'];
-  $rmanage[4] = ['jadwal','manage_jadwal','assign dosen ke kurikulum'];
-  $rmanage[5] = ['kelas','manage_kelas','assign kelas ke jadwal'];
-  $rmanage[6] = ['peserta','manage_peserta','assign mhs ke kelasnya'];
-  $rmanage[7] = ['sesi','manage_sesi','seting tanggal tiap sesi'];
-  $rmanage[8] = ['mhs','manage_mhs','manage aktifitas mhs'];
-  $rmanage[9] = ['dosen','monitoring_sks_dosen','manage aktifitas dosen'];
-  $rmanage[10] = ['mhs aktif','mhs_aktif','manage mhs aktif'];
+  $rmanage = [];
+  array_push($rmanage, ['master','manage_master','Awal seting Data Master']);
+  array_push($rmanage, ['kalender','manage_kalender','Awal seting Kalender Induk']);
+  array_push($rmanage, ['semester','manage_kalender','Seting penanggalan semester']);
+  array_push($rmanage, ['kurikulum','manage_kurikulum','assign mk ke kurikulum']);
+  array_push($rmanage, ['kelas','manage_kelas','assign kelas ke jadwal']);
+  array_push($rmanage, ['peserta','manage_peserta','assign mhs ke kelasnya']);
+  array_push($rmanage, ['jadwal#1','manage_jadwal','assign dosen ke kurikulum']);
+  array_push($rmanage, ['jadwal#2','manage_awal_kuliah','manage awal perkuliahan']);
+  array_push($rmanage, ['jadwal#3','manage_ruang','assign ruangan pada jadwal']);
+  array_push($rmanage, ['sesi','manage_sesi','seting tanggal tiap sesi']);
+  array_push($rmanage, ['mhs','manage_mhs','manage aktifitas mhs']);
+  array_push($rmanage, ['dosen','monitoring_sks_dosen','manage aktifitas dosen']);
+  array_push($rmanage, ['mhs aktif','mhs_aktif','manage mhs aktif']);
 
 
   for ($i=0; $i < count($rmanage); $i++) { 

@@ -4,6 +4,17 @@
 
 ALTER TABLE `tb_kelas_peserta` CHANGE `id_kelas_angkatan` `id_kelas_ta` INT(11) NOT NULL; 
   
+ADD KOLOM hari (INDEX) pada tb_jadwal
+ALTER TABLE `tb_jadwal` CHANGE `id_hari` `id_hari` TINYINT(4) NULL DEFAULT NULL COMMENT 'senin-sabtu | pagi/sore'; 
+
+IMPORT tb_hari
+
+ALTER TABLE `tb_jadwal` ADD `id_ruang` INT NULL DEFAULT NULL AFTER `id_hari`, ADD INDEX (`id_ruang`); 
+DROP kolom id_hari pada tb_jadwal
+ALTER TABLE `tb_jadwal` CHANGE `tanggal_sesi` `awal_kuliah` TIMESTAMP NULL DEFAULT NULL; 
+
+UPDATE `tb_ruang` SET `nama` = 'Ruang Zoom' WHERE `tb_ruang`.`id` = 1;
+ALTER TABLE `tb_ruang` ADD `kondisi` TINYINT(1) NOT NULL DEFAULT '1' AFTER `kapasitas`; 
 
 
 -->
