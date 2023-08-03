@@ -1,16 +1,7 @@
 <h1 data-aos="fade-up">Welcome to SIAKAD</h1>
 <?php 
 
-if($url_parameter=="logout"){
-  # =======================================================
-  # LOGOUT
-  # =======================================================
-  session_unset();
-  echo "<h1>Logout Success. Redirecting...</h1>
-  <script>location.replace('index.php');</script>
-  ";
-
-}elseif(isset($_POST['btn_login'])){
+if(isset($_POST['btn_login'])){
 
   $username = filter_var($_POST['username']);
   $password = filter_var($_POST['password']);

@@ -4,13 +4,14 @@
 # ========================================================
 session_start();
 // echo '<pre class=debug>'; var_dump($_SESSION); echo '</pre>';
-$dm=0;
+$dm=1;
 $now = date('Y-m-d H:i:s');
 $today = date('Y-m-d');
 
 $nama_user = "Pengunjung";
 $login_as = "Pengunjung";
 $is_login = 0;
+$is_password_default = 0;
 
 include 'config.php';
 if (isset($_SESSION['siakad_username'])) {
@@ -31,7 +32,18 @@ $b = explode("?", $a);
 $c = explode("&", $b[1]);
 $url_parameter = $c[0];
 
-
+if($url_parameter=="logout"){
+  # =======================================================
+  # LOGOUT
+  # =======================================================
+  // echo '<pre>';
+  // var_dump($_SESSION);
+  // echo '</pre>';
+  unset($_SESSION['siakad_username']);
+  die("<h1>Logout Success. Redirecting...</h1>
+  <script>location.replace('index.php');</script>
+  ");
+}
 
 # ========================================================
 # 12 FITUR SIAKAD 
@@ -41,7 +53,8 @@ $url_parameter = $c[0];
 # 3. KHS           7. LULUSAN          11. INVENTORY
 # 4. JADWAL        8. DOSEN            12. PERPUS
 # ========================================================
-include 'public/fitur_routing.php';
+// include 'public/fitur_routing.php';
+// die('zzz');
 
 
 ?>
@@ -53,8 +66,8 @@ include 'public/fitur_routing.php';
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
   <title>SIAKAD IKMI Cirebon :: Academic Enterprise System</title>
-  <meta content="" name="description">
-  <meta content="" name="keywords">
+  <meta content="Sistem Informasi Akademik STMIK IKMI Cirebon Indonesia adalah sistem informasi yang dibuat oleh Iin Sholihin untuk keperluan manajemen PMB, Keuangan, Akademik, Tugas Akhir, dan Kelulusan di Perguruan Tinggi." name="description">
+  <meta content="sistem informasi, siakad, pmb, keuangan, akademik, krs, khs, transkrip, tugas akhir, skripsi, yudisium, kampus, universitas, sekolah tinggi, institut, diploma, sarjana" name="keywords">
 
   <!-- Favicons -->
   <link href="assets/img/favicon.png" rel="icon">
@@ -88,13 +101,17 @@ include 'public/fitur_routing.php';
   <main id='main'>
 
     <?php 
-    if($url_parameter!='logout'){
-      include 'public/fitur_siakad.php'; 
-      include 'public/sections/informasi.php'; 
+    if($is_password_default){
+      include 'public/ubah_password.php';
+    }else{
+      if($url_parameter!='logout'){
+        include 'public/fitur_siakad.php'; 
+        include 'public/sections/informasi.php'; 
+      }
+      // include 'public/sections/progres.php'; 
+      include 'public/sections/team.php'; 
+      // include 'cari_profil_dosen.php'; 
     }
-    // include 'public/sections/progres.php'; 
-    include 'public/sections/team.php'; 
-    // include 'cari_profil_dosen.php'; 
 
     ?>
   </main>

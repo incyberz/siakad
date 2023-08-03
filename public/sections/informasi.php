@@ -1,4 +1,5 @@
 <?php
+if(0){
 $gf='';
 $ta = 'TA. 2022 Genap';
 
@@ -152,3 +153,5 @@ for ($h=1; $h <= count($judul_item); $h++) {
 </section>
 
 <script src="assets/vendor/echarts/echarts.min.js"></script>
+
+<?php } ?>

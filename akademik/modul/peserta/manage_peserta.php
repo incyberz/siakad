@@ -65,7 +65,7 @@ ORDER BY a.nama
 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 if(mysqli_num_rows($q)==0){
-  $div_mhs = div_alert('danger',"Tidak ada mhs kelas $shift angkatan $angkatan prodi $prodi");
+  $div_mhs = div_alert('danger',"Tidak ada mhs kelas $shift angkatan $angkatan prodi $prodi | <a href='?master&p=mhs&aksi=tambah' target=_blank>Tambah Mhs</a>");
 }else{
   $i=0;
   $tr = '';

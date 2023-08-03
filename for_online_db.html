@@ -9,12 +9,13 @@ ALTER TABLE `tb_jadwal` CHANGE `id_hari` `id_hari` TINYINT(4) NULL DEFAULT NULL 
 
 IMPORT tb_hari
 
-ALTER TABLE `tb_jadwal` ADD `id_ruang` INT NULL DEFAULT NULL AFTER `id_hari`, ADD INDEX (`id_ruang`); 
+ALTER TABLE `tb_jadwal` ADD `id_ruang` INT NULL DEFAULT NULL AFTER `shift`, ADD INDEX (`id_ruang`); 
 DROP kolom id_hari pada tb_jadwal
-ALTER TABLE `tb_jadwal` CHANGE `tanggal_sesi` `awal_kuliah` TIMESTAMP NULL DEFAULT NULL; 
+ALTER TABLE `tb_jadwal` ADD `awal_kuliah`  TIMESTAMP NULL DEFAULT NULL after id_ruang; 
 
 UPDATE `tb_ruang` SET `nama` = 'Ruang Zoom' WHERE `tb_ruang`.`id` = 1;
 ALTER TABLE `tb_ruang` ADD `kondisi` TINYINT(1) NOT NULL DEFAULT '1' AFTER `kapasitas`; 
+ALTER TABLE `tb_ruang` ADD `keterangan` TINYINT(1) NULL DEFAULT NULL ; 
 
 
 -->

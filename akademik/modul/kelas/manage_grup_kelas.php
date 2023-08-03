@@ -10,7 +10,7 @@ if(!$id_kurikulum || $id_kurikulum<1) die('<script>location.replace("?manage_kel
 # ==============================================================
 # GET OPTION JALUR DAFTAR
 # ==============================================================
-$rjalur = [1=>'REG',2=>'KIP']; // zzz default | tidak sesuai db
+$rjalur = [1=>'REG',2=>'KIP',3=>'KIP-C',4=>'MBKM']; // zzz default | tidak sesuai db
 $opt_jalur = '';
 foreach ($rjalur as $key => $value) $opt_jalur.= "<option value='$key'>$value</option>";
 

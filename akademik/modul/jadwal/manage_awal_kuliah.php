@@ -101,22 +101,6 @@ $tb_kurikulum = "
 # ==============================================================
 $rjam['pagi'] = [7,8,9,10,11,12,13,14,15];
 $rjam['sore'] = [16,17,18,19,20,21];
-// $opt_jam['pagi'] = '';
-// $opt_jam['sore'] = '';
-// for ($i=7; $i <= 16 ; $i++) {
-//   $i_show = $i<10 ? "0$i" : $i;
-//   $opt_jam['pagi'].="<option value=$i>$i_show</option>";
-// }
-// for ($i=17; $i <= 22 ; $i++) {
-//   $i_show = $i<10 ? "0$i" : $i;
-//   $opt_jam['sore'].="<option value=$i>$i_show</option>";
-// }
-// $opt_menit = '';
-// for ($i=0; $i <= 11 ; $i++) {
-//   $j = $i*5;
-//   $j_show = $j<10 ? "0$j" : $j;
-//   $opt_menit.="<option value=$j>$j_show</option>";
-// }
 
 # ==============================================================
 # TAMPIL SEMESTERS
@@ -231,7 +215,8 @@ while ($d=mysqli_fetch_assoc($q)) {
     } //// end awal_kuliah berisi
 
 
-    
+    $btn_set = "<button class='btn btn-info btn-sm btn_aksi' id=set__$id_jadwal $disabled_set>Set</button>";
+
     $blok_awal_kuliah = ($d2['nama_dosen']=='' || $d2['awal_kuliah_uts']=='') ? '-' : "
       <div class='kecil miring mb1' id=awal_kuliah_show__$id_jadwal>Jam Kuliah : $awal_kuliah_show</div>
       <div class=flexy>
@@ -246,12 +231,13 @@ while ($d=mysqli_fetch_assoc($q)) {
             $opt_menit
           </select>
         </div>
-        <div><button class='btn btn-info btn-sm btn_aksi' id=set__$id_jadwal $disabled_set>Set</button></div>
+        <div>$btn_set</div>
         $debug
       </div>
+      <div id=hasil_ajax__$id_jadwal>hasil_ajax__$id_jadwal</div>
     ";
 
-    $bobot_show = ($d2['bobot']>0 AND $d2['bobot']<=6) ? "$d2[bobot] SKS" : '<span class=red>invalid bobot SKS</span>';
+    $bobot_show = ($d2['bobot']>0 AND $d2['bobot']<=6) ? "<span id=bobot__$id_jadwal>$d2[bobot]</span> SKS" : '<span class=red>invalid bobot SKS</span>';
 
     $tr.="
     <tr id='tr__$d2[id_mk]'>
@@ -376,7 +362,35 @@ $blok_semesters
 
       // console.log(tid, id_jadwal, jap, jap2);
       $('#set__'+id_jadwal).prop('disabled',0);
+      
+      let aksi = 'set';
+      let bobot = $('#bobot__'+id_jadwal).text();
 
+      if(aksi=='set'){
+        // validasi konflik jam untuk mhs zzz here
+        let awal_kuliah = $('#tanggal_awal_kuliah__'+id_jadwal).val()
+          + ' '
+          + $('#select_jam__'+id_jadwal).val()
+          + ':'
+          + $('#select_menit__'+id_jadwal).val()
+          ;
+        
+        let link_ajax = `ajax_akademik/ajax_set_awal_kuliah.php?id_jadwal=${id_jadwal}&awal_kuliah=${awal_kuliah}&bobot=${bobot}&`;
+        $.ajax({
+          url:link_ajax,
+          success:function(a){
+            if(a.trim()=='sukses'){
+              location.reload(); // ambil cepat zzz
+            }else{
+              // alert(a);
+              $('#hasil_ajax__'+id_jadwal).html(a);
+            }
+          }
+        })
+      }else{
+        alert(`aksi ${aksi} belum terdapat handler.`);
+        return;
+      }
     });
 
     $('.btn_aksi').click(function(){
@@ -385,18 +399,26 @@ $blok_semesters
       let aksi = rid[0];
       let id_jadwal = rid[1];
 
+      let bobot = $('#bobot__'+id_jadwal).text();
+
       if(aksi=='set'){
         // validasi konflik jam untuk mhs zzz here
-        let awal_kuliah = '2023-04-05 17:35';
+        let awal_kuliah = $('#tanggal_awal_kuliah__'+id_jadwal).val()
+          + ' '
+          + $('#select_jam__'+id_jadwal).val()
+          + ':'
+          + $('#select_menit__'+id_jadwal).val()
+          ;
         
-        let link_ajax = `ajax_akademik/ajax_set_awal_kuliah.php?id_jadwal=${id_jadwal}&awal_kuliah=${awal_kuliah}&`;
+        let link_ajax = `ajax_akademik/ajax_set_awal_kuliah.php?id_jadwal=${id_jadwal}&awal_kuliah=${awal_kuliah}&bobot=${bobot}&`;
         $.ajax({
           url:link_ajax,
           success:function(a){
             if(a.trim()=='sukses'){
               location.reload(); // ambil cepat zzz
             }else{
-              alert(a);
+              // alert(a);
+              $('#hasil_ajax__'+id_jadwal).html(a);
             }
           }
         })

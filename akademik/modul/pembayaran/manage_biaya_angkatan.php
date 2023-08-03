@@ -187,8 +187,8 @@ echo "
       
       // VALIDASI VALUE
       isi_baru = parseInt(isi_baru);
-      if(isi_baru==0 || isi_baru % 1000 != 0){
-        alert('Masukan nominal kelipatan 1000. Silahkan coba kembali!');
+      if(isi_baru==0){
+        alert('Silahkan masukan nominal yang benar!');
         return;
       }else if(isi_baru>=100000000){
         alert('Nominal harus kurang dari 100 juta. Silahkan coba kembali!');
