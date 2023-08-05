@@ -1,5 +1,5 @@
 <h1>MANAGE SESI KULIAH</h1>
-<p>Manage Sesi hanya bisa dilakukan setelah adanya Penjadwalan Dosen.</p>
+<p>Manage Sesi hanya bisa dilakukan setelah adanya Penjadwalan Dosen dan Awal Perkuliahan sudah ditentukan.</p>
 <?php 
 $id_kurikulum = $_GET['id_kurikulum'] ?? '';
 if($id_kurikulum==''){
@@ -137,6 +137,8 @@ while ($d=mysqli_fetch_assoc($q)) {
   (
     SELECT id FROM tb_jadwal WHERE id_kurikulum_mk=b.id AND shift='$shift') as id_jadwal,  
   (
+    SELECT awal_kuliah FROM tb_jadwal WHERE id_kurikulum_mk=b.id AND shift='$shift') as awal_kuliah,  
+  (
     SELECT count(1) FROM tb_sesi_kuliah c 
     JOIN tb_jadwal d on c.id_jadwal=d.id  
     WHERE d.id_kurikulum_mk=b.id) as jumlah_sesi   
@@ -162,20 +164,26 @@ while ($d=mysqli_fetch_assoc($q)) {
 
     $red_bold_sesi = $d2['jumlah_sesi'] ? '' : 'red bold';
     $img_next_of_sesi = $d2['jumlah_sesi'] ? $img_aksi['check'] : $img_aksi['next'] ;
-    $link_manage_sesi = "<span><a href='?manage_sesi_detail&id_jadwal=$d2[id_jadwal]'>$img_next_of_sesi</a></span>";
+    $link_manage_sesi = "<span><a href='?manage_sesi_detail&id_jadwal=$d2[id_jadwal]' target=_blank>$img_next_of_sesi</a></span>";
     
 
-    $red_bold = $red_bold_sesi=='' ? '' : 'red bold';
-    $sesi_show = $d2['id_jadwal']=='' ? '-' : "$d2[jumlah_sesi] $link_manage_sesi";
-    $jadwal_show = $d2['id_jadwal']=='' ? "$img_aksi[prev] | <span class=red>manage</span>" : $img_aksi['check'];
-    $jadwal_show = "<a href='?manage_jadwal_dosen&id_kurikulum=$id_kurikulum&shift=$shift' target=_blank onclick='return confirm(\"Kembali ke Penjadwalan Dosen?\")'>$jadwal_show</a>";
+    $red_bold = ($d2['id_jadwal']=='' || $d2['awal_kuliah']=='') ? 'red bold' : '';
+    $sesi_show = ($d2['id_jadwal']=='' || $d2['awal_kuliah']=='') ? '-' : "$d2[jumlah_sesi] $link_manage_sesi";
+
+    $jadwal_icon = $d2['id_jadwal']=='' ? "$img_aksi[prev] | <span class=red>manage</span>" : $img_aksi['check'];
+    $jadwal_show = "<a href='?manage_jadwal_dosen&id_kurikulum=$id_kurikulum&shift=$shift' target=_blank onclick='return confirm(\"Kembali ke Penjadwalan Dosen?\")'>$jadwal_icon</a>";
+
+    $awal_kuliah_icon = $d2['awal_kuliah']=='' ? "$img_aksi[prev] | <span class=red>manage</span>" : $img_aksi['check'];
+    $awal_kuliah_show = "<a href='?manage_awal_kuliah&id_kurikulum=$id_kurikulum&shift=$shift' target=_blank onclick='return confirm(\"Kembali ke Manage Awal Kuliah?\")'>$awal_kuliah_icon</a>";
+    $awal_kuliah_show = $d2['id_jadwal']=='' ? '-' : $awal_kuliah_show;
 
     $tr.="
     <tr id='tr__$d2[id_mk]'>
-      <td width=5%>$j</td>
+      <td>$j</td>
       <td class='$red_bold'>$d2[nama_mk] | $d2[kode_mk]</td>
-      <td width=20% class='$red_bold_sesi'>$jadwal_show</td>
-      <td width=20% class='$red_bold_sesi'>$sesi_show</td>
+      <td class='$red_bold'>$jadwal_show</td>
+      <td class='$red_bold'>$awal_kuliah_show</td>
+      <td class='$red_bold_sesi'>$sesi_show</td>
     </tr>    
     ";
   } //end while list MK
@@ -198,15 +206,16 @@ while ($d=mysqli_fetch_assoc($q)) {
   $semesters .= "
   <div class='col-lg-12' id='semester__$d[id_semester]'>
     <div class='$wadah'>
-      <div class='semester-ke'>
+      <h4 class='darkblue'>
         Semester $d[no_semester] $semester_aktif $semester_lampau
-      </div>
-      <p>Rentang Waktu: $tanggal_awal_show s.d $tanggal_akhir_show</p>
+      </h4>
+      <p>$tanggal_awal_show s.d $tanggal_akhir_show</p>
       <table class='table tb-semester-mk'>
         <thead>
           <th>No</th>
           <th>Mata Kuliah</th>
           <th class=proper>Dosen $shift</th>
+          <th>Awal Kuliah</th>
           <th>Sesi Kuliah</th>
         </thead>
         

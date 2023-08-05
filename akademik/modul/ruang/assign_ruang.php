@@ -17,8 +17,15 @@ if(isset($_POST['btn_assign'])){
     }
   }else{
     // delete dahulu semua seting assign room
-    $s = "DELETE FROM tb_assign_ruang WHERE id_sesi_kuliah=$_POST[id_sesi_kuliah]";
+    $s = "SELECT a.id FROM tb_sesi_kuliah a WHERE a.id_jadwal=$_POST[id_jadwal]";
     $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+
+    $s_del = "DELETE FROM tb_assign_ruang WHERE 0 ";
+    while ($d=mysqli_fetch_assoc($q)) {
+      $s_del .= " OR id_sesi_kuliah=$d[id] ";
+    }
+
+    $q = mysqli_query($cn,$s_del) or die(mysqli_error($cn));
     
     // terapkan pada semua pertemuan
     $id_jadwal = $_POST['id_jadwal'];
@@ -45,7 +52,7 @@ if(isset($_POST['btn_assign'])){
   $values";
   // die($s);
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  echo "<div class='alert alert-success'>Assign sebanyak $jumlah_assigned_ruang Ruang Kelas Sukses.<hr><a class='btn btn-primary' href='?manage_sesi&id_jadwal=$_POST[id_jadwal]'>Kembali ke Manage Sesi</a> | <a class='btn btn-info' href='?assign_ruang&id_sesi_kuliah=$_POST[id_sesi_kuliah]'>Lihat hasil</a></div>";
+  echo "<div class='alert alert-success'>Assign sebanyak $jumlah_assigned_ruang Ruang Kelas Sukses.<hr><a class='btn btn-primary' href='?manage_sesi_detail&id_jadwal=$_POST[id_jadwal]'>Kembali ke Manage Sesi</a> | <a class='btn btn-info' href='?assign_ruang&id_sesi_kuliah=$_POST[id_sesi_kuliah]'>Lihat hasil</a></div>";
   exit;
 }
 
@@ -89,7 +96,6 @@ d.id_semester,
 d.id_kurikulum,
 e.nomor as no_semester,
 b.nama as nama_dosen,
-f.nama as nama_kurikulum,
 g.id as id_mk,
 g.nama as nama_mk,
 (g.bobot_teori + g.bobot_praktik) as bobot,
@@ -106,22 +112,20 @@ where a.id=$id_sesi_kuliah";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $d=mysqli_fetch_assoc($q);
 
-$sesi = "$d[pertemuan_ke]  / $d[nama_sesi] / $d[nama_mk]";
+$sesi = "P$d[pertemuan_ke]  / $d[nama_sesi] / $d[nama_mk]";
 
 $tanggal_sesi = $d['tanggal_sesi'];
 $tsesi = strtotime($tanggal_sesi);
 $stop_sesi = $d['stop_sesi'];
 $jam_keluar = date('H:i',strtotime($stop_sesi));
 
-$link_edit_tanggal_sesi = "<a href='?master&p=sesi_kuliah&aksi=update&id=$id_sesi_kuliah' target=_blank>Edit <span class=debug>Manual</span></a>";
-$tanggal_sesi_show = '<h4 class="biru tebal">'.$nama_hari[date('w',$tsesi)].', '.date('d M Y / H:i',$tsesi).' s.d '.$jam_keluar.'</h4>'.$link_edit_tanggal_sesi;
+$tanggal_sesi_show = '<h4 class="biru tebal">'.$nama_hari[date('w',$tsesi)].', '.date('d M Y / H:i',$tsesi).' s.d '.$jam_keluar.'</h4>';
 $id_jadwal = $d['id_jadwal'];
 $id_semester = $d['id_semester'];
 $id_kurikulum = $d['id_kurikulum'];
 $id_mk = $d['id_mk'];
 
-$semester = "$d[no_semester] / $d[nama_kurikulum]";
-$back_to = "Back to: <a href='?manage_sesi&id_jadwal=$id_jadwal'>Manage Sesi</a>";
+$semester = "$d[no_semester]";
 
 
 $kotaks = '';
@@ -174,7 +178,10 @@ if(mysqli_num_rows($q)){
     AND t.id_ruang=a.id  
     LIMIT 1) as terpakai_oleh   
   
-  FROM tb_ruang a";
+  FROM tb_ruang a 
+  WHERE kondisi=1 
+  AND kapasitas>0
+  ";
   echo '<pre>'; var_dump($s); echo '</pre>'; 
   // exit;
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
@@ -192,12 +199,12 @@ if(mysqli_num_rows($q)){
     $disabled = $terpakai_oleh==''?'':'disabled';
     $gradasi = $terpakai_oleh==''?'hijau':'merah';
     $kotaks.="
-            <div class='kotak gradasi-$gradasi' style='padding:0'>
-              <label style='display:block;padding:5px 5px 5px 15px; margin:0;cursor:pointer;'>
-                <input type='checkbox' name='cb__$r[id]' id='cb__$r[id]' class=cb_ruang $disabled>
-                $r[nama] $terpakai_oleh 
-              </label>
-            </div>
+      <div class='kotak gradasi-$gradasi' style='padding:0'>
+        <label style='display:block;padding:5px 5px 5px 15px; margin:0;cursor:pointer;'>
+          <input type='checkbox' name='cb__$r[id]' id='cb__$r[id]' class=cb_ruang $disabled>
+          $r[nama] $terpakai_oleh 
+        </label>
+      </div>
     ";
   }
 
@@ -259,14 +266,13 @@ if(mysqli_num_rows($q)){
   }
 </style>
 
-<?=$back_to?>
 <h1>Assign Ruangan pada Sesi Kuliah</h1>
 <form method=post>
   <table class='table table-hover table-dark'>
     <tr>
       <td>Sesi</td>
       <td>
-        <?=$sesi?>
+        <?=$sesi?> | <?=$d['bobot'] ?> SKS | SMT-<?=$semester?>
         <div class="debug">
           id_sesi_kuliah:<input name=id_sesi_kuliah value=<?=$id_sesi_kuliah?>>
           id_jadwal:<input name=id_jadwal value=<?=$id_jadwal?>>
@@ -275,13 +281,8 @@ if(mysqli_num_rows($q)){
     </tr>
 
     <tr>
-      <td>Semester</td>
-      <td><?=$semester?></td>
-    </tr>
-
-    <tr>
       <td>Pengajar</td>
-      <td><?=$d['nama_dosen'] ?> / <?=$d['bobot'] ?> SKS</td>
+      <td><?=$d['nama_dosen'] ?></td>
     </tr>
 
     <tr>

@@ -12,6 +12,7 @@ $nama_user = "Pengunjung";
 $login_as = "Pengunjung";
 $is_login = 0;
 $is_password_default = 0;
+$username = '';
 
 include 'config.php';
 if (isset($_SESSION['siakad_username'])) {
@@ -93,7 +94,7 @@ if($url_parameter=="logout"){
 
 <body>
 
-  <?php 
+  <?php
   include 'public/header.php';
   include 'public/sections/hero.php'; 
   ?>
@@ -101,7 +102,7 @@ if($url_parameter=="logout"){
   <main id='main'>
 
     <?php 
-    if($is_password_default){
+    if($is_password_default || $url_parameter=='ubah_password'){
       include 'public/ubah_password.php';
     }else{
       if($url_parameter!='logout'){

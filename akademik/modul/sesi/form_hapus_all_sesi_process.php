@@ -6,7 +6,7 @@ if(isset($_POST['btn_hapus_all_sesi'])){
     // die($s);
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
-  echo div_alert('info',"Menghapus semua sesi kuliah berhasil.<hr><a href='?manage_sesi&id_jadwal=$id_jadwal'>Lanjutkan Proses</a>");
+  echo div_alert('info',"Menghapus semua sesi kuliah berhasil.<hr><a href='?manage_sesi_detail&id_jadwal=$id_jadwal'>Lanjutkan Proses</a>");
   exit;
   
 }

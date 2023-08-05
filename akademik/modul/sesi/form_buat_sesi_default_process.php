@@ -53,7 +53,7 @@ if(isset($_POST['btn_buat_sesi_default'])){
     // die($s);
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
-  echo div_alert('success',"Membuat $jumlah_sesi Sesi Kuliah Default berhasil.<hr><a href='?manage_sesi&id_jadwal=$id_jadwal'>Lanjutkan Proses</a>");
+  echo div_alert('success',"Membuat $jumlah_sesi Sesi Kuliah Default berhasil.<hr><a href='?manage_sesi_detail&id_jadwal=$id_jadwal'>Lanjutkan Proses</a>");
   exit;
   
 }

@@ -40,6 +40,7 @@ $page_title = "<h1 class='judul-page upper'>$btn_back $aksi_title ".str_replace(
 $param_id = $page=='jenjang' ? 'jenjang' : 'id';
 $param_id = $page=='angkatan' ? 'angkatan' : $param_id;
 $param_id = $page=='kelas' ? 'kelas' : $param_id;
+$param_id = $page=='shift' ? 'shift' : $param_id; //new
 
 $s = "SELECT * FROM tb_$page";
 
@@ -47,6 +48,7 @@ $s = "SELECT * FROM tb_$page";
 # CUSTOM PRIMARY / FOREIGN KEY
 # ==============================================================
 $kolom_acuan = $page=='jenjang' ? 'jenjang' : 'id';
+$kolom_acuan = $page=='shift' ? 'shift' : $kolom_acuan; //new
 $s = !isset($_GET[$kolom_acuan]) ? $s : "SELECT * FROM tb_$page WHERE $kolom_acuan='$_GET[$kolom_acuan]'";
 
 # ==============================================================

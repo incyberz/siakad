@@ -20,7 +20,7 @@ d.id as id_dosen,
 d.nama as dosen_koordinator,  
 d.nidn,  
 e.nomor as nomor_semester,   
-e.awal_kuliah_uts as awal_perkuliahan,
+e.awal_kuliah_uts as minggu_awal_perkuliahan,
 f.id as id_kurikulum,
 g.id as id_prodi,
 g.singkatan as prodi,
@@ -46,22 +46,23 @@ $id_dosen = $d['id_dosen'];
 $id_semester = $d['id_semester'];
 $id_kurikulum = $d['id_kurikulum'];
 $nomor_semester = $d['nomor_semester'];
-$awal_perkuliahan = $d['awal_perkuliahan'];
+$minggu_awal_perkuliahan = $d['minggu_awal_perkuliahan'];
 $jumlah_sesi = $d['jumlah_sesi'];
 $sesi_uts = $d['sesi_uts'];
 $sesi_uas = $d['sesi_uas'];
 $bobot = $d['bobot'];
 $angkatan = $d['angkatan'];
 $shift = $d['shift'];
-// $nama_mk = $d['nama_mk'];
-// $kode_mk = $d['kode_mk'];
+$nama_mk = $d['nama_mk'];
+$kode_mk = $d['kode_mk'];
+$awal_kuliah = $d['awal_kuliah'];
 
 $nidn_show = $d['nidn'] ?? '-';
 
 $tahun_ajar = $angkatan + intval(($nomor_semester-1)/2);
 
 $unset = '<span class="red consolas miring">unset</span>';
-$ruang_show = $d['nama_ruang'] ?? $unset;
+// $ruang_show = $d['nama_ruang'] ?? $unset;
 $hari_show = $d['awal_kuliah'] ?? $unset;
 
 # ====================================================
@@ -105,10 +106,6 @@ echo "
       <td>$d[dosen_koordinator] | NIDN. $nidn_show</td>
     </tr>
     <tr>
-      <td>Ruang Kelas (untuk dosen)</td>
-      <td>$ruang_show</td>
-    </tr>
-    <tr>
       <td>Awal Perkuliahan</td>
       <td>$hari_show</td>
     </tr>
@@ -119,8 +116,6 @@ echo "
   </table>
 </div>
 ";
-
-
 
 
 # ====================================================
@@ -140,10 +135,12 @@ b.nama as nama_dosen,
 
 FROM tb_sesi_kuliah a 
 JOIN tb_dosen b on b.id=a.id_dosen 
-where a.id_jadwal=$id_jadwal order by a.pertemuan_ke";
+where a.id_jadwal=$id_jadwal 
+order by a.pertemuan_ke";
+
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 if(mysqli_num_rows($q)==0){
-  $syarat_jadwal_ok = 0; //zzz here
+  $syarat_jadwal_ok = 1; //zzz here
   if($syarat_jadwal_ok){
     include 'form_buat_sesi_default.php';
   }else{
@@ -156,15 +153,15 @@ if(mysqli_num_rows($q)==0){
   <thead>
     <th class='text-left upper'>Pertemuan ke</th>
     <th class='text-left upper'>Nama Sesi</th>
-    <th class='text-left upper'>Jam Masuk</th>
-    <th class='text-left upper'>Jam Keluar</th>
-    <th class='text-left upper'>Presensi</th>
-    <th class='text-left upper'>Ruang</th>
+    <th class='text-left upper'>Jam Kuliah</th>
+    <th class='text-left upper hideit'>Presensi</th>
+    <th class='text-left upper'>List Ruang</th>
     <th class='text-left upper'>Aksi</th>
   </thead>"; 
   $tr = '';
   $total_presensi_dosen =0;
   $total_presensi_mhs =0;
+  $total_assign_ruang =0;
   while ($d=mysqli_fetch_assoc($q)) {
     $tsesi = strtotime($d['tanggal_sesi']);
     $ttoday = strtotime($today);
@@ -205,6 +202,7 @@ if(mysqli_num_rows($q)==0){
 
     $list_ruang = '<span class="red kecil miring">--none--</span>';
     if($d['jumlah_ruang']>0){
+      $total_assign_ruang+=$d['jumlah_ruang'];
       $s2 = "SELECT b.nama as nama_ruang FROM tb_assign_ruang a 
       JOIN tb_ruang b on a.id_ruang=b.id 
       WHERE a.id_sesi_kuliah=$d[id_sesi_kuliah]";
@@ -214,6 +212,9 @@ if(mysqli_num_rows($q)==0){
         $list_ruang.= "<li>$d2[nama_ruang]</li>";
       }
       $list_ruang .= '</ol>';
+      $btn_assign_multi_ruang = "<a href='?assign_ruang&id_sesi_kuliah=$d[id_sesi_kuliah]' class='btn btn-danger btn-sm'>drop ruang</a>";
+    }else{
+      $btn_assign_multi_ruang = "<a href='?assign_ruang&id_sesi_kuliah=$d[id_sesi_kuliah]' class='btn btn-info btn-sm'>assign multi ruang</a>";
     }
 
     $today2 = date('Y-m-d');
@@ -225,6 +226,7 @@ if(mysqli_num_rows($q)==0){
     $jumlah_presensi_mhs = $d['jumlah_presensi_mhs'];
     $total_presensi_dosen += $d['jumlah_presensi_dosen'];
     $total_presensi_mhs += $d['jumlah_presensi_mhs'];
+
 
     # ========================================================
     # FINAL TR OUTPUT
@@ -244,41 +246,38 @@ if(mysqli_num_rows($q)==0){
       </td>
       <td class='upper gradasi-$gradasi'>
         $hari<br>$tanggal_sesi
-        <br>$jam_masuk
+        <br>$jam_masuk - $jam_keluar
       </td>
-      <td class='upper gradasi-$gradasi'>
-        $hari<br>$tanggal_sesi
-        <br>$jam_keluar
-      </td>
-      <td class='upper gradasi-$gradasi kecil'>
+      <td class='upper gradasi-$gradasi kecil hideit'>
         Dosen: $presensi_dosen_show
         <br>Mhs: $jumlah_presensi_mhs mhs
       </td>
       <td class='upper gradasi-$gradasi'>$list_ruang</td>
-      <td class='upper gradasi-$gradasi'>
-        <a href='?assign_ruang&id_sesi_kuliah=$d[id_sesi_kuliah]' class='btn btn-info btn-sm'>assign ruang</a>
-      </td>
+      <td class='upper gradasi-$gradasi'>$btn_assign_multi_ruang</td>
     </tr>"; 
   }
 
   // $total_presensi_dosen = 1; //debug
-  $total_presensi = $total_presensi_dosen+$total_presensi_mhs;
+  $total_trx = $total_presensi_dosen + $total_presensi_mhs + $total_assign_ruang;
 
-  $hapus_all_sesi = $total_presensi ? "
-  <div class=wadah>
-    <div class='alert alert-info tebal'>Sudah ada trx presensi. Anda tidak dapat lagi menghapus sesi kuliah pada MK ini.</div>
-    <ul>
-      <li>Presensi dosen: $total_presensi_dosen</li>
-      <li>Presensi mhs: $total_presensi_mhs</li>
-    </ul>
-    <p class=miring><code>Untuk menghapus semua sesi Anda hapus menghapus semua presensi terlebih dahulu.</code></p>
-  </div>
+  $reset_assign_ruang = $total_assign_ruang>0 ? "<a href='?reset_assign_ruang&id_jadwal=$id_jadwal' target=_blank onclick='return confirm(\"Menuju laman reset?\")'><span class=red>Reset Assign Ruang</span></a>" : '-';
+  $reset_presensi_dosen = $total_presensi_dosen>0 ? "<a href='?reset_presensi_dosen&id_jadwal=$id_jadwal' target=_blank onclick='return confirm(\"Menuju laman reset?\")'><span class=red>Reset Presensi Dosen</span></a>" : '-';
+  $reset_presensi_mhs = $total_presensi_mhs>0 ? "<a href='?reset_presensi_mhs&id_jadwal=$id_jadwal' target=_blank onclick='return confirm(\"Menuju laman reset?\")'><span class=red>Reset Presensi Mhs</span></a>" : '-';
+  
+  $hapus_all_sesi = $total_trx ? "
+    <div class='alert alert-info'><span class=darkblue>Sudah ada $total_trx sub-trx pada Jadwal Kuliah ini.</span> <div class='kecil miring darkred'>Saat ini Anda tidak dapat Reset Sesi. Agar dapat Reset Sesi Anda harus menghapus semua sub-trx sebagai berikut:</div>
+      <ul>
+        <li>Presensi dosen: $total_presensi_dosen | $reset_presensi_dosen</li>
+        <li>Presensi mhs: $total_presensi_mhs | $reset_presensi_mhs</li>
+        <li>Assign Ruang: $total_assign_ruang | $reset_assign_ruang</li>
+      </ul>
+    </div>
   " : "
   <form method=post>
-    <input type=debug name=id_jadwal value=$id_jadwal>
+    <input class=debug name=id_jadwal value=$id_jadwal>
     <div class='wadah gradasi-kuning'>
       <p>
-        <div class='alert alert-info tebal'>Presensi masih kosong. Anda masih dapat menghapus semua sesi.</div>
+        <div class='alert alert-info tebal'>Sub-trx masih kosong, sehingga Anda masih dapat menghapus (reset) semua sesi.</div>
         Untuk setting ulang tanggal sesi dari P1 s.d P$jumlah_sesi secara terurut per minggu silahkan lakukan <code>Hapus All Sesi</code> lalu Buat Ulang Sesi Default. <span class=red>Perhatian! Proses ini akan mengembalikan Nama-nama Sesi menjadi Default (NEW PXX)</span>
       </p>
       <div class='alert alert-danger'>

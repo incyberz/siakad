@@ -3,15 +3,15 @@
 
 if(isset($_POST['btn_login'])){
 
-  $username = filter_var($_POST['username']);
+  $post_username = filter_var($_POST['username']);
   $password = filter_var($_POST['password']);
 
-  $s = "SELECT 1 FROM tb_user a WHERE a.username='$username' and a.password = md5('$password')";
+  $s = "SELECT 1 FROM tb_user a WHERE a.username='$post_username' and a.password = md5('$password')";
   $q = mysqli_query($cn,$s) or die("Tidak dapat mengakses data login #1");
 
   if(mysqli_num_rows($q)==1){
     $is_login = 1;
-    $_SESSION['siakad_username'] = $username;
+    $_SESSION['siakad_username'] = $post_username;
     echo '<h1>Login Success. Redirecting...</h1><script>location.replace("index.php")</script>';
 
   }else{
@@ -20,7 +20,7 @@ if(isset($_POST['btn_login'])){
     <div class='alert alert-danger' data-aos='fade-up' data-aos-delay='400'>
       Maaf, Username dan Password Anda tidak cocok.
       <hr>
-      <a href='?username=$username' class='btn btn-primary' style='border-radius:10px'>Coba Lagi</a>
+      <a href='?username=$post_username' class='btn btn-primary' style='border-radius:10px'>Coba Lagi</a>
     </div>";
 
   }

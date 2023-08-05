@@ -1,5 +1,6 @@
 <?php
-// echo "d_peserta[pass]: $d_peserta[password] post[password]: $_POST[password]";
+// echo "d_user[pass]: $d_user[password] post[password]: $_POST[password]";
+$pesan='';
 $hideit='';
 $password='';
 $cpassword='';
@@ -11,33 +12,34 @@ if(isset($_POST['btn_ubah_password'])){
   // var_dump($_POST);
   // echo '</pre>';
   if($_POST['password']==$_POST['username']){
-    echo div_alert('danger', 'Password tidak boleh sama dengan Username.');
+    $pesan = div_alert('danger', 'Password tidak boleh sama dengan Username.');
   }elseif($_POST['password']==$_POST['cpassword']){
-    if($d_peserta['password']!=md5($_POST['password_lama']) and $d_peserta['password']!=''){
-      echo div_alert('danger', 'Password lama Anda tidak sesuai.');
+    if($d_user['password']!=md5($_POST['password_lama']) and $d_user['password']!=''){
+      $pesan = div_alert('danger', 'Password lama Anda tidak sesuai.');
     }else{
       $sql_password_lama = $_POST['password_lama']=='' ? 'password IS NULL' : 'password = \''.md5($_POST['password_lama']).'\'';
-      $s = "UPDATE tb_peserta SET password=md5('$_POST[password]') WHERE $sql_password_lama AND username='$username'";
+      $s = "UPDATE tb_user SET password=md5('$_POST[password]') WHERE $sql_password_lama AND username='$username'";
       // echo $s;
       $q=mysqli_query($cn,$s) or die(mysqli_error($cn));
       // echo '<script>location.replace("?")</script>';
-      session_unset();
-      echo div_alert('success','Ubah Password berhasil. Silahkan relogin!<hr><a href="?login" class="btn btn-primary btn-block">Relogin</a>');
+      unset($_SESSION['siakad_username']);
+      echo '<section><div class=container>'. div_alert('success','Ubah Password berhasil. Silahkan relogin!<hr><a href="?login" class="btn btn-primary btn-block">Relogin</a>').'</div></section>';
       exit;
     }
   }else{
-    echo div_alert('danger', 'Konfirmasi password tidak sama dengan password baru.');
+    $pesan = div_alert('danger', 'Konfirmasi password tidak sama dengan password baru.');
   }
 }
 
-// $hideit = $d_peserta['password']==''?'hideit':'';
+// $hideit = $d_user['password']==''?'hideit':'';
 $hideit = ''; //zzz
-
+// die($username);
 ?>
 <section id="ubah_password" class="" data-aos="fade-left">
   <div class="container">
 
     <div class="section-title">
+      <p><?=$pesan?></p>
       <h2>Ubah Password</h2>
       <p><?=$depas_note?></p>
     </div>

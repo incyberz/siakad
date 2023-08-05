@@ -75,6 +75,8 @@ $jenjang = $d_mhs['jenjang'];
 $jumlah_semester = $d_mhs['jumlah_semester'];
 $shift = $d_mhs['shift'];
 
+$admin_level=1; // zzz debug
+
 
 $id_kalender = '';
 $id_kurikulum = '';

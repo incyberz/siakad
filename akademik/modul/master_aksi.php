@@ -2,8 +2,9 @@
 # ========================================================
 # MANAGE AKSI IF AKSI NOT NULL
 # ========================================================
-$id = isset($_GET['jenjang']) ? $_GET['jenjang'] : $id;
-$id = isset($_GET['angkatan']) ? $_GET['angkatan'] : $id;
+$id = $_GET['jenjang'] ?? $id;
+$id = $_GET['angkatan'] ?? $id;
+$id = $_GET['shift'] ?? $id; //new
 $id = (trim($id)=='' and $aksi!='tambah') ? die('Aksi tanpa acuan id.') : $id;
 
 if($aksi=='hapus'){
@@ -46,6 +47,7 @@ for ($j=0; $j < count($Field); $j++) {
     if($nama_kolom=='jenjang') {$kolom_acuan_select='jenjang';}
     if($nama_kolom=='kelas') {$kolom_acuan_select='kelas';}
     if($nama_kolom=='angkatan') {$kolom_acuan_select='angkatan';}
+    if($nama_kolom=='shift') {$kolom_acuan_select='shift';}
 
     $s2 = "DESCRIBE tb_$tabel_select";
     // if($Field[$j]=='angkatan') die("zzz $s2");
@@ -62,6 +64,8 @@ for ($j=0; $j < count($Field); $j++) {
     if($nama_kolom=='jenjang') {$kolom_isi_select='jenjang';}
     if($nama_kolom=='kelas') {$kolom_isi_select='kelas';}
     if($nama_kolom=='angkatan') {$kolom_isi_select='angkatan';}
+    if($nama_kolom=='shift') {$kolom_isi_select='shift';}
+    if($nama_kolom=='status_mhs') {$kolom_isi_select='status_mhs';}
 
     echo "
     <script>

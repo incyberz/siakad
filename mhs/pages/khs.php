@@ -202,6 +202,8 @@ if(isset($_SESSION['siakad_username'])){
   $disabled_pdf = '';
   $info_disabled .= ' <span class="biru tebal consolas">[Login As Mode]</span>';
 }
+
+$btn_dw_all = $admin_level==1 ? '' : "<button class='btn btn-primary' $disabled_pdf name=dw_all>All</button>";
 ?>
 
 
@@ -223,7 +225,7 @@ if(isset($_SESSION['siakad_username'])){
         <input type="hidden" value="<?=$angkatan?>" name=angkatan>
         <input type="hidden" value="<?=$nama_mhs?>" name=nama_mhs>
         <?=$btn_smt?>
-        <button class='btn btn-primary' <?=$disabled_pdf?> name=dw_all>All</button>
+        <?=$btn_dw_all?>
         <div class=mt-2><?=$info_disabled?></div>
       </div>
     </form>

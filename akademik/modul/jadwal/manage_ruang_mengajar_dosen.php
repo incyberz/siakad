@@ -1,5 +1,5 @@
-<h1>Manage Awal Perkuliahan</h1>
-<p>Manage Awal Perkuliah hanya bisa dilakukan setelah adanya Penjadwalan Dosen dan Penanggalan Semester.</p>
+<h1>Manage Ruang Mengajar Dosen</h1>
+<p>Manage Ruang khusus untuk Dosen. Manage Ruang untuk Mhs dapat dilakukan saat Manage Sesi.</p>
 <?php 
 $id_kurikulum = $_GET['id_kurikulum'] ?? '';
 if($id_kurikulum==''){
@@ -29,7 +29,7 @@ if($id_kurikulum==''){
       <td>$i</td>
       <td>$d[angkatan]</td>
       <td>$d[jenjang]-$d[singkatan]</td>
-      <td><a class='btn btn-$primary btn-sm' href='?manage_awal_kuliah&id_kurikulum=$d[id_kurikulum]'>Manage Awal Kuliah</a></td>
+      <td><a class='btn btn-$primary btn-sm' href='?manage_ruang_mengajar_dosen&id_kurikulum=$d[id_kurikulum]'>Manage Ruang Mengajar Dosen</a></td>
     </tr>
     ";
     $last_angkatan=$d['angkatan'];
@@ -54,7 +54,7 @@ if($shift==''){
   $s = "SELECT * FROM tb_shift";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   while ($d=mysqli_fetch_assoc($q)) {
-    echo "<a href='?manage_awal_kuliah&id_kurikulum=$id_kurikulum&shift=$d[shift]' class='btn btn-info proper mr2'>kelas $d[shift]</a> ";
+    echo "<a href='?manage_ruang_mengajar_dosen&id_kurikulum=$id_kurikulum&shift=$d[shift]' class='btn btn-info proper mr2'>kelas $d[shift]</a> ";
   }
   exit;
 }
@@ -92,7 +92,7 @@ $prodi = $d['prodi'];
 $jenjang = $d['jenjang'];
 
 $tb_kurikulum = "
-<div class='wadah bg-white'>Kurikulum <a href='?manage_awal_kuliah'>$d[jenjang]-$d[prodi]-$d[angkatan]</a> ~ Kelas <a href='?manage_awal_kuliah&id_kurikulum=$id_kurikulum' id=shift class=proper>$shift</a></div>
+<div class='wadah bg-white'>Kurikulum <a href='?manage_ruang_mengajar_dosen'>$d[jenjang]-$d[prodi]-$d[angkatan]</a> ~ Kelas <a href='?manage_ruang_mengajar_dosen&id_kurikulum=$id_kurikulum' id=shift class=proper>$shift</a></div>
 ";
 
 
@@ -172,21 +172,6 @@ while ($d=mysqli_fetch_assoc($q)) {
     $nama_dosen = $d2['nama_dosen'] ?? $unset;
     $bobot = $d2['bobot'] ?? 0;
 
-    // opt jam without selected
-    $opt_jam = '';
-    foreach ($rjam[$shift] as $jam) {
-      $jam_show = $jam<10 ? '0'.$jam : $jam;
-      $opt_jam.= "<option value='$jam'>$jam_show</option>";
-    }
-    // opt menit without selected
-    $opt_menit = '';
-    for ($i=0; $i < 12; $i++) { 
-      $menit = $i*5;
-      $menit_show = $menit<10 ? '0'.$menit : $menit;
-      $opt_menit.= "<option value='$menit'>$menit_show</option>";
-    }
-    
-
     if($d2['awal_kuliah']==''){
       $awal_kuliah_show = $unset;
       // $disabled_set = '';
@@ -232,24 +217,9 @@ while ($d=mysqli_fetch_assoc($q)) {
 
     $btn_set = "<button class='btn btn-info btn-sm btn_aksi' id=set__$id_jadwal >Set</button>";
 
-    $blok_awal_kuliah = ($d2['nama_dosen']=='' || $d2['awal_kuliah_uts']=='') ? '-' : "
-      <div class='kecil miring mb1' id=awal_kuliah_show__$id_jadwal>Jam Kuliah : $awal_kuliah_show</div>
-      <div class=flexy>
-        <div><input type=date value='$tanggal_awal_kuliah' class='awal_kuliah_triger form-control' id=tanggal_awal_kuliah__$id_jadwal></div>
-        <div>
-          <select id=select_jam__$id_jadwal class='awal_kuliah_triger form-control'>
-            $opt_jam
-          </select>
-        </div>
-        <div>
-          <select id=select_menit__$id_jadwal class='awal_kuliah_triger form-control'>
-            $opt_menit
-          </select>
-        </div>
-        <div id=blok_btn_set__$id_jadwal class=hideit>$btn_set</div>
-        $debug
-      </div>
-      <div id=hasil_ajax__$id_jadwal></div>
+    $blok_ruangan_tersedia = ($d2['nama_dosen']=='' || $d2['awal_kuliah_uts']=='') ? '-' : "
+      <div class='kecil abu miring'>Ruang: $unset</div>
+      <a class='btn btn-info' href='?assign_ruang_mengajar_dosen&id_jadwal=$id_jadwal'>Assign Ruang Mengajar Dosen</a>
     ";
 
     $bobot_show = ($d2['bobot']>0 AND $d2['bobot']<=6) ? "<span id=bobot__$id_jadwal>$d2[bobot]</span> SKS" : '<span class=red>invalid bobot SKS</span>';
@@ -263,8 +233,9 @@ while ($d=mysqli_fetch_assoc($q)) {
           <span class=debug style=background:yellow>id_jadwal:$id_jadwal | </debug>
         </div>
         <div class=darkblue>$jadwal_show | Dosen: $nama_dosen</div>
+        <div class='kecil miring mb1' id=awal_kuliah_show__$id_jadwal>Jam Kuliah : $awal_kuliah_show</div>
       </td>
-      <td width=40% class=''>$blok_awal_kuliah</td>
+      <td width=40% class=''>$blok_ruangan_tersedia</td>
     </tr>    
     ";
   } //end while list MK
@@ -305,8 +276,8 @@ while ($d=mysqli_fetch_assoc($q)) {
           <th>No</th>
           <th>Mata Kuliah</th>
           <th class=proper>
-            Awal Perkuliahan $shift
-            <div class='kecil darkblue consolas'>Mulai Kuliah: $awal_kuliah_uts</div>
+            Assign Ruangan
+            <div class='kecil abu miring' style=font-weight:normal>)* Ruang Zoom dianggap mempunyai kapasitas unlimited.</div>
           </th>
         </thead>
         

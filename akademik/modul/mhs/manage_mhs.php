@@ -1,20 +1,5 @@
 <h1>Manage Mahasiswa</h1>
 <?php
-// if(isset($_POST['btn_buat_sesi_default'])){
-//   $id_dosen = $_POST['id_dosen'];
-  
-//   $s = "INSERT INTO tb_sesi_kuliah (
-//     kelas,
-//     pertemuan_ke,
-//     id_dosen,
-//     nama
-//     ) VALUES $values";
-//   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-
-//   echo div_alert('success',"Membuat $jumlah_sesi Sesi Kuliah Default berhasil.<hr><a href='?manage_sesi&kelas=$kelas'>Lanjutkan Proses</a>");
-//   exit;
-  
-// }
 
 
 

@@ -23,10 +23,14 @@ switch ($c[0]){
   case 'manage_jadwal': $konten = 'modul/jadwal/manage_jadwal.php';break;
   case 'manage_jadwal_dosen': $konten = 'modul/jadwal/manage_jadwal_dosen.php';break;
   case 'manage_awal_kuliah': $konten = 'modul/jadwal/manage_awal_kuliah.php';break;
-  case 'manage_ruang_dosen': $konten = 'modul/jadwal/manage_ruang_dosen.php';break;
+  case 'manage_ruang_mengajar_dosen': $konten = 'modul/jadwal/manage_ruang_mengajar_dosen.php';break;
+  case 'assign_ruang_mengajar_dosen': $konten = 'modul/jadwal/assign_ruang_mengajar_dosen.php';break;
   
   case 'manage_sesi': $konten = 'modul/sesi/manage_sesi.php';break;
   case 'manage_sesi_detail': $konten = 'modul/sesi/manage_sesi_detail.php';break;
+  case 'reset_assign_ruang': $konten = 'modul/sesi/reset_assign_ruang.php';break;
+  case 'reset_presensi_dosen': $konten = 'modul/sesi/reset_presensi_dosen.php';break;
+  case 'reset_presensi_mhs': $konten = 'modul/sesi/reset_presensi_mhs.php';break;
   
   case 'cek_all_sesi': $konten = 'modul/sesi_kuliah/cek_all_sesi.php';break;
   

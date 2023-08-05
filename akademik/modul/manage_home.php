@@ -21,8 +21,9 @@ if(!$izin) echo div_alert('danger','Maaf, hanya Bagian Akademik yang berhak meng
   array_push($rmanage, ['peserta','manage_peserta','assign mhs ke kelasnya']);
   array_push($rmanage, ['jadwal#1','manage_jadwal','assign dosen ke kurikulum']);
   array_push($rmanage, ['jadwal#2','manage_awal_kuliah','manage awal perkuliahan']);
-  array_push($rmanage, ['jadwal#3','manage_ruang','assign ruangan pada jadwal']);
-  array_push($rmanage, ['sesi','manage_sesi','seting tanggal tiap sesi']);
+  array_push($rmanage, ['sesi kuliah','manage_sesi','seting tanggal tiap sesi']);
+  array_push($rmanage, ['ruang#1','manage_ruang_mengajar_dosen','assign ruang untuk dosen mengajar ']);
+  array_push($rmanage, ['ruang#2','manage_ruang_belajar_mhs','assign ruang untuk belajar mhs ']);
   array_push($rmanage, ['mhs','manage_mhs','manage aktifitas mhs']);
   array_push($rmanage, ['dosen','monitoring_sks_dosen','manage aktifitas dosen']);
   array_push($rmanage, ['mhs aktif','mhs_aktif','manage mhs aktif']);

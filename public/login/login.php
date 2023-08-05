@@ -1,5 +1,5 @@
 <?php 
-$username= isset($_GET['username']) ? $_GET['username'] : '';
+$username= isset($_GET['username']) ? $_GET['username'] : $username;
 ?>
 <form method="post">
   <table width="100%">

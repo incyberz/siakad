@@ -1,9 +1,12 @@
 <?php
 $today = date('Y-m-d');
 $now = date('H:i');
-$awal_perkuliahan_show = date('d M Y',strtotime($awal_perkuliahan));
+$minggu_awal_perkuliahan_show = date('d M Y',strtotime($minggu_awal_perkuliahan));
 
-$jam_pagi = $shift=='pagi' ? '08:00' : '17:00';
+
+$awal_kuliah_date = date('Y-m-d',strtotime($awal_kuliah));
+$pukul = date('H:i',strtotime($awal_kuliah));
+
 
 $form = "
   <hr>
@@ -16,15 +19,15 @@ $form = "
     <input class=debug name=sesi_uas value='$sesi_uas'>
     <input class=debug name=bobot value='$bobot'>
     <div class='mb2'>
-      <label for=awal_perkuliahan>Tanggal Sesi Pertama</label>
-      <input class='form-control' type=date value='$awal_perkuliahan' required name=awal_perkuliahan id=awal_perkuliahan>
+      <label for=awal_perkuliahan>Tanggal Sesi Pertama <b class=darkblue>$nama_mk | $kode_mk</b></label>
+      <input class='form-control' type=date value='$awal_kuliah_date' required name=awal_perkuliahan id=awal_perkuliahan>
       <div class='miring'>
-        <p>Sesi Pertama harus mengacu pada Awal Perkuliahan ($awal_perkuliahan_show) | <a href='?manage_semester&id_semester=$id_semester' target=_blank>Lihat Seting Tanggal Semester</a>.</p>
+        <p>Sesi Pertama harus mengacu pada Minggu Awal Perkuliahan ($minggu_awal_perkuliahan_show) | <a href='?manage_semester&id_semester=$id_semester' target=_blank>Lihat Seting Tanggal Semester</a>.</p>
       </div>
     </div>
     <div class='mb2'>
       <label for=pukul_p1 class='proper tebal darkred'>Pukul (Kelas $shift)</label>
-      <input class='form-control' type=time value='$jam_pagi' required name=pukul_p1 id=pukul_p1>
+      <input class='form-control' type=time value='$pukul' required name=pukul_p1 id=pukul_p1>
       <div class=' miring'>Silahkan tentukan Jam Perkuliahan <span class='tebal darkred'>kelas $shift</span> !</div>
     </div>
 
@@ -63,5 +66,5 @@ $manage_tanggal_semester = div_alert('danger',"Awal Perkuliahan belum di set pad
 ?>
 <div class='alert alert-info'>
   <div class='alert alert-danger'><b>Belum ada sesi untuk jadwal ini</b></div> 
-  <?php echo $awal_perkuliahan=='' ? $manage_tanggal_semester : $form; ?>
+  <?php echo $minggu_awal_perkuliahan=='' ? $manage_tanggal_semester : $form; ?>
 </div>

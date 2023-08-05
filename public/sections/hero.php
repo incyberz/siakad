@@ -10,18 +10,18 @@ if($is_login){
 }
 ?>
 
-<div style="display: <?=$hide_hero ?> !important">
+<div style="display: <?=$hide_hero ?> ">
   <section id="hero" class="d-flex align-items-center">
-
+    
     <div class="container">
       <div class="row">
         <div class="col-lg-6 pt-5 pt-lg-0 order-2 order-lg-1 d-flex flex-column justify-content-center">
-
+          
           <?php include "public/login/login_process.php"; ?>
 
         </div>
         <div class="col-lg-6 order-1 order-lg-2 hero-img" data-aos="fade-left" data-aos-delay="200">
-          <img src="assets/img/hero-img.png" class="img-fluid animated" alt="">
+          <img src="assets/img/hero-img.png" class="img-fluid animated">
         </div>
       </div>
     </div>
