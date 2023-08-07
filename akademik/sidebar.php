@@ -1,3 +1,10 @@
+<style>.badge-danger{background:#f33}</style>
+<?php
+$s = "SELECT sum(unsetting) as unsetting_count FROM tb_unsetting";
+$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+$d=mysqli_fetch_assoc($q);
+$unsetting_count = $d['unsetting_count'];
+?>
 <aside>
   <div id="sidebar" class="nav-collapse ">
     <ul class="sidebar-menu">
@@ -8,7 +15,7 @@
       ?>
       <li class=proper><a href="?"><i class="icon_easel_alt"></i>Dashboard</a></li>
       <li class=proper><a href="?manage_master"><i class="icon_genius"></i>Master</a></li>
-      <li class=proper><a href="?manage"><i class="icon_genius"></i>Manage</a></li>
+      <li class=proper><a href="?manage"><i class="icon_genius"></i>Manage <span class="badge badge-danger"><?=$unsetting_count?></span></a></li>
       <!-- <li class=proper><a href="?master&p=kalender"><i class="icon_genius"></i>Manage Kalender</a></li>
       <li class=proper><a href="?master&p=kurikulum"><i class="icon_genius"></i>Manage Kurikulum</a></li>
       <li class=proper><a href="?manage_jadwal"><i class="icon_genius"></i>Manage Jadwal</a></li>

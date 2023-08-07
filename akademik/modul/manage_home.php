@@ -8,41 +8,53 @@
 ||$admin_level==9
 ) ? 1 : 0;
 if(!$izin) echo div_alert('danger','Maaf, hanya Bagian Akademik yang berhak mengakses Menu ini.');
-?>
-<div class="master-home">
 
-  <?php
-  $rmanage = [];
-  array_push($rmanage, ['master','manage_master','Awal seting Data Master']);
-  array_push($rmanage, ['kalender','manage_kalender','Awal seting Kalender Induk']);
-  array_push($rmanage, ['semester','manage_kalender','Seting penanggalan semester']);
-  array_push($rmanage, ['kurikulum','manage_kurikulum','assign mk ke kurikulum']);
-  array_push($rmanage, ['kelas','manage_kelas','assign kelas ke jadwal']);
-  array_push($rmanage, ['peserta','manage_peserta','assign mhs ke kelasnya']);
-  array_push($rmanage, ['jadwal#1','manage_jadwal','assign dosen ke kurikulum']);
-  array_push($rmanage, ['jadwal#2','manage_awal_kuliah','manage awal perkuliahan']);
-  array_push($rmanage, ['sesi kuliah','manage_sesi','seting tanggal tiap sesi']);
-  array_push($rmanage, ['ruang#1','manage_ruang_mengajar_dosen','assign ruang untuk dosen mengajar ']);
-  array_push($rmanage, ['ruang#2','manage_ruang_belajar_mhs','assign ruang untuk belajar mhs ']);
-  array_push($rmanage, ['mhs','manage_mhs','manage aktifitas mhs']);
-  array_push($rmanage, ['dosen','monitoring_sks_dosen','manage aktifitas dosen']);
-  array_push($rmanage, ['mhs aktif','mhs_aktif','manage mhs aktif']);
+$rmanage = [];      // caption  link            keterangan               tb 
+array_push($rmanage, ['master','manage_master','Awal seting Data Master']);
+array_push($rmanage, ['kalender','manage_kalender','Awal seting Kalender Induk']);
+array_push($rmanage, ['semester','manage_kalender','Seting penanggalan semester']);
+array_push($rmanage, ['kurikulum','manage_kurikulum','assign mk ke kurikulum']);
+array_push($rmanage, ['kelas','manage_kelas','assign kelas ke jadwal']);
+array_push($rmanage, ['peserta','manage_peserta','assign mhs ke kelasnya']);
+array_push($rmanage, ['jadwal','manage_jadwal','assign dosen ke kurikulum']);
+array_push($rmanage, ['awal_kuliah','manage_awal_kuliah','manage awal perkuliahan']);
+array_push($rmanage, ['sesi_kuliah','manage_sesi','seting tanggal tiap sesi']);
+array_push($rmanage, ['ruang','manage_ruang','assign ruang untuk jadwal ']);
+array_push($rmanage, ['mhs','manage_mhs','manage aktifitas mhs']);
+array_push($rmanage, ['dosen','monitoring_sks_dosen','manage aktifitas dosen']);
+array_push($rmanage, ['mhs_aktif','mhs_aktif','manage mhs aktif']);
 
 
-  for ($i=0; $i < count($rmanage); $i++) { 
-    $href = $izin ? '?'.$rmanage[$i][1] : '#';
-    $no_manage = $i+1;
-    echo "
-    <div class='item-master'>
-      <div>
-        <div class=tengah>
-          <div class=no_manage>$no_manage</div>
-        </div>
-        <a href='$href'>manage<br> ".$rmanage[$i][0]."</a>
-        <div class=ket_manage>".$rmanage[$i][2]."</div>
+$s = "SELECT __";
+$div = '';
+for ($i=0; $i < count($rmanage); $i++) { 
+  $capt = $rmanage[$i][0];
+  $s .= ",(SELECT unsetting FROM tb_unsetting WHERE kolom='$capt') unsetting_count__$capt";
+}
+$s = str_replace('__,','',$s);
+$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+$d = mysqli_fetch_assoc($q);
+
+$div = '';
+for ($i=0; $i < count($rmanage); $i++) { 
+  $capt = $rmanage[$i][0];
+  $caption = str_replace('_',' ',$capt);
+  $href = $izin ? '?'.$rmanage[$i][1] : '#';
+  $no_manage = $i+1;
+  $unsetting_count = $d['unsetting_count__'.$capt];
+
+  $div.= "
+  <div class='item-master'>
+    <div>
+      <div class=tengah>
+        <div class=no_manage>$no_manage</div>
       </div>
+      <a href='$href'>manage<br> $caption</a>
+      <div class=ket_manage>".$rmanage[$i][2]." <span class='badge badge-danger'>$unsetting_count</span></div>
     </div>
-    ";
-  }
-  ?>
-</div>
+  </div>
+  ";
+}
+
+echo "<div class='master-home'>$div</div>";
+?>

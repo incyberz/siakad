@@ -1,4 +1,4 @@
-<h1>MANAGE JADWAL</h1>
+<h1>Manage Jadwal</h1>
 <p>Proses assign dosen terhadap tiap MK yang ada pada Kurikulum.</p>
 <?php
 $angkatan = $_GET['angkatan'] ?? '';
@@ -8,6 +8,34 @@ include 'include/include_rjenjang.php';
 
 
 if($angkatan=='' || $jenjang==''){
+
+  $s = "SELECT 1 FROM tb_kurikulum a JOIN tb_kurikulum_mk b ON b.id_kurikulum=a.id ";
+  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  $total_mk = mysqli_num_rows($q);
+  $s = "SELECT 1 FROM tb_kurikulum a JOIN tb_kurikulum_mk b ON b.id_kurikulum=a.id JOIN tb_jadwal c ON c.id_kurikulum_mk=b.id ";
+  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  $total_jadwal = mysqli_num_rows($q);
+  $unsetting = $total_mk-$total_jadwal;
+  
+  // echo "<h1>total MK : $total_mk | $total_jadwal </h1>";
+
+  $allsetting = $total_mk;
+  $settinged = $allsetting-$unsetting;
+  $persen_setting = $allsetting==0 ? 0 : round(($settinged/$allsetting)*100,2);
+
+  $green_color = intval($persen_setting/100*155);
+  $red_color = intval((100-$persen_setting)/100*255);
+  $rgb = "rgb($red_color,$green_color,50)";
+  echo "
+  <div class='kecil miring consolas' style='color:$rgb'>Progres Penjadwalan Dosen : $persen_setting% | $settinged of $allsetting Jadwal</div>
+  <div class=progress>
+    <div class='progress-bar progress-bar-danger' style='width:$persen_setting%;background:$rgb;'></div>
+  </div>
+  ";
+
+  $s = "INSERT INTO tb_unsetting (kolom,unsetting,total) VALUES ('jadwal',$unsetting,$allsetting) ON DUPLICATE KEY UPDATE unsetting=$unsetting,total=$allsetting";
+  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+
   echo "<div class='mb2 biru'>Silahkan klik salah satu Kurikulum untuk Penjadwalan Dosen! </div>";
   foreach ($rangkatan as $key => $angkatan) {
     echo "<div class=wadah><h3 class=mb2>Angkatan $angkatan</h3>";

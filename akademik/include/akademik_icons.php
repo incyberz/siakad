@@ -18,6 +18,7 @@ $aksi = [
 'new',
 'drop',
 'assign',
+'merge',
 'help',
 'login_as',
 'detail',

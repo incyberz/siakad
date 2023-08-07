@@ -1,4 +1,4 @@
-<h1>MANAGE SESI KULIAH</h1>
+<h1>Manage Sesi Kuliah</h1>
 <p>Manage Sesi hanya bisa dilakukan setelah adanya Penjadwalan Dosen dan Awal Perkuliahan sudah ditentukan.</p>
 <?php 
 $id_kurikulum = $_GET['id_kurikulum'] ?? '';
@@ -7,7 +7,17 @@ if($id_kurikulum==''){
   a.id as id_kurikulum,
   b.angkatan,
   b.jenjang,
-  c.singkatan  
+  c.singkatan, 
+  (
+    SELECT count(1) FROM tb_kurikulum p 
+    JOIN tb_kurikulum_mk q ON q.id_kurikulum=p.id 
+    JOIN tb_jadwal r ON r.id_kurikulum_mk=q.id
+    WHERE r.shift='pagi' AND p.id=a.id) total_jadwal_pagi,   
+  (
+    SELECT count(1) FROM tb_kurikulum p 
+    JOIN tb_kurikulum_mk q ON q.id_kurikulum=p.id 
+    JOIN tb_jadwal r ON r.id_kurikulum_mk=q.id
+    WHERE r.shift='sore' AND p.id=a.id) total_jadwal_sore   
   FROM tb_kurikulum a 
   JOIN tb_kalender b ON a.id_kalender=b.id
   JOIN tb_prodi c ON a.id_prodi=c.id
@@ -24,12 +34,29 @@ if($id_kurikulum==''){
     $border = $last_angkatan==$d['angkatan'] ? '' : 'style="border-top: solid 6px #faf"';
     $green = $d['jenjang']=='D3' ? 'green gradasi-hijau' : 'darkblue gradasi-biru';
     $primary = $d['jenjang']=='D3' ? 'success' : 'primary';
+
+    // if($d['total_jadwal_pagi']){
+    //   $s2 = "SELECT 1 FROM tb_sesi_kuliah a 
+    //   JOIN tb_jadwal b ON a.id_jadwal=b.id 
+    //   WHERE b.id=$d[]";
+    // }else{
+    //   $unsetting_pagi=0;
+    // }
+    $unsetting_pagi=0;
+    $unsetting_sore=0;
+
     $tr .= "
     <tr class='$green' $border>
       <td>$i</td>
-      <td>$d[angkatan]</td>
-      <td>$d[jenjang]-$d[singkatan]</td>
-      <td><a class='btn btn-$primary btn-sm' href='?manage_sesi&id_kurikulum=$d[id_kurikulum]'>Manage Sesi</a></td>
+      <td>$d[jenjang]-$d[singkatan]-$d[angkatan]</td>
+      <td class='hideit zzz here'>
+        <div>$unsetting_pagi of $d[total_jadwal_pagi] Jadwal Pagi</div>
+        <div>$unsetting_sore of $d[total_jadwal_sore] Jadwal Sore</div>
+      </td>
+      <td>
+        <a class='btn btn-$primary btn-sm' href='?manage_sesi&id_kurikulum=$d[id_kurikulum]&shift=pagi'>Manage Sesi Pagi</a>
+        <a class='btn btn-$primary btn-sm' href='?manage_sesi&id_kurikulum=$d[id_kurikulum]&shift=sore'>Manage Sesi sore</a>
+      </td>
     </tr>
     ";
     $last_angkatan=$d['angkatan'];
@@ -40,8 +67,8 @@ if($id_kurikulum==''){
   <table class='table'>
     <thead>
       <th>No</th>
-      <th>Angkatan</th>
-      <th>Prodi</th>
+      <th>Kurikulum</th>
+      <th class='hideit zzz here'>Unsetting Sesi</th>
       <th>Aksi</th>
     </thead>
     $tr

@@ -1,12 +1,14 @@
-<h1>MANAGE KALENDER</h1>
+<h1>Manage Kalender dan Semester</h1>
 <p>Pada menu ini Anda dapat Seting Kalender dan Penanggalan tiap Semesternya.</p>
+
 <?php
 if(isset($_POST['btn_delete_kalender'])){
-  $z = parse_url($_SERVER['REQUEST_URI']);
-  $uq = $z['query'];
   $s = "DELETE FROM tb_kalender WHERE id='$_POST[btn_delete_kalender]'";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   echo div_alert('success', 'Delete Kalender berhasil.');
+
+  $z = parse_url($_SERVER['REQUEST_URI']);
+  $uq = $z['query'];
   echo "<script>location.replace('?$uq')</script>";  
   exit;
 }
@@ -18,15 +20,22 @@ if($id_kalender==''){
   include 'include/include_rangkatan.php';
   include 'include/include_rjenjang.php';
   if($angkatan=='' || $jenjang==''){
-    echo "<div class=mb2>Untuk angkatan: </div>";
+    $unsetting = 0;
+    $allsetting = 0;
+    $div = '<div class="mb2 biru">Silahkan pilih salah satu Angkatan untuk Manage Kalender dan Penanggalan Semester: </div>';
     foreach ($rangkatan as $key => $angkatan) {
-      echo "<div class=wadah><div class=mb2>Angkatan $angkatan</div>";
+      $div .= "<div class=wadah><div class=mb2>Angkatan $angkatan</div>";
       // echo " <a class='btn btn-info' href='?manage_kalender&angkatan=$angkatan'>$angkatan</a>";
       foreach ($rjenjang as $key => $jenjang) {
         $info = $jenjang=='D3' ? 'success' : 'info';
 
-        $s = "SELECT id as id_kalender,
-        (SELECT count(1) FROM tb_semester WHERE id_kalender=a.id) jumlah_semester 
+        $s = "SELECT id as id_kalender, 
+        (
+          SELECT count(1) FROM tb_semester 
+          WHERE id_kalender=a.id AND last_update IS NOT NULL) jumlah_semester_updated, 
+        (
+          SELECT count(1) FROM tb_semester 
+          WHERE id_kalender=a.id) jumlah_semester 
         FROM tb_kalender a WHERE a.jenjang='$jenjang' AND a.angkatan=$angkatan";
         // echo "<h1 class=debug>$s</h1>";
         $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
@@ -39,19 +48,43 @@ if($id_kalender==''){
           }
           echo '</div>';
           exit;
-        }
-        if(mysqli_num_rows($q)){
+        }elseif(mysqli_num_rows($q)==1){
           $d=mysqli_fetch_assoc($q);
           $jumlah_semester = $d['jumlah_semester'];
+          $jumlah_semester_updated = $d['jumlah_semester_updated'];
           $bred = $jumlah_semester==$rjumlah_semester[$jenjang] ? '' : 'style="border: solid 2px red"';
 
-          echo " <a class='btn btn-$info' href='?manage_kalender&angkatan=$angkatan&jenjang=$jenjang' $bred>$angkatan-$jenjang <span class=debug>id:$d[id_kalender]</span></a>";
+          $unsetting += ($jumlah_semester-$jumlah_semester_updated);
+          $allsetting += $jumlah_semester;
+
+          $smt_lengkap = $jumlah_semester==$jumlah_semester_updated 
+          ? "<div class='green miring small mb3'>Penanggalan Semester sudah terisi.</div>"
+          : "<div class='red miring small mb3'>Penanggalan Semester: $jumlah_semester_updated of $jumlah_semester</div>";
+
+          $div.="<div class=mb1><a class='btn btn-$info' href='?manage_kalender&angkatan=$angkatan&jenjang=$jenjang' $bred>$angkatan-$jenjang <span class=debug>id:$d[id_kalender]</span></a></div>$smt_lengkap";
         }else{
-          echo " <a class='btn btn-primary' href='?manage_kalender&angkatan=$angkatan&jenjang=$jenjang'>AutoCreate Kalender $angkatan-$jenjang</a>";
+          $div.=" <a class='btn btn-primary' href='?manage_kalender&angkatan=$angkatan&jenjang=$jenjang'>AutoCreate Kalender $angkatan-$jenjang</a>";
         }
       }
-      echo '</div>';
+      $div.='</div>';
     }
+
+    $settinged = $allsetting-$unsetting;
+    $persen_setting = $allsetting==0 ? 0 : round(($settinged/$allsetting)*100,1);
+
+    $green_color = intval($persen_setting/100*155);
+    $red_color = intval((100-$persen_setting)/100*255);
+    $rgb = "rgb($red_color,$green_color,50)";
+    echo "
+    <div class='kecil miring consolas' style='color:$rgb'>Progres Seting Semester : $persen_setting% | $settinged of $allsetting</div>
+    <div class=progress>
+      <div class='progress-bar progress-bar-danger' style='width:$persen_setting%;background:$rgb;'></div>
+    </div>
+    $div
+    ";
+
+    $s = "INSERT INTO tb_unsetting (kolom,unsetting,total) VALUES ('semester',$unsetting,$allsetting) ON DUPLICATE KEY UPDATE unsetting=$unsetting,total=$allsetting";
+    $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
     exit;
   }
 

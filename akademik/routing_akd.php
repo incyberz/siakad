@@ -20,6 +20,8 @@ switch ($c[0]){
   case 'manage_kalender': $konten = 'modul/kalender/manage_kalender.php';break;
   case 'manage_semester': $konten = 'modul/semester/manage_semester.php';break;
   case 'manage_kurikulum': $konten = 'modul/kurikulum/manage_kurikulum.php';break;
+  case 'merge_mk': $konten = 'modul/kurikulum/merge_mk.php';break;
+
   case 'manage_jadwal': $konten = 'modul/jadwal/manage_jadwal.php';break;
   case 'manage_jadwal_dosen': $konten = 'modul/jadwal/manage_jadwal_dosen.php';break;
   case 'manage_awal_kuliah': $konten = 'modul/jadwal/manage_awal_kuliah.php';break;

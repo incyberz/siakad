@@ -3,11 +3,56 @@
 <?php 
 $id_kurikulum = $_GET['id_kurikulum'] ?? '';
 if($id_kurikulum==''){
+
+  $s = "SELECT 1 FROM tb_kurikulum a 
+  JOIN tb_kurikulum_mk b ON b.id_kurikulum=a.id 
+  JOIN tb_jadwal c ON c.id_kurikulum_mk=b.id ";
+  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  $allsetting = mysqli_num_rows($q);
+  
+  $s = "SELECT 1 FROM tb_kurikulum a 
+  JOIN tb_kurikulum_mk b ON b.id_kurikulum=a.id 
+  JOIN tb_jadwal c ON c.id_kurikulum_mk=b.id 
+  WHERE c.awal_kuliah is null 
+  ";
+  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  $unsetting = mysqli_num_rows($q);
+  
+  $settinged = $allsetting-$unsetting;
+  $persen_setting = $allsetting==0 ? 0 : round(($settinged/$allsetting)*100,2);
+
+  $green_color = intval($persen_setting/100*155);
+  $red_color = intval((100-$persen_setting)/100*255);
+  $rgb = "rgb($red_color,$green_color,50)";
+  echo "
+  <div class='kecil miring consolas' style='color:$rgb'>Progres Manage Awal Kuliah : $persen_setting% | $settinged of $allsetting Jadwal</div>
+  <div class=progress>
+    <div class='progress-bar progress-bar-danger' style='width:$persen_setting%;background:$rgb;'></div>
+  </div>
+  ";
+
+  $s = "INSERT INTO tb_unsetting (kolom,unsetting,total) VALUES ('awal_kuliah',$unsetting,$allsetting) ON DUPLICATE KEY UPDATE unsetting=$unsetting,total=$allsetting";
+  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+
+
+
+
+
+
   $s = "SELECT 
   a.id as id_kurikulum,
   b.angkatan,
   b.jenjang,
-  c.singkatan  
+  c.singkatan,
+  (SELECT count(1) FROM tb_kurikulum p 
+  JOIN tb_kurikulum_mk q ON q.id_kurikulum=p.id 
+  JOIN tb_jadwal r ON r.id_kurikulum_mk=q.id 
+  WHERE r.awal_kuliah is null AND p.id=a.id AND r.shift='pagi') unsetting_pagi, 
+  (SELECT count(1) FROM tb_kurikulum p 
+  JOIN tb_kurikulum_mk q ON q.id_kurikulum=p.id 
+  JOIN tb_jadwal r ON r.id_kurikulum_mk=q.id 
+  WHERE r.awal_kuliah is null AND p.id=a.id AND r.shift='sore') unsetting_sore  
+
   FROM tb_kurikulum a 
   JOIN tb_kalender b ON a.id_kalender=b.id
   JOIN tb_prodi c ON a.id_prodi=c.id
@@ -22,14 +67,24 @@ if($id_kurikulum==''){
   while ($d=mysqli_fetch_assoc($q)) {
     $i++;
     $border = $last_angkatan==$d['angkatan'] ? '' : 'style="border-top: solid 6px #faf"';
-    $green = $d['jenjang']=='D3' ? 'green gradasi-hijau' : 'darkblue gradasi-biru';
+    $gradasi = $d['jenjang']=='D3' ? 'green gradasi-hijau' : 'darkblue gradasi-biru';
     $primary = $d['jenjang']=='D3' ? 'success' : 'primary';
+    $merah = ($d['unsetting_pagi']||$d['unsetting_sore']) ? 'red' : '';
+    $unsetting_pagi_show = $d['unsetting_pagi'] ? "<span class='red bold'>$d[unsetting_pagi] unsetting awal kuliah pagi</span>" : '-';
+    $unsetting_sore_show = $d['unsetting_sore'] ? "<span class='red bold'>$d[unsetting_sore] unsetting awal kuliah sore</span>" : '-';
     $tr .= "
-    <tr class='$green' $border>
+    <tr class='$gradasi $merah' $border>
       <td>$i</td>
-      <td>$d[angkatan]</td>
-      <td>$d[jenjang]-$d[singkatan]</td>
-      <td><a class='btn btn-$primary btn-sm' href='?manage_awal_kuliah&id_kurikulum=$d[id_kurikulum]'>Manage Awal Kuliah</a></td>
+      <td>$d[jenjang]-$d[singkatan]-$d[angkatan]</td>
+      <td>
+        <div class=mb1>$unsetting_pagi_show</div>
+        <div class=mb1>$unsetting_sore_show</div>
+      </td>
+      <td>
+        <div class=mb1>
+        <a class='btn btn-$primary btn-sm' href='?manage_awal_kuliah&id_kurikulum=$d[id_kurikulum]&shift=pagi' target=_blank>Manage Awal Kuliah Pagi</a></div>
+        <a class='btn btn-$primary btn-sm' href='?manage_awal_kuliah&id_kurikulum=$d[id_kurikulum]&shift=sore' target=_blank>Manage Awal Kuliah Sore</a>
+      </td>
     </tr>
     ";
     $last_angkatan=$d['angkatan'];
@@ -40,8 +95,8 @@ if($id_kurikulum==''){
   <table class='table'>
     <thead>
       <th>No</th>
-      <th>Angkatan</th>
-      <th>Prodi</th>
+      <th>Kurikulum</th>
+      <th>Unsetting Awal Kuliah</th>
       <th>Aksi</th>
     </thead>
     $tr

@@ -39,17 +39,6 @@ if(isset($_POST['btn_apply_setting'])){
   $durasi_uas -= 2; // kurangi 2 hari
   $akhir_uas = date('Y-m-d',strtotime("+$durasi_uas day",strtotime($awal_uas)));
 
-  // echo "
-  // <br>awal_bayar: $awal_bayar
-  // <br>akhir_bayar: $akhir_bayar
-  // <br>awal_krs: $awal_krs
-  // <br>akhir_krs: $akhir_krs
-  // <br>awal_kuliah_uts: $awal_kuliah_uts
-  // <br>awal_kuliah_uas: $awal_kuliah_uas
-  // <br>awal_uts: $awal_uts
-  // <br>awal_uas: $awal_uas
-  // ";
-
   $s = "UPDATE tb_semester SET 
   awal_bayar = '$awal_bayar',
   akhir_bayar = '$akhir_bayar',

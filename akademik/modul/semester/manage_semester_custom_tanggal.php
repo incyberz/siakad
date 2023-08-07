@@ -70,6 +70,7 @@ $blok_tgl = "<div class='row'>$tr_smt</div>";
   <form method=post>
     <input class=debug name='id_semester' value='<?=$id_semester?>'>
     <h3 class='m0 mb2'>Custom Aturan Tanggal</h3>
+    <p class='biru miring mb2'>Anda dapat mengubah kembali batasan penanggalan secara manual.</p>
     <?=$blok_tgl ?>
     <button class='btn btn-primary btn-block' name=btn_simpan_aturan_tanggal>Simpan Aturan Tanggal</button>
   </form>
