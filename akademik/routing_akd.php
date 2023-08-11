@@ -62,6 +62,7 @@ switch ($c[0]){
   case 'mhs_aktif': $konten = 'modul/mhs/mhs_aktif.php';break;
   case 'list_mhs_aktif': $konten = 'modul/mhs/list_mhs_aktif.php';break;
   case 'login_as': $konten = 'modul/mhs/login_as.php';break;
+  case 'login_as_dosen': $konten = 'modul/dosen/login_as_dosen.php';break;
   
   case 'pembayaran_home': $konten = 'modul/pembayaran/pembayaran_home.php';break;
   case 'pembayaran_manual': $konten = 'modul/pembayaran/pembayaran_manual.php';break;

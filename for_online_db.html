@@ -9,4 +9,13 @@ ALTER TABLE `tb_ruang` ADD `keterangan` VARCHAR(100) NULL DEFAULT NULL AFTER `ko
 UPDATE DATA RUANG
 
 
+
+
+
+INSERT ... pada excel
+import tb_nilai
+ALTER TABLE `tb_syarat_biaya` ADD `shift` VARCHAR(5) NOT NULL DEFAULT 'pagi' AFTER `keterangan`, ADD INDEX (`shift`);
+UPDATE `tb_biaya` SET `nominal_default` = '9000000' WHERE 1;
+
+
 -->

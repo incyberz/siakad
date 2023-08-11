@@ -1,5 +1,7 @@
 <h1>Manage Biaya Angkatan</h1>
 <?php
+include 'include/akademik_icons.php';
+
 if (isset($_POST['btn_set_biaya_default'])) {
   $angkatan = $_POST['angkatan'];
   $id_prodi = $_POST['id_prodi'];
@@ -23,6 +25,104 @@ if (isset($_POST['btn_set_biaya_default'])) {
 }
 
 // echo $s;
+
+
+# =====================================================
+# WAJIB ADA ANGKATAN + ID_PRODI + SHIFT
+# =====================================================
+$angkatan = $_GET['angkatan'] ?? '';
+$id_prodi = $_GET['id_prodi'] ?? '';
+$shift = $_GET['shift'] ?? '';
+$tr='';
+$i=0;
+$count_kurikulum=0;
+$unsetting=0;
+$last_angkatan = '';
+if($angkatan==''||$id_prodi==''||$shift==''){
+
+
+  $s = "SELECT 1 FROM tb_biaya";
+  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  $count_biaya = mysqli_num_rows($q);
+
+  $s = "SELECT angkatan FROM tb_angkatan";
+  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  $link='';
+  while ($d=mysqli_fetch_assoc($q)) {
+    $angkatan = $d['angkatan'];
+    $s2 = "SELECT a.id as id_prodi,a.singkatan,a.jenjang,
+    (SELECT count(1) FROM tb_biaya_angkatan WHERE angkatan=$angkatan AND id_prodi=a.id AND shift='pagi') count_pagi, 
+    (SELECT count(1) FROM tb_biaya_angkatan WHERE angkatan=$angkatan AND id_prodi=a.id AND shift='sore') count_sore 
+    FROM tb_prodi a ";
+    $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
+    while ($d2=mysqli_fetch_assoc($q2)) {
+      $i++;
+      $count_kurikulum++;
+      $border = $last_angkatan!=$angkatan ? 'style="border-top:solid 8px #faf"' : '';
+      $prodi = $d2['singkatan'];
+      $id_prodi = $d2['id_prodi'];
+      $jenjang = $d2['jenjang'];
+      $gradasi = $d2['jenjang']=='S1' ? 'biru' : 'hijau';
+      $href = "?manage_biaya_angkatan&angkatan=$angkatan&id_prodi=$id_prodi";
+      $showof_pagi = $d2['count_pagi'] == $count_biaya ? $img_aksi['check'] : "<span class='red small tebal'>$d2[count_pagi] of $count_biaya</span>";
+      $showof_sore = $d2['count_sore'] == $count_biaya ? $img_aksi['check'] : "<span class='red small tebal'>$d2[count_sore] of $count_biaya</span>";
+      $unsetting+=($count_biaya-$d2['count_pagi']);
+      $unsetting+=($count_biaya-$d2['count_sore']);
+      $tr.="
+        <tr $border class='gradasi-$gradasi'>
+          <td>$i</td>
+          <td>$angkatan</td>
+          <td>$jenjang-$prodi</td>
+          <td>
+            <a class='btn btn-success btn-sm' href='$href&shift=pagi' target=_blank>Pagi</a>
+            $showof_pagi
+          </td>
+          <td>
+            <a class='btn btn-primary btn-sm' href='$href&shift=sore' target=_blank>Sore</a>
+            $showof_sore
+          </td>
+        </tr>
+      ";
+
+      $last_angkatan = $angkatan;
+
+      // echo "<div><a class='btn btn-$primary mb2 mt2 ' href='?manage_biaya_angkatan&angkatan=$angkatan&id_prodi=$d[id]'>$d[jenjang]-$d[singkatan]</a></div> ";
+    }
+    $link .= "<a class='btn btn-info btn-sm' href='?manage_biaya_angkatan&angkatan=$d[angkatan]'>$d[angkatan]</a> ";
+  }
+  // echo "<h4>Seting Biaya untuk Angkatan:</h4><div class=wadah>$link</div>";
+
+  $allsetting = $count_biaya * $count_kurikulum * 2; // 2 shift
+  $settinged = $allsetting-$unsetting;
+  $persen_setting = $allsetting==0 ? 0 : round(($settinged/$allsetting)*100,2);
+
+  $green_color = intval($persen_setting/100*155);
+  $red_color = intval((100-$persen_setting)/100*255);
+  $rgb = "rgb($red_color,$green_color,50)";
+  echo "
+    <div class='kecil miring consolas' style='color:$rgb'>Progres Manage : $persen_setting% | $settinged of $allsetting Biaya Angkatan</div>
+    <div class=progress>
+      <div class='progress-bar progress-bar-danger' style='width:$persen_setting%;background:$rgb;'></div>
+    </div>
+
+    <table class=table>
+      <thead>
+        <th>No</th>
+        <th>Angkatan</th>
+        <th>Prodi</th>
+        <th colspan=2>Manage Biaya</th>
+      </thead>
+      $tr
+    </table>
+  ";
+
+  $s = "INSERT INTO tb_unsetting (kolom,unsetting,total,untuk) VALUES ('biaya_angkatan',$unsetting,$allsetting,'bau') ON DUPLICATE KEY UPDATE unsetting=$unsetting,total=$allsetting";
+  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  
+  
+  exit;
+}
+
 
 
 # =====================================================
@@ -110,7 +210,7 @@ $null = '<code class=miring>null</code>';
 while ($d=mysqli_fetch_assoc($q)) {
   $i++;
   $nominal = $d['nominal']=='' ? $d['nominal_default'] : $d['nominal'];
-  $def = $d['nominal']=='' ? '<code>(nominal default)</code>' : '<span class="biru consolas">(custom)</span>';
+  $def = $d['nominal']=='' ? '<code>(nominal default)</code>' : '<span class="biru consolas">'.$img_aksi['check'].'</span>';
   $besar_cicilan = $d['besar_cicilan']=='' ? $null : $d['besar_cicilan'];
   $id = $d['id'];
   $idx = $angkatan."__$id_prodi"."__$id";

@@ -15,7 +15,7 @@ if($event==''){
   exit;
 }
 
-$angkatan = isset($_GET['angkatan']) ? $_GET['angkatan'] : '';
+$angkatan = $_GET['angkatan'] ?? '';
 if($angkatan==''){
   $s = "SELECT angkatan FROM tb_angkatan";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
@@ -27,18 +27,28 @@ if($angkatan==''){
   exit;
 }
 
-$id_prodi = isset($_GET['id_prodi']) ? $_GET['id_prodi'] : '';
+$id_prodi = $_GET['id_prodi'] ?? '';
 if($id_prodi==''){
   echo "<div>Seting Biaya $event untuk angkatan $angkatan prodi:</div>";
-  $s = "SELECT id,nama,jenjang FROM tb_prodi";
+  $s = "SELECT id,singkatan,jenjang FROM tb_prodi";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   while ($d=mysqli_fetch_assoc($q)) {
-    $d['nama'] = strtoupper($d['nama']);
+    $d['singkatan'] = strtoupper($d['singkatan']);
     $primary = $d['jenjang']=='S1' ? 'primary' : 'success';
-    echo "<div><a class='btn btn-$primary mb2 mt2 btn-blocks' href='?manage_syarat_biaya&event=$event&angkatan=$angkatan&id_prodi=$d[id]'>$d[jenjang]-$d[nama]</a></div> ";
+    echo "
+    <div>
+      <a class='btn btn-$primary mb2 mt2 btn-blocks' href='?manage_syarat_biaya&event=$event&angkatan=$angkatan&id_prodi=$d[id]&shift=pagi'>
+        $d[jenjang]-$d[singkatan]-PAGI
+      </a> 
+      <a class='btn btn-$primary mb2 mt2 btn-blocks' href='?manage_syarat_biaya&event=$event&angkatan=$angkatan&id_prodi=$d[id]&shift=sore'>
+        $d[jenjang]-$d[singkatan]-SORE
+      </a>
+    </div> ";
   }
   exit;
 }
+
+$shift = $_GET['shift'] ?? die(erid('shift'));
 
 $s = "SELECT a.nama,a.singkatan,a.jenjang,b.jumlah_semester FROM tb_prodi a JOIN tb_jenjang b on a.jenjang=b.jenjang where a.id=$id_prodi";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
@@ -68,8 +78,8 @@ $id_kalender = $d['id_kalender'];
 
 if($event=='KRS'){
   $s = "SELECT a.*, a.id as id_biaya, 
-  (SELECT nominal FROM tb_biaya_angkatan WHERE id_biaya=a.id AND angkatan=$angkatan AND id_prodi=$id_prodi) nominal, 
-  (SELECT persen_biaya FROM tb_syarat_biaya WHERE id_biaya=a.id AND angkatan=$angkatan AND id_prodi=$id_prodi AND event='$event') persen_biaya 
+  (SELECT nominal FROM tb_biaya_angkatan WHERE id_biaya=a.id AND angkatan=$angkatan AND id_prodi=$id_prodi AND shift='pagi') nominal, 
+  (SELECT persen_biaya FROM tb_syarat_biaya WHERE id_biaya=a.id AND angkatan=$angkatan AND id_prodi=$id_prodi AND event='$event' AND shift='pagi') persen_biaya 
   FROM tb_biaya a 
   WHERE a.untuk_semester is not null 
   order by a.untuk_semester,a.no";
@@ -82,7 +92,7 @@ if($event=='KRS'){
 
     $border = $last_smt!=$d['untuk_semester'] ? 'style="border-top:solid 6px #fcf"' : '';
     $nominal = $d['nominal']=='' ? number_format($d['nominal_default']) : number_format($d['nominal']);
-    $nominal_info = $d['nominal']=='' ? ' ~ <span class="darkred kecil miring pointer text_zoom">(default)</span>' : ' ~ <span class="darkblue kecil miring pointer text_zoom">(custom angkatan)</span>';
+    $nominal_info = $d['nominal']=='' ? ' ~ <span class="darkred kecil miring pointer text_zoom">(masih nominal default)</span>' : ' ~ <span class="darkblue kecil miring pointer text_zoom">(custom angkatan)</span>';
 
     $persen_biaya = $d['persen_biaya'] ?? 100;
 
@@ -106,8 +116,8 @@ if($event=='KRS'){
   <table class=table>
     <thead>
       <th>Semester</th>
-      <th>Syarat Biaya <a href='?manage_syarat_biaya'>$event</a> <a href='?manage_syarat_biaya&event=KRS&angkatan=$angkatan'>$jenjang-$prodi</a>-<a href='?manage_syarat_biaya&event=KRS'>$angkatan</a></th>
-      <th>Nominal</th>
+      <th>Syarat Biaya <a href='?manage_syarat_biaya'>$event</a> <a href='?manage_syarat_biaya&event=KRS&angkatan=$angkatan'>$jenjang-$prodi</a>-<a href='?manage_syarat_biaya&event=KRS'>$angkatan</a> ~ <span class=darkblue>Kelas <span class=proper id=shift>$shift</span></span></th>
+      <th class='proper darkblue'>Nominal $shift</th>
       <th class=darkblue>Agar dapat $event,<br>harus bayar minimal</th>
     </thead>
     $tr

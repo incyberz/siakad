@@ -22,21 +22,21 @@ if(!$izin) echo div_alert('danger','Maaf, hanya Bagian Akademik yang berhak meng
   ?>
 </div>
 
-<div class="master-home">
+<!-- <div class="master-home"> -->
 
   <?php
-  $rmanual[0] = ['List KHS Manual','list_khs_manual'];
-  $rmanual[1] = ['input KHS Manual','input_khs_manual'];
-  $rmanual[2] = ['import KHS Manual','import_khs_manual'];
+  // $rmanual[0] = ['List KHS Manual','list_khs_manual'];
+  // $rmanual[1] = ['input KHS Manual','input_khs_manual'];
+  // $rmanual[2] = ['import KHS Manual','import_khs_manual'];
 
 
-  for ($i=0; $i < count($rmanual); $i++) { 
-    $href = $izin ? '?'.$rmanual[$i][1] : '#';
-    echo "
-    <div class='item-master'>
-      <div><a href='$href'>".$rmanual[$i][0]."</a></div>
-    </div>
-    ";
-  }
+  // for ($i=0; $i < count($rmanual); $i++) { 
+  //   $href = $izin ? '?'.$rmanual[$i][1] : '#';
+  //   echo "
+  //   <div class='item-master'>
+  //     <div><a href='$href'>".$rmanual[$i][0]."</a></div>
+  //   </div>
+  //   ";
+  // }
   ?>
-</div>
+<!-- </div> -->

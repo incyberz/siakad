@@ -4,6 +4,7 @@
 $judul = '<h1>Manage Sesi Detail</h1>';
 include 'form_buat_sesi_default_process.php';
 include 'form_hapus_all_sesi_process.php';
+include 'include/akademik_icons.php';
 
 $id_jadwal = $_GET['id_jadwal'] ?? die('<script>alert("ID Jadwal belum terdefinisi. Silahkan Manage Sesi !"); location.replace("?manage_sesi")</script>');
 
@@ -240,7 +241,8 @@ if(mysqli_num_rows($q)==0){
       </td>
       <td class='upper gradasi-$gradasi'>
         <a href='?master&p=sesi_kuliah&aksi=update&id=$d[id_sesi_kuliah]' class='tebal' target='_blank'>$d[nama_sesi]</a>
-        <br><i>Pengajar</i>: <a href='?master&p=dosen&id=$d[id_dosen]' target=_blank>$d[nama_dosen]</a>
+        <br><i>Pengajar</i>: <a href='?master&p=dosen&id=$d[id_dosen]' target=_blank  onclick='return confirm(\"Ingin menuju Laman Master Dosen?\")'>$d[nama_dosen]</a> 
+        <a href='?login_as_dosen&id_dosen=$d[id_dosen]' onclick='return confirm(\"Ingin Login sebagai Dosen ini?\")' target=_blank>$img_aksi[login_as]</a>
         <br>$bobot SKS x 50 menit
         
       </td>

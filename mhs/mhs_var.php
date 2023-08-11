@@ -80,15 +80,29 @@ $admin_level=1; // zzz debug
 
 $id_kalender = '';
 $id_kurikulum = '';
+$id_semester = '';
 if($angkatan!='' and $jenjang!=''){
   $s = "SELECT a.id as id_kalender, 
   (SELECT id FROM tb_kurikulum WHERE id_kalender=a.id AND id_prodi=$id_prodi) as id_kurikulum  
   FROM tb_kalender a WHERE a.angkatan='$angkatan' AND a.jenjang='$jenjang'";
+
+  $s = "SELECT a.id as id_kurikulum,
+  b.id as id_kalender,
+  c.id as id_semester  
+  FROM tb_kurikulum a 
+  JOIN tb_kalender b ON a.id_kalender=b.id 
+  JOIN tb_semester c ON c.id_kalender=b.id 
+  WHERE b.angkatan='$angkatan' 
+  AND b.jenjang='$jenjang' 
+  AND a.id_prodi='$id_prodi' 
+  AND c.nomor='$d_mhs[semester_manual]'";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  if(mysqli_num_rows($q)>1) die(div_alert('danger', 'Duplikat Data Akademik pada mhs_var. Segera lapor Petugas!'));
   if(mysqli_num_rows($q)){
     $d=mysqli_fetch_assoc($q);
     $id_kalender = $d['id_kalender'];
     $id_kurikulum = $d['id_kurikulum'];
+    $id_semester = $d['id_semester'];
   }
 }
 

@@ -1,9 +1,15 @@
 <style>.badge-danger{background:#f33}</style>
 <?php
-$s = "SELECT sum(unsetting) as unsetting_count FROM tb_unsetting";
+$s = "SELECT 
+(
+  SELECT sum(unsetting) FROM tb_unsetting WHERE untuk='baak') unsetting_count_baak,
+(
+  SELECT sum(unsetting) FROM tb_unsetting WHERE untuk='bau') unsetting_count_bau
+  ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $d=mysqli_fetch_assoc($q);
-$unsetting_count = $d['unsetting_count'];
+$unsetting_count_baak = $d['unsetting_count_baak'];
+$unsetting_count_bau = $d['unsetting_count_bau'];
 ?>
 <aside>
   <div id="sidebar" class="nav-collapse ">
@@ -15,7 +21,7 @@ $unsetting_count = $d['unsetting_count'];
       ?>
       <li class=proper><a href="?"><i class="icon_easel_alt"></i>Dashboard</a></li>
       <li class=proper><a href="?manage_master"><i class="icon_genius"></i>Master</a></li>
-      <li class=proper><a href="?manage"><i class="icon_genius"></i>Manage <span class="badge badge-danger"><?=$unsetting_count?></span></a></li>
+      <li class=proper><a href="?manage"><i class="icon_genius"></i>Manage <span class="badge badge-danger"><?=$unsetting_count_baak?></span></a></li>
       <!-- <li class=proper><a href="?master&p=kalender"><i class="icon_genius"></i>Manage Kalender</a></li>
       <li class=proper><a href="?master&p=kurikulum"><i class="icon_genius"></i>Manage Kurikulum</a></li>
       <li class=proper><a href="?manage_jadwal"><i class="icon_genius"></i>Manage Jadwal</a></li>
@@ -25,7 +31,7 @@ $unsetting_count = $d['unsetting_count'];
       <li class=proper><a href="?manage_mhs"><i class="icon_genius"></i>Manage Mhs</a></li> -->
       <!-- <li class=proper><a href="?dpnu"><i class="icon_genius"></i>DPNU</a></li> -->
 
-      <li class=proper><a href="?pembayaran_home"><i class="icon_genius"></i>Keuangan</a></li>
+      <li class=proper><a href="?pembayaran_home"><i class="icon_genius"></i>Keuangan <span class="badge badge-danger"><?=$unsetting_count_bau?></span></a></li>
       <!-- <li class=proper><a onclick="belom()"><i class="icon_genius"></i><span class=merah>Pembayaran</span></a></li> -->
       <!-- <li class=proper><a onclick="belom()"><i class="icon_genius"></i><span class=merah>KRS</span></a></li> -->
       <!-- <li class=proper><a onclick="belom()"><i class="icon_genius"></i><span class=merah>KHS</span></a></li> -->

@@ -292,7 +292,7 @@ $bg_progres = $total_mk_terjadwal==$total_mk ? '' : 'gradasi-merah merah';
 // echo "</pre>";
 echo "
 <div class='wadah gradasi-hijau'>
-  <h4 class='darkblue proper tebal'>Kurikulum <a href='?manage_jadwal'>$nama_kurikulum</a> kelas <a href='?manage_jadwal_dosen&id_kurikulum=$id_kurikulum' id=shift>$shift</a></h4>
+  <h4 class='darkblue proper tebal'>Kurikulum <a href='?manage_jadwal'>$nama_kurikulum</a> kelas <a href='?manage_jadwal_dosen&id_kurikulum=$id_kurikulum' id=shift>$shift</a> | <a href='?test_krs&id_kurikulum=$id_kurikulum' target=_blank >Test Jadwal</a></h4>
   <table class=table>
     <tr class='$bg_progres'><td>Progres Penjadwalan</td><td>$total_mk_terjadwal of $total_mk </td></tr>
     <tr><td>Jumlah Dosen terlibat</td><td>$total_dosen dosen</td></tr>

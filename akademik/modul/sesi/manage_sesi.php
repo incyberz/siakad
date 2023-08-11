@@ -12,12 +12,24 @@ if($id_kurikulum==''){
     SELECT count(1) FROM tb_kurikulum p 
     JOIN tb_kurikulum_mk q ON q.id_kurikulum=p.id 
     JOIN tb_jadwal r ON r.id_kurikulum_mk=q.id
-    WHERE r.shift='pagi' AND p.id=a.id) total_jadwal_pagi,   
+    JOIN tb_sesi_kuliah s ON s.id_jadwal=r.id 
+    WHERE r.shift='sore' AND p.id=a.id AND r.awal_kuliah is not null AND s.pertemuan_ke=1) count_sesi_sore,   
   (
     SELECT count(1) FROM tb_kurikulum p 
     JOIN tb_kurikulum_mk q ON q.id_kurikulum=p.id 
     JOIN tb_jadwal r ON r.id_kurikulum_mk=q.id
-    WHERE r.shift='sore' AND p.id=a.id) total_jadwal_sore   
+    JOIN tb_sesi_kuliah s ON s.id_jadwal=r.id 
+    WHERE r.shift='pagi' AND p.id=a.id AND r.awal_kuliah is not null AND s.pertemuan_ke=1) count_sesi_pagi,   
+  (
+    SELECT count(1) FROM tb_kurikulum p 
+    JOIN tb_kurikulum_mk q ON q.id_kurikulum=p.id 
+    JOIN tb_jadwal r ON r.id_kurikulum_mk=q.id
+    WHERE r.shift='pagi' AND p.id=a.id AND r.awal_kuliah is not null) count_jadwal_pagi,   
+  (
+    SELECT count(1) FROM tb_kurikulum p 
+    JOIN tb_kurikulum_mk q ON q.id_kurikulum=p.id 
+    JOIN tb_jadwal r ON r.id_kurikulum_mk=q.id
+    WHERE r.shift='sore' AND p.id=a.id AND r.awal_kuliah is not null) count_jadwal_sore   
   FROM tb_kurikulum a 
   JOIN tb_kalender b ON a.id_kalender=b.id
   JOIN tb_prodi c ON a.id_prodi=c.id
@@ -35,26 +47,35 @@ if($id_kurikulum==''){
     $green = $d['jenjang']=='D3' ? 'green gradasi-hijau' : 'darkblue gradasi-biru';
     $primary = $d['jenjang']=='D3' ? 'success' : 'primary';
 
-    // if($d['total_jadwal_pagi']){
-    //   $s2 = "SELECT 1 FROM tb_sesi_kuliah a 
-    //   JOIN tb_jadwal b ON a.id_jadwal=b.id 
-    //   WHERE b.id=$d[]";
-    // }else{
-    //   $unsetting_pagi=0;
-    // }
-    $unsetting_pagi=0;
-    $unsetting_sore=0;
+    $count_jadwal_pagi = $d['count_jadwal_pagi'] ? "<div>$d[count_jadwal_pagi] Jadwal Pagi</div>" : '<div>-</div>';
+    $count_jadwal_sore = $d['count_jadwal_sore'] ? "<div>$d[count_jadwal_sore] Jadwal Sore</div>" : '<div>-</div>';
+
+    $unsesi_pagi = $d['count_jadwal_pagi']-$d['count_sesi_pagi'];
+    if($unsesi_pagi){
+      $belum_ada_sesi_pagi = "<div class='red bold'>$unsesi_pagi | belum ada Sesi Pagi</div>";
+    }else{
+      $belum_ada_sesi_pagi = $d['count_jadwal_pagi'] ? '<div class=green>Sesi Lengkap</div>' : '<div>-</div>';
+    }
+
+    $unsesi_sore = $d['count_jadwal_sore']-$d['count_sesi_sore'];
+    $belum_ada_sesi_sore = $unsesi_sore 
+    ? "<div class='red bold'>$unsesi_sore | belum ada Sesi Sore</div>" 
+    : '<div>-</div>';
 
     $tr .= "
     <tr class='$green' $border>
       <td>$i</td>
       <td>$d[jenjang]-$d[singkatan]-$d[angkatan]</td>
-      <td class='hideit zzz here'>
-        <div>$unsetting_pagi of $d[total_jadwal_pagi] Jadwal Pagi</div>
-        <div>$unsetting_sore of $d[total_jadwal_sore] Jadwal Sore</div>
+      <td>
+        $count_jadwal_pagi
+        $count_jadwal_sore
       </td>
       <td>
-        <a class='btn btn-$primary btn-sm' href='?manage_sesi&id_kurikulum=$d[id_kurikulum]&shift=pagi'>Manage Sesi Pagi</a>
+        $belum_ada_sesi_pagi
+        $belum_ada_sesi_sore
+      </td>
+      <td>
+        <div class=mb1><a class='btn btn-$primary btn-sm' href='?manage_sesi&id_kurikulum=$d[id_kurikulum]&shift=pagi'>Manage Sesi Pagi</a></div>
         <a class='btn btn-$primary btn-sm' href='?manage_sesi&id_kurikulum=$d[id_kurikulum]&shift=sore'>Manage Sesi sore</a>
       </td>
     </tr>
@@ -68,7 +89,8 @@ if($id_kurikulum==''){
     <thead>
       <th>No</th>
       <th>Kurikulum</th>
-      <th class='hideit zzz here'>Unsetting Sesi</th>
+      <th>Jadwal dg Awal Kuliah Terisi</th>
+      <th>Belum Punya Sesi</th>
       <th>Aksi</th>
     </thead>
     $tr

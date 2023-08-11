@@ -1,8 +1,40 @@
 <h3 class="page-header"><i class="fa fa-laptop"></i>SIAKAD Dashboard</h3>
+<p style="background-color: #ffa;padding: 10px"><b>Today</b>: <?=date('D, d-M-Y H:i', strtotime('now'))?> | <b>Petugas</b>: <?=$nama_user?> | <b>Login as</b>: <?=$login_as?>  </p>
 <?php 
 
-$today = date("D, d M Y h:i");
+# ======================================================
+# PROGRES
+# ======================================================
+$s = "SELECT * FROM tb_unsetting ORDER BY no";
+$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+$div='';
+while ($d=mysqli_fetch_assoc($q)) {
+	$setinged = $d['total'] - $d['unsetting'];
+	$persen = round($setinged/$d['total']*100,2);
+	$green_color = intval($persen/100*155);
+  $red_color = intval((100-$persen)/100*255);
+  $rgb = "rgb($red_color,$green_color,50)";
 
+	$div.="
+		<div class=col-lg-4>
+			<div class='kecil miring abu'>Manage $d[caption] ~ $persen% | $setinged of $d[total]</div>
+			<div class=progress>
+				<div class='progress-bar' style='width:$persen%; background:$rgb'></div>
+			</div>
+		</div>
+	";
+}
+echo "
+<div class='wadah gradasi-hijau'>
+	<h4 class='darkblue'>Progress Manage:</h4>
+	<div class=row>
+		$div
+	</div>
+</div>";
+
+# ======================================================
+# MHS AKTIF
+# ======================================================
 $jumlah_mhs_aktif = 0;
 $jumlah_sudah_bayar = 0;
 $jumlah_sudah_krs = 0;
@@ -73,21 +105,6 @@ $jumlah_mhs_aktif_prodi_show .= $unprodi_show;
 # =======================================================
 # SEMESTER AKTIF
 # =======================================================
-// $s = "SELECT a.*, b.* FROM tb_semester a 
-// JOIN tb_kalender b ON a.id_kalender=b.id 
-// WHERE '$now' >= a.tanggal_awal AND '$now' < a.tanggal_akhir";
-// // echo "<span class=debug>$s</span>";
-// $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-// $li = '';
-// while ($d=mysqli_fetch_assoc($q)) {
-// 	$tanggal_akhir = date('d M Y',strtotime($d['tanggal_akhir']));
-// 	$selisih_hari = (strtotime($d['tanggal_akhir'])-strtotime('today'))/(24*60*60);
-// 	$id = "<span class=debug>$d[id]</span>";
-// 	$li .= "<li>Semester $d[nomor] $d[jenjang]-$d[angkatan] hingga $tanggal_akhir ($selisih_hari hari lagi) $id</li>";
-// }
-
-// $ul = $li=='' ? "<div class=red>Belum ada semester aktif pada SIAKAD.</div>" 
-// : "<ul>$li</ul>";
 $today = date('Y-m-d');
 $s = "SELECT *,
 (
@@ -121,8 +138,6 @@ if(mysqli_num_rows($q)){
 ?>
 
 
-
-<p style="background-color: #ffa;padding: 10px"><b>Today</b>: <?=$today?> | <b>Petugas</b>: <?=$nama_user?> | <b>Login as</b>: <?=$login_as?>  </p>
 
 <div class="alert alert-info">
 	<b>Semester Aktif:</b>
