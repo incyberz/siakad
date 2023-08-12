@@ -12,14 +12,14 @@ if(isset($_POST['btn_submit_presensi'])){
   (id_sesi,id_dosen) VALUES 
   ($_POST[id_sesi],$_POST[id_dosen])";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  echo div_alert('success',"Terimakasih Anda sudah mengisi Presensi.<hr><a class='btn btn-primary' href='?jadwal_mingguan'>Kembali ke Jadwal</a>");
+  echo div_alert('success',"Terimakasih Anda sudah mengisi Presensi.<hr><a class='btn btn-primary' href='?jadwal_dosen'>Kembali ke Jadwal</a>");
   exit;
 }
 
 if(isset($_POST['btn_save_as_draft'])){
   $s = "UPDATE tb_sesi set materi='$_POST[materi]' WHERE id=$_POST[id_sesi]"; 
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  echo div_alert('success',"Draft Saved.<hr><a class='btn btn-primary' href='?jadwal_mingguan'>Kembali ke Jadwal</a>");
+  echo div_alert('success',"Draft Saved.<hr><a class='btn btn-primary' href='?jadwal_dosen'>Kembali ke Jadwal</a>");
   exit;
 }
 
@@ -34,12 +34,12 @@ if($id_sesi=='') die(erid('id_sesi::empty'));
 $s = "SELECT 1 from tb_presensi_dosen where id_sesi=$id_sesi and id_dosen=$id_dosen";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 if(mysqli_num_rows($q)>0){
-  echo '<script>location.replace("?jadwal_mingguan")</script>';
+  echo '<script>location.replace("?jadwal_dosen")</script>';
   exit;
 }
 
 $back_to = "<div class='mb-2 mt-2' style='position:sticky;top:29px;z-index:998;padding:5px;border:solid 1px #ccc;background:white;font-size:small'>Back to: 
-  <a href='?jadwal_mingguan'>Jadwal Dosen</a>
+  <a href='?jadwal_dosen'>Jadwal Dosen</a>
 </div>";
 
 

@@ -21,14 +21,14 @@
 <!-- =========================================================== -->
 <div class='mb2'>
   <?php if($semua){ ?>
-    <a class='nav_jadwal gradasi-biru' href="?jadwal_mingguan&semua=1">Mendatang</a>
-    <a class='nav_jadwal gradasi-kuning' href="?jadwal_mingguan&semua=1&lampau=1">Lampau</a>
+    <a class='nav_jadwal gradasi-biru' href="?jadwal_dosen&semua=1">Mendatang</a>
+    <a class='nav_jadwal gradasi-kuning' href="?jadwal_dosen&semua=1&lampau=1">Lampau</a>
     <a class='nav_jadwal gradasi-hijau' href="?">Sekarang</a>
   <?php }else{ ?>
     <span class='nav_jadwal nav_aksi gradasi-hijau' id='nav__hari_ini'>Hari ini</span>
     <span class='nav_jadwal nav_aksi gradasi-kuning' id='nav__besok'>Besok</span>
     <span class='nav_jadwal nav_aksi' id='nav__minggu_ini'>Minggu ini</span>
-    <a class='nav_jadwal' href="?jadwal_mingguan&semua=1" onclick="return confirm('Ingin melihat semua Data Mengajar?')">Semua</a>
+    <a class='nav_jadwal' href="?jadwal_dosen&semua=1" onclick="return confirm('Ingin melihat semua Data Mengajar?')">Semua</a>
   <?php } ?>
 </div>
 

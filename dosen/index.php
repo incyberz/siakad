@@ -30,7 +30,7 @@ if (!strpos($a, "&")) $a.="&";
 $b = explode("?", $a);
 $c = explode("&", $b[1]);
 $parameter = $c[0];
-$parameter = $parameter=='' ? 'jadwal_mingguan' : $parameter;
+$parameter = $parameter=='' ? 'jadwal_dosen' : $parameter;
 
 
 

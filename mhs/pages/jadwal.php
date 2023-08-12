@@ -1,5 +1,5 @@
 <?php
-if(isset($_POST['btn_check_in'])) include 'presensi_process.php';
+if(isset($_POST['btn_check_in'])||isset($_POST['btn_check_out'])) include 'presensi_process.php';
 $debug='';
 $debug.="semester:$semester | ";
 $debug.="id_semester:$id_semester | ";
@@ -229,12 +229,23 @@ if(mysqli_num_rows($q)){
                 $info_lampau = "<div class=berlangsung>Sedang Berlangsung s.d $jam_selesai_show ($eta_menit menit lagi)</div>";
 
                 if($d2['presensi_dosen']!=''){
-                  $closed_by = '<div class="kecil miring abu consolas">Presention system ready.</div>';
-                  $closed_by .= "
-                  <form method=post>
-                    <button class='btn btn-primary btn-block' value='$id_sesi' name=btn_check_in>Check-In</button>
-                  </form>
-                  ";
+                  if($d2['timestamp_masuk']==''){
+                    $closed_by = "
+                    <div class='kecil miring abu consolas'>Presention system ready.</div>
+                    <form method=post>
+                      <button class='btn btn-primary btn-block' value='$id_sesi' name=btn_check_in>Check-In</button>
+                    </form>
+                    ";
+                  }elseif($d2['timestamp_keluar']==''){
+                    $closed_by = "
+                    <div class='kecil miring green bold consolas mb1' style='font-size:10px'>Check-In at: $d2[timestamp_masuk]</div>
+                    <form method=post>
+                      <button class='btn btn-primary btn-block' value='$id_mhs-$id_sesi' name=btn_check_out>Check-Out</button>
+                    </form>
+                    ";                    
+                  }else{
+                    $closed_by = 'all done.'; //zzz debug
+                  }
                 }else{
                   $closed_by = '<div class="kecil miring abu consolas">Dosen belum presensi ...</div>';
                   $closed_by .= "<button class='btn btn-danger btn-block' disabled>Isi Presensi</button>";

@@ -12,6 +12,7 @@
 
     if(isset($_POST['btn_check_out'])){
       $id_presensi = $_POST['btn_check_out'];
+      if($id_presensi=='') die(erid('id_presensi'));
       $s = "UPDATE tb_presensi SET timestamp_keluar=CURRENT_TIMESTAMP WHERE id='$id_presensi'";
       $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
       echo div_alert('success','Check-Out sukses.');
