@@ -76,7 +76,7 @@ echo "<div class=wadah><table class='table'>$tr</table>$fitur_tambahan</div>";
 # LIST SESI KULIAH
 # ===============================================
 $s = "SELECT 
-a.id as id_sesi_kuliah,
+a.id as id_sesi,
 a.pertemuan_ke,
 a.nama as nama_sesi,
 a.tanggal_sesi,
@@ -84,11 +84,11 @@ b.nama as nama_dosen,
 (
   SELECT count(1) FROM tb_ruang c 
   JOIN tb_assign_ruang d ON c.id=d.id_ruang 
-  WHERE d.id_sesi_kuliah=a.id) as jumlah_ruang, 
-(SELECT timestamp_masuk FROM tb_presensi WHERE id_mhs=$id_mhs and id_sesi_kuliah=a.id) as tanggal_presensi, 
-(SELECT status FROM tb_presensi WHERE id_mhs=$id_mhs and id_sesi_kuliah=a.id) as status_presensi 
+  WHERE d.id_sesi=a.id) as jumlah_ruang, 
+(SELECT timestamp_masuk FROM tb_presensi WHERE id_mhs=$id_mhs and id_sesi=a.id) as tanggal_presensi, 
+(SELECT status FROM tb_presensi WHERE id_mhs=$id_mhs and id_sesi=a.id) as status_presensi 
 
-FROM tb_sesi_kuliah a 
+FROM tb_sesi a 
 JOIN tb_dosen b on b.id=a.id_dosen 
 
 WHERE a.id_jadwal=$id_jadwal";
@@ -119,11 +119,11 @@ while ($d=mysqli_fetch_assoc($q)) {
   $btn_active_a = $d['status_presensi']=='a' ? 'btn_active' : '';
   $btn_active_null = $d['status_presensi']=='' ? 'btn_active' : '';
 
-  $btn_set_hadir = "<button class='btn btn-info btn-sm btn_status_presensi btn_status_presensi__$d[id_sesi_kuliah] $btn_active_hadir' id=status__h__$d[id_sesi_kuliah]>Hadir</button>";
-  $btn_s = "<button class='btn btn-warning btn-sm btn_status_presensi btn_status_presensi__$d[id_sesi_kuliah] $btn_active_s' id=status__s__$d[id_sesi_kuliah]>S</button>";
-  $btn_i = "<button class='btn btn-warning btn-sm btn_status_presensi btn_status_presensi__$d[id_sesi_kuliah] $btn_active_i' id=status__i__$d[id_sesi_kuliah]>I</button>";
-  $btn_a = "<button class='btn btn-danger btn-sm btn_status_presensi btn_status_presensi__$d[id_sesi_kuliah] $btn_active_a' id=status__a__$d[id_sesi_kuliah]>A</button>";
-  $btn_null = "<button class='btn btn-danger btn-sm btn_status_presensi btn_status_presensi__$d[id_sesi_kuliah] $btn_active_null' id=status__null__$d[id_sesi_kuliah]>Null</button>";
+  $btn_set_hadir = "<button class='btn btn-info btn-sm btn_status_presensi btn_status_presensi__$d[id_sesi] $btn_active_hadir' id=status__h__$d[id_sesi]>Hadir</button>";
+  $btn_s = "<button class='btn btn-warning btn-sm btn_status_presensi btn_status_presensi__$d[id_sesi] $btn_active_s' id=status__s__$d[id_sesi]>S</button>";
+  $btn_i = "<button class='btn btn-warning btn-sm btn_status_presensi btn_status_presensi__$d[id_sesi] $btn_active_i' id=status__i__$d[id_sesi]>I</button>";
+  $btn_a = "<button class='btn btn-danger btn-sm btn_status_presensi btn_status_presensi__$d[id_sesi] $btn_active_a' id=status__a__$d[id_sesi]>A</button>";
+  $btn_null = "<button class='btn btn-danger btn-sm btn_status_presensi btn_status_presensi__$d[id_sesi] $btn_active_null' id=status__null__$d[id_sesi]>Null</button>";
 
   switch ($d['status_presensi']) {
     case 'h': $status_presensi = "Hadir"; break;
@@ -164,11 +164,11 @@ echo "<div class=wadah><table class=table>$thead$tr</table></div>";
       let rid = tid.split('__');
       let kolom = rid[0];
       let status_presensi = rid[1];
-      let id_sesi_kuliah = rid[2];
+      let id_sesi = rid[2];
       let id_mhs = $("#id_mhs").text();
 
-      // console.log(kolom,status_presensi,id_sesi_kuliah,id_mhs); return;
-      let link_ajax = `ajax_akademik/ajax_set_status_presensi.php?status_presensi=${status_presensi}&id_sesi_kuliah=${id_sesi_kuliah}&id_mhs=${id_mhs}`;
+      // console.log(kolom,status_presensi,id_sesi,id_mhs); return;
+      let link_ajax = `ajax_akademik/ajax_set_status_presensi.php?status_presensi=${status_presensi}&id_sesi=${id_sesi}&id_mhs=${id_mhs}`;
 
       $.ajax({
         url:link_ajax,

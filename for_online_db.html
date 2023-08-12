@@ -2,20 +2,13 @@
 
 <!-- 
 
-UPDATE `tb_status_mhs` SET `status_mhs` = 'Nonaktif' WHERE `tb_status_mhs`.`id` = 0; 
-UPDATE `tb_status_mhs` SET `status_mhs` = 'Aktif' WHERE `tb_status_mhs`.`id` = 1; 
+  
+  update tb_sesi_kuliah stop_sesi_old
+   RENAME TABLE `db_siakad_v8`.`tb_sesi_kuliah` TO `db_siakad_v8`.`tb_sesi`; 
+  rename id_sesi_kuliah id_sesi
 
-ALTER TABLE `tb_ruang` ADD `keterangan` VARCHAR(100) NULL DEFAULT NULL AFTER `kondisi`;
-UPDATE DATA RUANG
-
-
-
-
-
-INSERT ... pada excel
-import tb_nilai
-ALTER TABLE `tb_syarat_biaya` ADD `shift` VARCHAR(5) NOT NULL DEFAULT 'pagi' AFTER `keterangan`, ADD INDEX (`shift`);
-UPDATE `tb_biaya` SET `nominal_default` = '9000000' WHERE 1;
-
+  ALTER TABLE `tb_assign_ruang` CHANGE `id_sesi_kuliah` `id_sesi` INT(11) NOT NULL; 
+  ALTER TABLE `tb_presensi` CHANGE `id_sesi_kuliah` `id_sesi` INT(11) NOT NULL; 
+  ALTER TABLE `tb_presensi_dosen` CHANGE `id_sesi_kuliah` `id_sesi` INT(11) NOT NULL;
 
 -->

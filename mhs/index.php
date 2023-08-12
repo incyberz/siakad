@@ -25,7 +25,8 @@ if(!isset($_SESSION['siakad_mhs'])){
   # ========================================================
   # GLOBAL VARIABLE FILES
   # ========================================================
-  $undef = '<span style="color:#f77; font-style:italic">undefined</span>';
+  $undef = '<span style="color:#f77" class="kecil miring consolas">undefined</span>';
+  $unset = '<span class="red kecil miring consolas">unset</span>';
   include "mhs_var.php";
   include "akd_var.php";
 
@@ -61,7 +62,7 @@ if(!isset($_SESSION['siakad_mhs'])){
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>SIAKAD Mhs - <?=$nama_mhs ?></title>
+  <title>Mhs Page - <?=$nama_mhs ?></title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 

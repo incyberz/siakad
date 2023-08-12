@@ -123,19 +123,22 @@ echo "
 # LIST SESI KULIAH
 # ====================================================
 $s = "SELECT 
-a.id as id_sesi_kuliah,
+a.id as id_sesi,
 a.pertemuan_ke,
 a.nama as nama_sesi,
 a.id_dosen, 
 a.tanggal_sesi,
-a.stop_sesi,
 b.nama as nama_dosen,
-(SELECT count(1) FROM tb_assign_ruang WHERE id_sesi_kuliah=a.id) as jumlah_ruang, 
-(SELECT count(1) FROM tb_presensi_dosen WHERE id_sesi_kuliah=a.id) as jumlah_presensi_dosen, 
-(SELECT count(1) FROM tb_presensi WHERE id_sesi_kuliah=a.id) as jumlah_presensi_mhs 
+(e.bobot_teori+e.bobot_praktik) bobot,
+(SELECT count(1) FROM tb_assign_ruang WHERE id_sesi=a.id) as jumlah_ruang, 
+(SELECT count(1) FROM tb_presensi_dosen WHERE id_sesi=a.id) as jumlah_presensi_dosen, 
+(SELECT count(1) FROM tb_presensi WHERE id_sesi=a.id) as jumlah_presensi_mhs 
 
-FROM tb_sesi_kuliah a 
+FROM tb_sesi a 
 JOIN tb_dosen b on b.id=a.id_dosen 
+JOIN tb_jadwal c on a.id_jadwal=c.id 
+JOIN tb_kurikulum_mk d on c.id_kurikulum_mk=d.id 
+JOIN tb_mk e on d.id_mk=e.id 
 where a.id_jadwal=$id_jadwal 
 order by a.pertemuan_ke";
 
@@ -170,7 +173,7 @@ if(mysqli_num_rows($q)==0){
     $tanggal_sesi = date('d M Y', $tsesi);
     $jam_masuk = date('H:i', $tsesi);
 
-    $jam_keluar = date('H:i',strtotime($d['stop_sesi']));
+    $jam_keluar = date('H:i',$tsesi+$d['bobot']*45*60);
     $hari = $nama_hari[date('w',$tsesi)];
 
     $gradasi = $tsesi<$ttoday ? 'kuning' : '';
@@ -206,16 +209,16 @@ if(mysqli_num_rows($q)==0){
       $total_assign_ruang+=$d['jumlah_ruang'];
       $s2 = "SELECT b.nama as nama_ruang FROM tb_assign_ruang a 
       JOIN tb_ruang b on a.id_ruang=b.id 
-      WHERE a.id_sesi_kuliah=$d[id_sesi_kuliah]";
+      WHERE a.id_sesi=$d[id_sesi]";
       $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
       $list_ruang = '<ol style="padding-left:15px;">';
       while ($d2=mysqli_fetch_assoc($q2)) {
         $list_ruang.= "<li>$d2[nama_ruang]</li>";
       }
       $list_ruang .= '</ol>';
-      $btn_assign_multi_ruang = "<a href='?assign_ruang&id_sesi_kuliah=$d[id_sesi_kuliah]' class='btn btn-danger btn-sm'>drop ruang</a>";
+      $btn_assign_multi_ruang = "<a href='?assign_ruang&id_sesi=$d[id_sesi]' class='btn btn-danger btn-sm'>drop ruang</a>";
     }else{
-      $btn_assign_multi_ruang = "<a href='?assign_ruang&id_sesi_kuliah=$d[id_sesi_kuliah]' class='btn btn-info btn-sm'>assign multi ruang</a>";
+      $btn_assign_multi_ruang = "<a href='?assign_ruang&id_sesi=$d[id_sesi]' class='btn btn-info btn-sm'>assign multi ruang</a>";
     }
 
     $today2 = date('Y-m-d');
@@ -240,7 +243,7 @@ if(mysqli_num_rows($q)==0){
         <br>$minggu_aktif
       </td>
       <td class='upper gradasi-$gradasi'>
-        <a href='?master&p=sesi_kuliah&aksi=update&id=$d[id_sesi_kuliah]' class='tebal' target='_blank'>$d[nama_sesi]</a>
+        <a href='?master&p=sesi&aksi=update&id=$d[id_sesi]' class='tebal' target='_blank'>$d[nama_sesi]</a>
         <br><i>Pengajar</i>: <a href='?master&p=dosen&id=$d[id_dosen]' target=_blank  onclick='return confirm(\"Ingin menuju Laman Master Dosen?\")'>$d[nama_dosen]</a> 
         <a href='?login_as_dosen&id_dosen=$d[id_dosen]' onclick='return confirm(\"Ingin Login sebagai Dosen ini?\")' target=_blank>$img_aksi[login_as]</a>
         <br>$bobot SKS x 50 menit

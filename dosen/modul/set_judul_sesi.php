@@ -69,16 +69,16 @@ $bobot = $d['bobot_teori']+$d['bobot_praktik'];
 # LIST SESI KULIAH
 # ====================================================
 $s = "SELECT 
-a.id as id_sesi_kuliah,
+a.id as id_sesi,
 a.id_dosen as id_dosen,
 a.pertemuan_ke,
 a.nama as nama_sesi,
 b.nama as nama_dosen,
-(SELECT count(1) FROM tb_assign_ruang WHERE id_sesi_kuliah=a.id) as jumlah_ruang, 
-(SELECT count(1) FROM tb_presensi_dosen WHERE id_sesi_kuliah=a.id) as jumlah_presensi_dosen, 
-(SELECT count(1) FROM tb_presensi WHERE id_sesi_kuliah=a.id) as jumlah_presensi_mhs 
+(SELECT count(1) FROM tb_assign_ruang WHERE id_sesi=a.id) as jumlah_ruang, 
+(SELECT count(1) FROM tb_presensi_dosen WHERE id_sesi=a.id) as jumlah_presensi_dosen, 
+(SELECT count(1) FROM tb_presensi WHERE id_sesi=a.id) as jumlah_presensi_mhs 
 
-FROM tb_sesi_kuliah a 
+FROM tb_sesi a 
 JOIN tb_dosen b on b.id=a.id_dosen 
 where a.id_jadwal=$id_jadwal order by a.pertemuan_ke";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
@@ -111,7 +111,7 @@ if(mysqli_num_rows($q)==0){
       <td class='upper'>
         $d[pertemuan_ke] 
       </td>
-      <td class='upper $editable $red' id='nama__$d[id_sesi_kuliah]'>$d[nama_sesi]</td>
+      <td class='upper $editable $red' id='nama__$d[id_sesi]'>$d[nama_sesi]</td>
       <td class='upper'>
         <a href='?dosen_detail&id_dosen=$d[id_dosen]' target='_blank'>$d[nama_dosen]</a>
       </td>
@@ -178,7 +178,7 @@ if(mysqli_num_rows($q)==0){
         return;
       }
 
-      let link_ajax = `../ajax_global/ajax_global_update.php?tabel=tb_sesi_kuliah&kolom_target=nama&isi_baru=${isi_baru.toUpperCase()}&acuan=${acuan}&kolom_acuan=id`;
+      let link_ajax = `../ajax_global/ajax_global_update.php?tabel=tb_sesi&kolom_target=nama&isi_baru=${isi_baru.toUpperCase()}&acuan=${acuan}&kolom_acuan=id`;
 
       $.ajax({
         url:link_ajax,

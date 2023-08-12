@@ -1,6 +1,6 @@
 <?php
 $s = "SELECT 
-a.id as id_sesi_kuliah,
+a.id as id_sesi,
 a.pertemuan_ke,
 a.nama as nama_sesi,
 a.tanggal_sesi,
@@ -9,7 +9,7 @@ b.nama as nama_dosen,
   SELECT nama FROM tb_status_sesi c WHERE c.id=a.id_status_sesi 
 ) as status_presensi 
 
-FROM tb_sesi_kuliah a 
+FROM tb_sesi a 
 JOIN tb_dosen b on b.id=a.id_dosen 
 
 WHERE a.id_jadwal=$id_jadwal";
@@ -37,7 +37,7 @@ while ($d=mysqli_fetch_assoc($q)) {
     <td>$tanggal_sesi</td>
     <td>$d[nama_dosen]</td>
     <td>
-      <a href='?dpnu&kelas=$kelas&id_jadwal=$id_jadwal&id_sesi_kuliah=$d[id_sesi_kuliah]' class='btn btn-info btn-sm'>Daftar Hadir Sesi</a>
+      <a href='?dpnu&kelas=$kelas&id_jadwal=$id_jadwal&id_sesi=$d[id_sesi]' class='btn btn-info btn-sm'>Daftar Hadir Sesi</a>
     </td>
   </tr>
   ";

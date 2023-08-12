@@ -78,17 +78,25 @@ $shift = $d_mhs['shift'];
 $admin_level=1; // zzz debug
 
 
+# ========================================================
+# SEMESTER DAN KELAS-TA AKTIF
+# ========================================================
 $id_kalender = '';
 $id_kurikulum = '';
 $id_semester = '';
+$semester = $d_mhs['semester_manual'];
+
 if($angkatan!='' and $jenjang!=''){
-  $s = "SELECT a.id as id_kalender, 
-  (SELECT id FROM tb_kurikulum WHERE id_kalender=a.id AND id_prodi=$id_prodi) as id_kurikulum  
-  FROM tb_kalender a WHERE a.angkatan='$angkatan' AND a.jenjang='$jenjang'";
+  $tahun_ajar = $angkatan + intval(($semester-1)/2);
 
   $s = "SELECT a.id as id_kurikulum,
   b.id as id_kalender,
-  c.id as id_semester  
+  c.id as id_semester, 
+  (
+    SELECT kelas FROM tb_kelas_ta_detail a 
+    JOIN tb_kelas_ta b ON a.id_kelas_ta=b.id 
+    WHERE a.nim='$nim' AND b.tahun_ajar='$tahun_ajar') as kelas_ta  
+
   FROM tb_kurikulum a 
   JOIN tb_kalender b ON a.id_kalender=b.id 
   JOIN tb_semester c ON c.id_kalender=b.id 
@@ -103,7 +111,10 @@ if($angkatan!='' and $jenjang!=''){
     $id_kalender = $d['id_kalender'];
     $id_kurikulum = $d['id_kurikulum'];
     $id_semester = $d['id_semester'];
+    $kelas_ta = $d['kelas_ta'] ?? $unset;
   }
+
+
 }
 
 # ========================================================
@@ -123,29 +134,3 @@ $nama_prodi_show = $d_mhs['nama_prodi']!=''?$d_mhs['nama_prodi']:$undef;
 $jenjang_show = $d_mhs['jenjang']!=''?$d_mhs['jenjang']:$undef;
 
 $is_depas = ($d_mhs['password']=='' || $d_mhs['password']==$nim) ? 1 : 0;
-
-# ========================================================
-# GET DATA SEMESTER
-# ========================================================
-$semester = $d_mhs['semester_manual'];
-
-
-
-# ========================================================
-# GET DATA KELAS ANGKATAN
-# ========================================================
-$s = "SELECT b.kelas, b.tahun_ajar  
-FROM tb_kelas_ta_detail a 
-JOIN tb_kelas_ta b ON a.id_kelas_ta=b.id 
-WHERE a.nim=$nim 
-ORDER BY b.tahun_ajar DESC 
-LIMIT 1 
-";
-// echo $s;
-$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-if(mysqli_num_rows($q)>0){
-  $d_kelas = mysqli_fetch_assoc($q);
-  $kelas = $d_kelas['kelas'];
-  $tahun_ajar = $d_kelas['tahun_ajar'];
-}
-$kelas_show = $kelas==$undef ? $undef : "$kelas pada TA $tahun_ajar";

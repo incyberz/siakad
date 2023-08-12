@@ -54,7 +54,7 @@ include 'routing_akd.php';
   <meta name="keyword" content="SIAKAD, Sistem Informasi, akademik, Dashboard, Admin, STMIK, IKMI, Cirebon, Pendaftaran, Kuliah">
   <link rel="shortcut icon" href="img/icons/favicon.png">
 
-  <title>SIAKAD Admin</title>
+  <title>Akademik Page - <?=$nama_user?></title>
 
 
   <link href="css/bootstrap.min.css" rel="stylesheet">

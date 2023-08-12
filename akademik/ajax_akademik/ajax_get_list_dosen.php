@@ -76,7 +76,7 @@ while ($d = mysqli_fetch_assoc($q)) {
   a.nama as nama_sesi, 
   d.nama as nama_mk, 
   (d.bobot_teori + d.bobot_praktik) as bobot  
-  FROM tb_sesi_kuliah a 
+  FROM tb_sesi a 
   JOIN tb_jadwal b ON b.id=a.id_jadwal  
   JOIN tb_kurikulum_mk c ON c.id=b.id_kurikulum_mk  
   JOIN tb_mk d ON d.id=c.id_mk  

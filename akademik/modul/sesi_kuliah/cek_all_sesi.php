@@ -122,7 +122,7 @@ while ($d=mysqli_fetch_assoc($q)) {
   b.id as id_kurikulum_mk, 
   (SELECT id FROM tb_jadwal WHERE id_kurikulum_mk=b.id) as id_jadwal,  
   
-  (SELECT count(1) FROM tb_sesi_kuliah c 
+  (SELECT count(1) FROM tb_sesi c 
   JOIN tb_jadwal d on c.id_jadwal=d.id  
   WHERE d.id_kurikulum_mk=b.id) as jumlah_sesi,  
 
@@ -132,7 +132,7 @@ while ($d=mysqli_fetch_assoc($q)) {
   WHERE e.id=a.id) as jumlah_kelas,  
 
   (SELECT count(1) FROM tb_assign_ruang c 
-  JOIN tb_sesi_kuliah d on d.id=c.id_sesi_kuliah
+  JOIN tb_sesi d on d.id=c.id_sesi
   JOIN tb_jadwal e on e.id=d.id_jadwal
   WHERE e.id_kurikulum_mk=b.id and d.pertemuan_ke=1) as jumlah_ruang_p1  
 

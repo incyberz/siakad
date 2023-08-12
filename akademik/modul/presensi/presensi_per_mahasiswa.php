@@ -175,14 +175,14 @@ while ($d=mysqli_fetch_assoc($q)) {
     # CEK SEMESTER FOR MHS DAN KURIKULUM-MK
     # ==========================================================
     $s3 = "SELECT 
-    a.id as id_sesi_kuliah,
+    a.id as id_sesi,
     a.pertemuan_ke,
     a.tanggal_sesi,
     (
-      SELECT timestamp_masuk FROM tb_presensi WHERE id_mhs=$id_mhs and id_sesi_kuliah=a.id) as timestamp_masuk, 
+      SELECT timestamp_masuk FROM tb_presensi WHERE id_mhs=$id_mhs and id_sesi=a.id) as timestamp_masuk, 
     (
-      SELECT status FROM tb_presensi WHERE id_mhs=$id_mhs and id_sesi_kuliah=a.id) as status_presensi 
-    FROM tb_sesi_kuliah a 
+      SELECT status FROM tb_presensi WHERE id_mhs=$id_mhs and id_sesi=a.id) as status_presensi 
+    FROM tb_sesi a 
     WHERE a.id_jadwal=$id_jadwal
     order by a.pertemuan_ke";
     $q3 = mysqli_query($cn,$s3) or die(mysqli_error($cn));
@@ -196,7 +196,7 @@ while ($d=mysqli_fetch_assoc($q)) {
       $total_presensi++;
       if($no_presensi!=$d3['pertemuan_ke']) die(div_alert('danger',"Nomor Presensi tidak berurutan (tidak sama dengan Sesi Pertemuan). | $manage_sesi<hr><small><i>no_presensi: $no_presensi !== pertemuan_ke: $d3[pertemuan_ke]</i></small>"));
 
-      $id_sesi_kuliah = $d3['id_sesi_kuliah'];
+      $id_sesi = $d3['id_sesi'];
       $manage_presensi = "<a href='?manage_presensi_per_mhs&id_jadwal=$id_jadwal&id_mhs=$id_mhs'>Manage Presensi per Mhs</a>";
 
       $tanggal_sesi_show = date('d/m',strtotime($d3['tanggal_sesi']));

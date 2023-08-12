@@ -25,7 +25,6 @@ if(isset($_POST['btn_buat_sesi_default'])){
     // echo date('M d, Y', $date);
     $selisih = ($i-1)*7;
     $new_tgl = date('Y-m-d H:i',strtotime("+$selisih day",strtotime($awal_perkuliahan)));
-    $stop_sesi = date('Y-m-d H:i',strtotime($new_tgl)+$bobot*$menit_sks*60);
 
     $nama_sesi = "NEW P$i";
     $nama_sesi = $i==$sesi_uts ? 'UTS' : $nama_sesi;
@@ -36,19 +35,17 @@ if(isset($_POST['btn_buat_sesi_default'])){
     $i,
     $id_dosen,
     '$nama_sesi',
-    '$new_tgl',
-    '$stop_sesi'
+    '$new_tgl'
     )";
   }
   $values = str_replace('__,','',$values);
 
-  $s = "INSERT INTO tb_sesi_kuliah (
+  $s = "INSERT INTO tb_sesi (
     id_jadwal,
     pertemuan_ke,
     id_dosen,
     nama,
-    tanggal_sesi,
-    stop_sesi
+    tanggal_sesi
     ) VALUES $values";
     // die($s);
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));

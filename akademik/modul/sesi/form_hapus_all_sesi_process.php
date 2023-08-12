@@ -2,7 +2,7 @@
 if(isset($_POST['btn_hapus_all_sesi'])){
   $id_jadwal = $_POST['id_jadwal'];
 
-  $s = "DELETE FROM tb_sesi_kuliah WHERE id_jadwal=$id_jadwal";
+  $s = "DELETE FROM tb_sesi WHERE id_jadwal=$id_jadwal";
     // die($s);
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 

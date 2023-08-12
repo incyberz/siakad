@@ -11,32 +11,32 @@ if(isset($_POST['btn_assign'])){
     foreach ($_POST as $key => $value) {
       if(strpos("a$key",'cb__')){
         $rkey = explode('__',$key);
-        $values .= ",($rkey[1],$_POST[id_sesi_kuliah],$_POST[id_tipe_sesi])";
+        $values .= ",($rkey[1],$_POST[id_sesi],$_POST[id_tipe_sesi])";
         $jumlah_assigned_ruang++;
       }
     }
   }else{
     // delete dahulu semua seting assign room
-    $s = "SELECT a.id FROM tb_sesi_kuliah a WHERE a.id_jadwal=$_POST[id_jadwal]";
+    $s = "SELECT a.id FROM tb_sesi a WHERE a.id_jadwal=$_POST[id_jadwal]";
     $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
     $s_del = "DELETE FROM tb_assign_ruang WHERE 0 ";
     while ($d=mysqli_fetch_assoc($q)) {
-      $s_del .= " OR id_sesi_kuliah=$d[id] ";
+      $s_del .= " OR id_sesi=$d[id] ";
     }
 
     $q = mysqli_query($cn,$s_del) or die(mysqli_error($cn));
     
     // terapkan pada semua pertemuan
     $id_jadwal = $_POST['id_jadwal'];
-    $s = "SELECT id FROM tb_sesi_kuliah WHERE id_jadwal=$id_jadwal";
+    $s = "SELECT id FROM tb_sesi WHERE id_jadwal=$id_jadwal";
     $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
     while ($d=mysqli_fetch_assoc($q)) {
-      $id_sesi_kuliah = $d['id'];
+      $id_sesi = $d['id'];
       foreach ($_POST as $key => $value) {
         if(strpos("a$key",'cb__')){
           $rkey = explode('__',$key);
-          $values .= ",($rkey[1],$id_sesi_kuliah,$_POST[id_tipe_sesi])";
+          $values .= ",($rkey[1],$id_sesi,$_POST[id_tipe_sesi])";
           $jumlah_assigned_ruang++;
         }
       }
@@ -48,16 +48,16 @@ if(isset($_POST['btn_assign'])){
   $values = str_replace('__,','',$values);
 
   $s = "INSERT INTO tb_assign_ruang 
-  (id_ruang,id_sesi_kuliah,id_tipe_sesi) VALUES 
+  (id_ruang,id_sesi,id_tipe_sesi) VALUES 
   $values";
   // die($s);
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  echo "<div class='alert alert-success'>Assign sebanyak $jumlah_assigned_ruang Ruang Kelas Sukses.<hr><a class='btn btn-primary' href='?manage_sesi_detail&id_jadwal=$_POST[id_jadwal]'>Kembali ke Manage Sesi</a> | <a class='btn btn-info' href='?assign_ruang&id_sesi_kuliah=$_POST[id_sesi_kuliah]'>Lihat hasil</a></div>";
+  echo "<div class='alert alert-success'>Assign sebanyak $jumlah_assigned_ruang Ruang Kelas Sukses.<hr><a class='btn btn-primary' href='?manage_sesi_detail&id_jadwal=$_POST[id_jadwal]'>Kembali ke Manage Sesi</a> | <a class='btn btn-info' href='?assign_ruang&id_sesi=$_POST[id_sesi]'>Lihat hasil</a></div>";
   exit;
 }
 
 if(isset($_POST['btn_drop'])){
-  $s = "DELETE FROM tb_assign_ruang WHERE id_sesi_kuliah=$_POST[id_sesi_kuliah]";
+  $s = "DELETE FROM tb_assign_ruang WHERE id_sesi=$_POST[id_sesi]";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   echo "<div class='alert alert-info'>Assign Ruang berhasil di drop. Silahkan pilih kembali ruangan!</div>";
 }
@@ -73,24 +73,23 @@ if(isset($_POST['btn_drop'])){
 
 
 
-$id_sesi_kuliah = isset($_GET['id_sesi_kuliah']) ? $_GET['id_sesi_kuliah'] : die(div_alert('danger',"Tidak bisa diakses secara langsung<hr>$btn_back"));
+$id_sesi = isset($_GET['id_sesi']) ? $_GET['id_sesi'] : die(div_alert('danger',"Tidak bisa diakses secara langsung<hr>$btn_back"));
 
 
 
 $s = "SELECT * FROM tb_assign_ruang a 
-where a.id=$id_sesi_kuliah";
+where a.id=$id_sesi";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $d=mysqli_fetch_assoc($q);
 
 
 $s = "SELECT 
-a.id as id_sesi_kuliah,
+a.id as id_sesi,
 a.id_jadwal,
 a.pertemuan_ke,
 a.nama as nama_sesi,
 a.id_dosen, 
 a.tanggal_sesi,
-a.stop_sesi,
 c.id_kurikulum_mk,
 d.id_semester,
 d.id_kurikulum,
@@ -99,16 +98,16 @@ b.nama as nama_dosen,
 g.id as id_mk,
 g.nama as nama_mk,
 (g.bobot_teori + g.bobot_praktik) as bobot,
-(SELECT count(1) FROM tb_assign_ruang WHERE id_sesi_kuliah=a.id) as jumlah_ruang 
+(SELECT count(1) FROM tb_assign_ruang WHERE id_sesi=a.id) as jumlah_ruang 
 
-FROM tb_sesi_kuliah a 
+FROM tb_sesi a 
 JOIN tb_dosen b on b.id=a.id_dosen 
 JOIN tb_jadwal c on c.id=a.id_jadwal 
 JOIN tb_kurikulum_mk d on d.id=c.id_kurikulum_mk 
 JOIN tb_semester e on e.id=d.id_semester 
 JOIN tb_kurikulum f on f.id=d.id_kurikulum 
 JOIN tb_mk g on g.id=d.id_mk 
-where a.id=$id_sesi_kuliah";
+where a.id=$id_sesi";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $d=mysqli_fetch_assoc($q);
 
@@ -116,8 +115,7 @@ $sesi = "P$d[pertemuan_ke]  / $d[nama_sesi] / $d[nama_mk]";
 
 $tanggal_sesi = $d['tanggal_sesi'];
 $tsesi = strtotime($tanggal_sesi);
-$stop_sesi = $d['stop_sesi'];
-$jam_keluar = date('H:i',strtotime($stop_sesi));
+$jam_keluar = date('H:i',$tsesi + $d['bobot']*45*60);
 
 $tanggal_sesi_show = '<h4 class="biru tebal">'.$nama_hari[date('w',$tsesi)].', '.date('d M Y / H:i',$tsesi).' s.d '.$jam_keluar.'</h4>';
 $id_jadwal = $d['id_jadwal'];
@@ -132,7 +130,7 @@ $kotaks = '';
 $s = "SELECT b.*  
 FROM tb_assign_ruang a 
 JOIN tb_ruang b on a.id_ruang=b.id 
-where id_sesi_kuliah=$id_sesi_kuliah";
+where id_sesi=$id_sesi";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 if(mysqli_num_rows($q)){
   while ($r=mysqli_fetch_assoc($q)) {
@@ -169,12 +167,12 @@ if(mysqli_num_rows($q)){
   $s = "SELECT a.*,
   (
     SELECT concat(b.nama,' MK ',e.nama,'|',b.tanggal_sesi,'|',e.bobot_teori,'|',e.bobot_praktik) FROM tb_assign_ruang t 
-    JOIN tb_sesi_kuliah b on b.id=t.id_sesi_kuliah 
+    JOIN tb_sesi b on b.id=t.id_sesi 
     JOIN tb_jadwal c on c.id=b.id_jadwal 
     JOIN tb_kurikulum_mk d on d.id=c.id_kurikulum_mk 
     JOIN tb_mk e on e.id=d.id_mk 
     WHERE (b.tanggal_sesi >= '$tanggal_sesi' and b.tanggal_sesi < '$stop_sesi' 
-    OR b.stop_sesi > '$tanggal_sesi' and b.stop_sesi <= '$stop_sesi')
+    OR b.stop_sesai zzz > '$tanggal_sesi' and b.stop_sesai <= '$stop_sesi')
     AND t.id_ruang=a.id  
     LIMIT 1) as terpakai_oleh   
   
@@ -274,7 +272,7 @@ if(mysqli_num_rows($q)){
       <td>
         <?=$sesi?> | <?=$d['bobot'] ?> SKS | SMT-<?=$semester?>
         <div class="debug">
-          id_sesi_kuliah:<input name=id_sesi_kuliah value=<?=$id_sesi_kuliah?>>
+          id_sesi:<input name=id_sesi value=<?=$id_sesi?>>
           id_jadwal:<input name=id_jadwal value=<?=$id_jadwal?>>
         </div>
       </td>

@@ -13,9 +13,9 @@ include $insho_styles;
 
 $folder_rps = "../uploads/rps";
 $folder_media_soal = "../uploads/media_soal";
+$unset = '<span class="red consolas miring kecil">unset</span>';
 
-$id_dosen = '';
-if(isset($_GET['id_dosen'])) $id_dosen = $_GET['id_dosen'];
+$id_dosen = $_GET['id_dosen'] ?? '';
 
 
 
@@ -77,17 +77,9 @@ if(isset($_SESSION['siakad_dosen'])) {
   # ========================================================
   # DETAIL DOSEN
   # ========================================================
-  $s = "SELECT 
-  a.*,
-  (
-    SELECT nama from tb_prodi where id=a.homebase 
-  ) as nama_prodi 
-
-
-  from tb_dosen a 
-  join tb_user b on a.id_user=b.id  
-
-  where b.username='$_SESSION[siakad_dosen]'";
+  $s = "SELECT a.*,
+  (SELECT nama from tb_prodi where id=a.homebase) as homebase 
+  FROM tb_dosen a WHERE a.nidn='$_SESSION[siakad_dosen]'";
   $q = mysqli_query($cn,$s) or die("Error @Index. ".mysqli_error($cn));
   if(mysqli_num_rows($q)!=1) die("No Data. id_dosen:$id_dosen");
   $d_dosen = mysqli_fetch_assoc($q);
@@ -113,7 +105,7 @@ if(isset($_SESSION['siakad_dosen'])) {
   if(!file_exists($img_profile)) $img_profile = "uploads/profile_na.jpg";
   if(!file_exists($img_bg)) $img_bg = "uploads/bg_na.jpg";
 
-  $homebase_prodi = $d_dosen['nama_prodi'];
+  $homebase = $d_dosen['homebase'];
   $link_logout = "<p class=mt-2>Selamat Datang $nama_dosen | <a href='?logout' onclick='return confirm(\"Yakin untuk Logout?\")'>Logout</a></p>";
   $nav = "
     <div style='position:sticky; top:0;padding:5px;border:solid 1px #ccc;background:linear-gradient(#fafffa,#efe);font-size:small; z-index:999;margin-bottom:15px'>

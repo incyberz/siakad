@@ -14,7 +14,7 @@
     <li><a href="?pembayaran"><i class="bx bx-file-blank"></i> <span>Pembayaran</span></a></li>
     <li><a href="?ambil_krs"><i class="bx bx-file-blank"></i> <span>KRS</span></a></li>
     <li><a href="?jadwal"><i class="bx bx-calendar"></i> <span>Jadwal Kuliah</span></a></li>
-    <li><a href="?presensi"><i class="bx bx-book-open"></i> Presensi</a></li>
+    <li><a href="?rekap_presensi"><i class="bx bx-book-open"></i> Rekap Presensi</a></li>
     <li><a href="?khs"><i class="bx bx-calendar-star"></i> Nilai / KHS</a></li>
     <!-- <li><a href="?bimbingan"><i class="bx bx-book-bookmark"></i> Bimbingan</a></li> -->
     <!-- <li><a href="?karya"><i class="bx bx-medal"></i> Karya Mhs</a></li> -->

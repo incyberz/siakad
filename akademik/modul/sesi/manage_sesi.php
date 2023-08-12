@@ -12,13 +12,13 @@ if($id_kurikulum==''){
     SELECT count(1) FROM tb_kurikulum p 
     JOIN tb_kurikulum_mk q ON q.id_kurikulum=p.id 
     JOIN tb_jadwal r ON r.id_kurikulum_mk=q.id
-    JOIN tb_sesi_kuliah s ON s.id_jadwal=r.id 
+    JOIN tb_sesi s ON s.id_jadwal=r.id 
     WHERE r.shift='sore' AND p.id=a.id AND r.awal_kuliah is not null AND s.pertemuan_ke=1) count_sesi_sore,   
   (
     SELECT count(1) FROM tb_kurikulum p 
     JOIN tb_kurikulum_mk q ON q.id_kurikulum=p.id 
     JOIN tb_jadwal r ON r.id_kurikulum_mk=q.id
-    JOIN tb_sesi_kuliah s ON s.id_jadwal=r.id 
+    JOIN tb_sesi s ON s.id_jadwal=r.id 
     WHERE r.shift='pagi' AND p.id=a.id AND r.awal_kuliah is not null AND s.pertemuan_ke=1) count_sesi_pagi,   
   (
     SELECT count(1) FROM tb_kurikulum p 
@@ -188,7 +188,7 @@ while ($d=mysqli_fetch_assoc($q)) {
   (
     SELECT awal_kuliah FROM tb_jadwal WHERE id_kurikulum_mk=b.id AND shift='$shift') as awal_kuliah,  
   (
-    SELECT count(1) FROM tb_sesi_kuliah c 
+    SELECT count(1) FROM tb_sesi c 
     JOIN tb_jadwal d on c.id_jadwal=d.id  
     WHERE d.id_kurikulum_mk=b.id) as jumlah_sesi   
 

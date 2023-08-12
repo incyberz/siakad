@@ -1,8 +1,8 @@
 <style>.btn_active{border:solid 3px blue}</style>
 <?php
 $id_jadwal = isset($_GET['id_jadwal']) ? $_GET['id_jadwal'] : '';
-$id_sesi_kuliah = isset($_GET['id_sesi_kuliah']) ? $_GET['id_sesi_kuliah'] : '';
-$judul = $id_sesi_kuliah=='' ? 'Daftar Presensi dan Nilai Ujian (DPNU)' : 'Daftar Hadir Sesi Kuliah';
+$id_sesi = isset($_GET['id_sesi']) ? $_GET['id_sesi'] : '';
+$judul = $id_sesi=='' ? 'Daftar Presensi dan Nilai Ujian (DPNU)' : 'Daftar Hadir Sesi Kuliah';
 $judul = "<h1 class='m0 mb2'>$judul</h1>";
 
 if($id_jadwal==''){
@@ -47,15 +47,15 @@ $back_to = "<div class=mb2>Back to :
 # ===============================================
 # DATA SESI KULIAH
 # ===============================================
-if($id_sesi_kuliah>0){
+if($id_sesi>0){
   $s = "SELECT 
   concat(a.pertemuan_ke, ' / ',a.nama) as pertemuan_ke,
   a.tanggal_sesi 
 
-  FROM tb_sesi_kuliah a 
+  FROM tb_sesi a 
 
 
-  WHERE a.id=$id_sesi_kuliah";
+  WHERE a.id=$id_sesi";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   $d = mysqli_fetch_assoc($q);
   $koloms = [];
@@ -83,7 +83,7 @@ if($kelas==''){
 # ===============================================
 # LIST SESI KULIAH
 # ===============================================
-if($id_sesi_kuliah==''){
+if($id_sesi==''){
   # ===============================================
   # LIST MAHASISWA PADA DPNU
   # ===============================================

@@ -3,12 +3,12 @@
 $id_jadwal = $_GET['id_jadwal'] ?? die('<script>alert("ID Jadwal belum terdefinisi. Silahkan Manage Sesi !"); location.replace("?manage_sesi")</script>');
 
 if(isset($_POST['btn_drop_all'])){
-  $s = "SELECT a.id FROM tb_sesi_kuliah a WHERE a.id_jadwal=$id_jadwal";
+  $s = "SELECT a.id FROM tb_sesi a WHERE a.id_jadwal=$id_jadwal";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
   $s_del = "DELETE FROM tb_assign_ruang WHERE 0 ";
   while ($d=mysqli_fetch_assoc($q)) {
-    $s_del .= " OR id_sesi_kuliah=$d[id] ";
+    $s_del .= " OR id_sesi=$d[id] ";
   }
 
   $q = mysqli_query($cn,$s_del) or die(mysqli_error($cn));
@@ -39,7 +39,7 @@ echo "
 
 $s = "SELECT a.*,c.nama as nama_ruang, b.pertemuan_ke    
 FROM tb_assign_ruang a 
-JOIN tb_sesi_kuliah b ON a.id_sesi_kuliah=b.id 
+JOIN tb_sesi b ON a.id_sesi=b.id 
 JOIN tb_ruang c ON a.id_ruang=c.id 
 WHERE b.id_jadwal=$id_jadwal 
 ";
