@@ -200,13 +200,13 @@ for ($i=$loop_awal; $i < $loop_ahir ; $i++) {
     $pdf->Cell(200, 1, " ", 0, 1); // spacer
     $pdf->Cell($ksip[0], $lh, ' ', 0, 0, '');
     $pdf->Cell($ksip[1], $lh, 'Indeks Prestasi (IP)', 1, 0, 'R');
-    $pdf->Cell($ksip[2], $lh, $ip, 1, 0, 'C');
+    $pdf->Cell($ksip[2], $lh, number_format($ip,2), 1, 0, 'C');
     $pdf->Cell($ksip[3], $lh, 'Total SKS', 1, 0, 'R');
     $pdf->Cell($ksip[4], $lh, $total_sks, 1, 1, 'C');
 
     $pdf->Cell($ksip[0], $lh, ' ', 0, 0, '');
     $pdf->Cell($ksip[1], $lh, 'Indeks Prestasi Kumulatif Semester (IPKS)', 1, 0, 'R');
-    $pdf->Cell($ksip[2], $lh, $ipks, 1, 0, 'C');
+    $pdf->Cell($ksip[2], $lh, number_format($ipks,2), 1, 0, 'C');
     $pdf->Cell($ksip[3], $lh, 'Total NM', 1, 0, 'R');
     $pdf->Cell($ksip[4], $lh, $total_nm, 1, 1, 'C');
 

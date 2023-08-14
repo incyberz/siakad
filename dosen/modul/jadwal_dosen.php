@@ -1,5 +1,14 @@
-<?php $semua = isset($_GET['semua']) ? $_GET['semua'] : 0; ?>
-<?php $lampau = isset($_GET['lampau']) ? $_GET['lampau'] : 0; ?>
+<?php 
+if(isset($_POST['btn_stop_sesi'])){
+  $s = "UPDATE tb_presensi_dosen SET timestamp_keluar=CURRENT_TIMESTAMP WHERE id_sesi=$_POST[btn_stop_sesi]";
+  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  echo div_alert('success','Stop Sesi berhasil.');
+  echo '<script>location.replace("?jadwal_dosen")</script>';
+  exit;
+}
+$semua = $_GET['semua'] ?? 0;
+$lampau = $_GET['lampau'] ?? 0; 
+?>
 <style>
   .nav_jadwal{
     display:inline-block;
@@ -79,6 +88,7 @@ c.id as id_kurikulum_mk,
 (SELECT nama from tb_status_sesi where id=a.id) as status_sesi,
 (SELECT count(1) FROM tb_presensi_dosen WHERE id_sesi=a.id) as jumlah_presensi_dosen, 
 (SELECT timestamp_masuk FROM tb_presensi_dosen WHERE id_sesi=a.id) as tanggal_presensi, 
+(SELECT timestamp_keluar FROM tb_presensi_dosen WHERE id_sesi=a.id) as timestamp_keluar, 
 (SELECT count(1) FROM tb_presensi WHERE id_sesi=a.id) as jumlah_presensi_mhs 
 
 
@@ -247,16 +257,22 @@ while ($d=mysqli_fetch_assoc($q)) {
 
   $masih_berlangsung = strtotime('now')<$takhir ? 1 : 0;
   $eta_menit_abs = intval(($takhir-strtotime('now'))/60)+1;
-  $form_stop_sesi = !$masih_berlangsung ? '' : "
-  <form method=post>
-    <button name=btn_stop_sesi value='$d[id_sesi]' class='btn btn-danger btn-block' onclick='return confirm(\"Yakin untuk Stop Sesi secara manual?\")'>Stop Sesi Perkuliahan (manual)</button>
-    <div class='kecil miring abu'>Stop Sesi dapat secara manual atau otomatis (saat waktu perkuliahan habis, $eta_menit_abs menit lagi). Stop Sesi dipergunakan agar Mhs dapat Check-Out pada Sesi ini.</div>
-  </form>
-  ";
+  if($d['timestamp_keluar']!=''){
+    $form_stop_sesi = "<div class='alert alert-info tengah'>Sesi Perkuliahan Telah Berakhir pada $d[timestamp_keluar]</div>";
+  }elseif($masih_berlangsung){
+    $form_stop_sesi = "
+    <form method=post>
+      <button name=btn_stop_sesi value='$d[id_sesi]' class='btn btn-danger btn-block' onclick='return confirm(\"Yakin untuk Stop Sesi secara manual?\")'>Stop Sesi Perkuliahan (manual)</button>
+      <div class='kecil miring abu'>Stop Sesi dapat secara manual atau otomatis (saat waktu perkuliahan habis, $eta_menit_abs menit lagi). Stop Sesi dipergunakan agar Mhs dapat Check-Out pada Sesi ini.</div>
+    </form>
+    ";
+  }else{
+    $form_stop_sesi = '';
+  }
 
   $info_sudah_presensi = $d['tanggal_presensi']=='' 
   ? div_alert('danger text-center',"Anda Telat Presensi. Segera lapor ke Petugas Akademik!") 
-  : div_alert('info text-center',"Anda Sudah Presensi pada $d[tanggal_presensi]").$form_stop_sesi;
+  : div_alert('info text-center green bold',"Anda Sudah Presensi pada $d[tanggal_presensi]").$form_stop_sesi;
 
   
   $blok_presensi = ($d['jumlah_presensi_dosen']==0 and $eta_hari==0) ? $btn_presensi_dosen : $info_sudah_presensi;

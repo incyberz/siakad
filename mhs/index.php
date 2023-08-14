@@ -93,20 +93,38 @@ if(!isset($_SESSION['siakad_mhs'])){
       border: solid 3px red;
       padding: 3px;
     }
+    .foto_profil{
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: solid 3px white;
+      box-shadow: 0px 0px 3px gray;
+      transition: .2s;
+      margin: 10px;
+      opacity: 75%;
+      cursor: pointer;
+    }
+
+    .foto_profil:hover{
+      transform: scale(1.2);
+      -webkit-filter: grayscale(0%);
+      filter: grayscale(0%);
+      opacity: 100%;
+    }
   </style>
 
-  <?php ?>
 
 </head>
 
 <body class='gradasi-hijau'>
 
   <?php if($is_login){ ?>
-  <button type="button" class="mobile-nav-toggle d-xl-none"><i class="icofont-navigation-menu"></i></button>
-  <?php include "header.php";?>
-  <main id="main"><?php include 'routing.php' ; ?></main>
-  <?php include "pages/footer.php";?>
-  <a href="#" class="back-to-top"><i class="icofont-simple-up"></i></a>
+    <button type="button" class="mobile-nav-toggle d-xl-none"><i class="icofont-navigation-menu"></i></button>
+    <?php include "header.php";?>
+    <main id="main"><?php include 'routing.php' ; ?></main>
+    <?php include "pages/footer.php";?>
+    <a href="#" class="back-to-top"><i class="icofont-simple-up"></i></a>
   <?php }else{ include 'pages/login.php'; }?>
 
   <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>

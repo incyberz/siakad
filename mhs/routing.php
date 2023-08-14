@@ -3,7 +3,15 @@
 # ROUTING MAHASISWA
 # ==================================================
 
-// ubah password default
+# ==================================================
+# redirect to home mahasiswa non-aktif
+# ==================================================
+$parameter = ($status_mhs==0 and $parameter!='logout') ? '' : $parameter;
+
+
+# ==================================================
+# ubah password default
+# ==================================================
 $skip_ubah_password=0;
 if($skip_ubah_password){
   echo '<div class="red tebal">Perhatian! Mode Pass Ubah Password is ON.</div>';
@@ -17,9 +25,10 @@ if($skip_ubah_password){
   }
 }
 
-// redirect to home mahasiswa non-aktif
-$parameter = ($status_mhs==0 and $parameter!='logout') ? '' : $parameter;
-
+# ==================================================
+# SHOW ALWAYS UPLOAD PROFILE
+# ==================================================
+if($img_profile==$profile_na and $parameter!='upload_profile') include 'must_upload_profile.php';
 
 switch ($parameter) {
   case '': 

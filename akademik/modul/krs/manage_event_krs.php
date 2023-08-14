@@ -259,7 +259,7 @@ if($sum_nominal==0){
   prodi <b><a href="?manage_krs&angkatan=<?=$angkatan?>"> <?=$nama_prodi?></a></b>
 </p>
 <ul>
-  <li>Jumlah mahasiswa aktif saat ini : <a href="?mhs_aktif" target=_blank><?=$jumlah_mhs_aktif?> mhs</a></li>
+  <li>Jumlah mahasiswa aktif saat ini : <a href="?rekap_mhs_aktif" target=_blank><?=$jumlah_mhs_aktif?> mhs</a></li>
   <li>Semester aktif: <a href="?manage_kalender&id_kalender=<?=$id_kalender?>" target=_blank>Semester <?=$semester_aktif?> dari <?=$tanggal_awal_smt?> s.d <?=$tanggal_akhir_smt?></a></li>
 </ul>
 <div class='kecil miring mb3'></div>

@@ -15,7 +15,7 @@ $li_status = "
 
     <div class="section-title">
       <h2>Home</h2>
-      <p>Selamat Datang <?=$nama_mhs?>! Anda sedang login sebagai Mahasiswa.</p>
+      <p>Selamat Datang <?=$nama_mhs?>! Berikut adalah Data Kemahasiswaan Anda:</p>
       <?=$pesan_keaktifan?>
       <hr>
       <ul><?=$li_status?></ul>

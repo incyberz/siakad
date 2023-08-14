@@ -22,7 +22,7 @@ a.nama as nama_mhs,
   where c.id_mhs=a.id and b.tahun_ajar=$tahun_ajar) as kelas,  
 (
   SELECT id from tb_kelas_ta_detail b 
-  where b.id_mhs=a.id) as id_kelas_angkatan_detail  
+  where b.id_mhs=a.id) as id_kelas_ta_detail  
 
 FROM tb_mhs a 
 WHERE (a.nim like '%$keyword%' OR a.nama like '%$keyword%') 
@@ -56,11 +56,11 @@ while ($d = mysqli_fetch_assoc($q)) {
   $tr_sty = ($d['kelas']=='') ? '' : 'style="background:linear-gradient(#fee,#fcc)"'; 
   $tr_sty = ($d['kelas']==$kelas) ? 'style="background:linear-gradient(#efe,#cfc)"' : $tr_sty; 
 
-  $id_kelas_angkatan_detail = $d['id_kelas_angkatan_detail']==''? 'new' : $d['id_kelas_angkatan_detail'];
+  $id_kelas_ta_detail = $d['id_kelas_ta_detail']==''? 'new' : $d['id_kelas_ta_detail'];
 
   $btn_assign = $d['kelas']=='' 
-  ? "<button class='btn btn-primary btn-sm btn_aksi' id='assign__$d[id_mhs]__$id_kelas_angkatan_detail'>Assign ke $kelas</button>"
-  : "<button class='btn btn-danger btn-sm btn_aksi' id='drop__$d[id_mhs]__$id_kelas_angkatan_detail'>Drop</button>";
+  ? "<button class='btn btn-primary btn-sm btn_aksi' id='assign__$d[id_mhs]__$id_kelas_ta_detail'>Assign ke $kelas</button>"
+  : "<button class='btn btn-danger btn-sm btn_aksi' id='drop__$d[id_mhs]__$id_kelas_ta_detail'>Drop</button>";
 
   $btn_assign = $d['kelas']==$kelas ? '' : $btn_assign;
   $kelas_ini = $d['kelas']==$kelas ? '<div class="kecil miring">sudah terdaftar di kelas ini.</div>' : '';

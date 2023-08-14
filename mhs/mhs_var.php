@@ -49,11 +49,12 @@ if($folder_uploads==''){
   $qq = mysqli_query($cn,$ss)or die("Update folder_uploads error. ".mysqli_error($cn));
 }
 
-$img_profile = "uploads/$folder_uploads/img_profile_$nim.jpg";
+$profile_na = 'uploads/profile_na.jpg';
+$img_profile = "uploads/$folder_uploads/profil-$nim.jpg";
 $img_bg = "uploads/$folder_uploads/img_bg_$nim.jpg";
 
-if(!file_exists($img_profile)) $img_profile = "uploads/profile_na.jpg";
-if(!file_exists($img_bg)) $img_bg = "uploads/bg_na.jpg";
+if(!file_exists($img_profile)) $img_profile = $profile_na;
+if(!file_exists($img_bg)) $img_bg = 'uploads/bg_na.jpg';
 
 
 # ========================================================

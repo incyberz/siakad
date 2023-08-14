@@ -98,33 +98,10 @@ foreach ($d as $key => $value) {
 
 
 
-# ====================================================
-# KELAS PESERTA
-# ====================================================
-$s2 = "SELECT * FROM tb_kelas_peserta a 
-JOIN tb_kurikulum_mk b on b.id=a.id_kurikulum_mk  
-JOIN tb_jadwal c on b.id=c.id_kurikulum_mk  
-WHERE c.id=$id_jadwal ";
-// echo $s2;
-$q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
-if(mysqli_num_rows($q2)==0){
-  $kelas_peserta = '<span class="miring red">--NULL--</span>';
-}else{
-  $kelas_peserta = '<ol style="padding-left:15px">';
-  while ($d2=mysqli_fetch_assoc($q2)) {
-    $kelas_peserta.= "<li>$d2[kelas]</li>";
-  }
-  $kelas_peserta .= '</ol>';
-}
-
 
 $tb_mk = "
 <table class=table>
   $tr
-  <tr>
-    <td>KELAS PESERTA</td>
-    <td>$kelas_peserta</td>
-  </tr>
 </table>";
 
 $form_upload = "

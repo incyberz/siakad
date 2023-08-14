@@ -140,10 +140,10 @@ if(mysqli_num_rows($q)>0){
   $total_nm=0;
   $btn_smt='';
   for ($i=1; $i <= $max_smt ; $i++) {
-    $ip[$i] = $total_sks_smt[$i]==0?0:round($total_nm_smt[$i]/$total_sks_smt[$i],2);
+    $ip[$i] = $total_sks_smt[$i]==0?0:number_format($total_nm_smt[$i]/$total_sks_smt[$i],2);
     $total_sks+=$total_sks_smt[$i];
     $total_nm+=$total_nm_smt[$i];
-    $ipks = $total_sks==0?0:round($total_nm/$total_sks,2);
+    $ipks = $total_sks==0?0:number_format($total_nm/$total_sks,2);
     $ip_show[$i] = "
     <div class='wadah gradasi-kuning text-centera'>
       <div class=row>

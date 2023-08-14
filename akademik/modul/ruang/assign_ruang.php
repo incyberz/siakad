@@ -116,6 +116,7 @@ $sesi = "P$d[pertemuan_ke]  / $d[nama_sesi] / $d[nama_mk]";
 $tanggal_sesi = $d['tanggal_sesi'];
 $tsesi = strtotime($tanggal_sesi);
 $jam_keluar = date('H:i',$tsesi + $d['bobot']*45*60);
+$stop_sesi = date('Y-m-d H:i',$tsesi + $d['bobot']*45*60);
 
 $tanggal_sesi_show = '<h4 class="biru tebal">'.$nama_hari[date('w',$tsesi)].', '.date('d M Y / H:i',$tsesi).' s.d '.$jam_keluar.'</h4>';
 $id_jadwal = $d['id_jadwal'];
@@ -164,15 +165,15 @@ if(mysqli_num_rows($q)){
 
   // belum ada assign ruang
   $kotaks='';
-  $s = "SELECT a.*,
+  $s = "SELECT a.* ,
   (
-    SELECT concat(b.nama,' MK ',e.nama,'|',b.tanggal_sesi,'|',e.bobot_teori,'|',e.bobot_praktik) FROM tb_assign_ruang t 
+    SELECT concat(b.nama,' MK ',e.nama,'|',b.tanggal_sesi,'|',e.bobot_teori,'|',e.bobot_praktik) 
+    FROM tb_assign_ruang t 
     JOIN tb_sesi b on b.id=t.id_sesi 
     JOIN tb_jadwal c on c.id=b.id_jadwal 
     JOIN tb_kurikulum_mk d on d.id=c.id_kurikulum_mk 
     JOIN tb_mk e on e.id=d.id_mk 
-    WHERE (b.tanggal_sesi >= '$tanggal_sesi' and b.tanggal_sesi < '$stop_sesi' 
-    OR b.stop_sesai zzz > '$tanggal_sesi' and b.stop_sesai <= '$stop_sesi')
+    WHERE (b.tanggal_sesi >= '$tanggal_sesi' and b.tanggal_sesi < '$stop_sesi')
     AND t.id_ruang=a.id  
     LIMIT 1) as terpakai_oleh   
   
@@ -180,7 +181,7 @@ if(mysqli_num_rows($q)){
   WHERE kondisi=1 
   AND kapasitas>0
   ";
-  echo '<pre>'; var_dump($s); echo '</pre>'; 
+  // echo '<pre>'; var_dump($s); echo '</pre>'; 
   // exit;
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
   while ($r=mysqli_fetch_assoc($q)) {

@@ -13,6 +13,7 @@ $login_as = "Pengunjung";
 $is_login = 0;
 $is_password_default = 0;
 $username = '';
+$admin_level = 0;
 
 include 'config.php';
 if (isset($_SESSION['siakad_username'])) {

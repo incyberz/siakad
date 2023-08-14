@@ -9,7 +9,7 @@ b.id as id_mhs,
 b.nim,
 b.nama as nama_mhs,
 c.kelas,
-a.id as id_kelas_angkatan_detail 
+a.id as id_kelas_ta_detail 
 
 FROM tb_kelas_ta_detail a 
 JOIN tb_mhs b on b.id=a.id_mhs 
@@ -34,7 +34,7 @@ $tr = '';
 $i=0;
 while ($d = mysqli_fetch_assoc($q)) {
   $i++;
-  $btn_drop = "<button class='btn btn-danger btn-sm btn_aksi' id='drop__$d[id_mhs]__$d[id_kelas_angkatan_detail]'>Drop</button>";
+  $btn_drop = "<button class='btn btn-danger btn-sm btn_aksi' id='drop__$d[id_mhs]__$d[id_kelas_ta_detail]'>Drop</button>";
   $kelas = $d['kelas']==''?'<span class="abu miring">-- null --</span>':$d['kelas'];
   $tr .= "<tr id=tr2__$d[id_mhs]>
     <td>$i</td>

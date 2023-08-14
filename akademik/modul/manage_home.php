@@ -22,7 +22,7 @@ array_push($rmanage, ['sesi_kuliah','manage_sesi','seting tanggal tiap sesi']);
 array_push($rmanage, ['ruang','manage_ruang','assign ruang untuk jadwal ']);
 array_push($rmanage, ['mhs','manage_mhs','manage aktifitas mhs']);
 array_push($rmanage, ['dosen','monitoring_sks_dosen','manage aktifitas dosen']);
-array_push($rmanage, ['mhs_aktif','mhs_aktif','manage mhs aktif']);
+array_push($rmanage, ['rekap_mhs_aktif','rekap_mhs_aktif','manage mhs aktif']);
 
 
 $s = "SELECT __";

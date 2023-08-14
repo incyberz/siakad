@@ -12,7 +12,8 @@ if(isset($_POST['btn_submit_presensi'])){
   (id_sesi,id_dosen) VALUES 
   ($_POST[id_sesi],$_POST[id_dosen])";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  echo div_alert('success',"Terimakasih Anda sudah mengisi Presensi.<hr><a class='btn btn-primary' href='?jadwal_dosen'>Kembali ke Jadwal</a>");
+  echo div_alert('success','Presensi Dosen sukses.');
+  echo '<script>location.replace("?jadwal_dosen")</script>';
   exit;
 }
 

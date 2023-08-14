@@ -130,7 +130,7 @@ while ($d=mysqli_fetch_assoc($q)) {
   
   if($jumlah_bayar==''){
     $lunas_show = '';
-    $verif_status = '<span class="miring abu">belum melakukan pembayaran</span>';
+    $verif_status = $d['tanggal_penagihan']=='' ? '' : '<span class="miring abu">belum melakukan pembayaran</span>';
   }else{
     if($d['verif_status']==''){
       $lunas_show = "<div><a class='tebal darkred' href='?lihat_trx&id_biaya=$d[id]'>Sedang Proses Verifikasi</a> $form_wa_petugas</div>";

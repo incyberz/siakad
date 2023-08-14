@@ -98,6 +98,7 @@ if(mysqli_num_rows($q)){
       b.nidn,
       (e.bobot_teori+e.bobot_praktik) bobot,
       (SELECT timestamp_masuk FROM tb_presensi_dosen WHERE id_dosen=b.id AND id_sesi=a.id) presensi_dosen, 
+      (SELECT timestamp_keluar FROM tb_presensi_dosen WHERE id_dosen=b.id AND id_sesi=a.id) timestamp_keluar_dosen, 
       (SELECT timestamp_masuk FROM tb_presensi WHERE id_mhs=$id_mhs AND id_sesi=a.id) timestamp_masuk, 
       (SELECT timestamp_keluar FROM tb_presensi WHERE id_mhs=$id_mhs AND id_sesi=a.id) timestamp_keluar 
       FROM tb_sesi a 
@@ -219,6 +220,7 @@ if(mysqli_num_rows($q)){
               }
               $info_lampau = "<span class=biru>$info_lampau</span>";
               $status_presensi = '<span class="biru kecil miring">bersiaplah untuk presensi!</span>';
+              $closed_by='';
             }else{ // sedang atau sudah berlangsung
               
 
@@ -237,12 +239,19 @@ if(mysqli_num_rows($q)){
                     </form>
                     ";
                   }elseif($d2['timestamp_keluar']==''){
-                    $closed_by = "
-                    <div class='kecil miring green bold consolas mb1' style='font-size:10px'>Check-In at: $d2[timestamp_masuk]</div>
-                    <form method=post>
-                      <button class='btn btn-primary btn-block' value='$id_mhs-$id_sesi' name=btn_check_out>Check-Out</button>
-                    </form>
-                    ";                    
+                    $closed_by = "<div class='kecil miring green bold consolas mb1' style='font-size:10px'>Check-In at: $d2[timestamp_masuk]</div>";
+                    if($d2['timestamp_keluar_dosen']==''){
+                      $closed_by.= "
+                        <div class='kecil miring abu'>Dosen belum mengakhiri sesi ...</div>
+                        <button class='btn btn-danger btn-block' disabled>Check-Out</button>
+                      ";
+                    }else{
+                      $closed_by.= "
+                        <form method=post>
+                          <button class='btn btn-primary btn-block' value='$id_mhs-$id_sesi' name=btn_check_out>Check-Out</button>
+                        </form>
+                      ";
+                    }                   
                   }else{
                     $closed_by = 'all done.'; //zzz debug
                   }
@@ -280,6 +289,7 @@ if(mysqli_num_rows($q)){
                 if($cek_in and $cek_out){ //presensi saat telah selesai, tapi dlm minggu aktif
                   $status_presensi = "<div class=small><span class='green tebal'>Presensi Sudah Lengkap</span></div>";
                   $info_lampau = "<span class='green'>Sudah Selesai. ($eta_show)</span>";
+                  $closed_by = '';
                 }elseif($cek_in){
                   $status_presensi = "<div class=small><span class=green>Sudah Check-In</span> | <span class=red>Tidak Check-Out</span></div>";
                 }elseif($cek_out){

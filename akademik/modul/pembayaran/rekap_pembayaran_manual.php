@@ -69,7 +69,7 @@ echo "
 <div class='row'>
   <div class='col-lg-6'>
     <div class='wadah gradasi-kuning'>
-      <div class='biru mb2'><a href='?mhs_aktif'>Mhs Aktif : $jumlah_mhs_aktif</a></div>
+      <div class='biru mb2'><a href='?rekap_mhs_aktif'>Mhs Aktif : $jumlah_mhs_aktif</a></div>
       $loop
     </div>
   </div>
