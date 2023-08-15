@@ -82,7 +82,7 @@ for ($i=0; $i < count($rid_prodi); $i++){
     $hideit_lainnya1 = $jumlah_allmhs_prodi_angkatan[$rid_prodi[$i]][$rangkatan[$j]]==0 ? 'hideit' : ''; //hide lainnya pada prodi if count 0
     $hideit_lainnya2 = $persen==0 ? 'hideit' : ''; //hide lainnya pada prodi if count 0
     $prodi_ang = "$rnama_prodi[$i]-$rangkatan[$j]";
-    $prodi_ang = $rangkatan[$j]=='lainnya' ? $prodi_ang : "<a href='?list_mhs_aktif&keyword=$prodi_ang&keyword2=$prodi_ang'>$prodi_ang</a>";
+    $prodi_ang = $rangkatan[$j]=='lainnya' ? $prodi_ang : "<a href='?master_mhs&keyword=$prodi_ang&keyword2=$prodi_ang'>$prodi_ang</a>";
     $loop_allmhs .= "<div class='wadah gradasi-kuning $hideit_lainnya1'>$prodi_ang : ".$jumlah_allmhs_prodi_angkatan[$rid_prodi[$i]][$rangkatan[$j]]."</div>";
     $loop_aktif .= "<div class='wadah gradasi-$gradasi $hideit_lainnya2'>$prodi_ang : ".$jumlah_aktif_prodi_angkatan[$rid_prodi[$i]][$rangkatan[$j]]." ($persen%)</div>";
   }
@@ -104,7 +104,7 @@ echo "
 
   <div class='col-lg-6'>
     <div class='wadah gradasi-hijau'>
-      <div class='biru mb2'><a href='?list_mhs_aktif'>Mhs Aktif : $jumlah_aktif ($persen%)</a> <img class='img_expand expand_v1' src='../assets/img/icons/expand.png' height=20px></div>
+      <div class='biru mb2'><a href='?master_mhs'>Mhs Aktif : $jumlah_aktif ($persen%)</a> <img class='img_expand expand_v1' src='../assets/img/icons/expand.png' height=20px></div>
       $loop_aktif
     </div>
   </div>

@@ -11,4 +11,7 @@
   ALTER TABLE `tb_presensi` CHANGE `id_sesi_kuliah` `id_sesi` INT(11) NOT NULL; 
   ALTER TABLE `tb_presensi_dosen` CHANGE `id_sesi_kuliah` `id_sesi` INT(11) NOT NULL;
 
+
+  ALTER TABLE `tb_mhs` ADD `id_jalur` SMALLINT NOT NULL DEFAULT NULL AFTER `id_prodi`; 
+
 -->

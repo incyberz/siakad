@@ -17,7 +17,7 @@ $form_filter2 = "
     <input name='keyword' value='$keyword' class=debug> 
     <input name='keyword2' value='$keyword2' $bg required minlength=3 maxlength=20> 
     <button class='btn btn-primary btn-sm'>Filter</button>
-    <a href='?list_mhs_aktif' class='btn btn-info btn-sm'>Clear</a>
+    <a href='?master_mhs' class='btn btn-info btn-sm'>Clear</a>
   </div>
 </form>
 ";
@@ -52,7 +52,7 @@ if(mysqli_num_rows($q)>0){
         </td>
         <td class=kecil>
         <div><b>Prodi</b> : $d[nama_prodi]</div>
-        <div><b>Kelas</b> : <a href='?list_mhs_aktif&keyword=$kelas&keyword2=$kelas'>$kelas</a></div>
+        <div><b>Kelas</b> : <a href='?master_mhs&keyword=$kelas&keyword2=$kelas'>$kelas</a></div>
         <div><b>Semester</b> : $semester</div>
         </td>
         <td>

@@ -51,7 +51,7 @@ while ($d=mysqli_fetch_assoc($q)) {
       Urutkan kolom <code>No</code> agar tampilan ke mhs juga terurut!
     </li>
     <li>Dikarenakan biaya tiap angkatan dan tiap prodi <u>dapat berbeda</u>, disarankan Anda melakukan <a href="?manage_biaya_angkatan">Manage Biaya setiap Angkatan</a>.</li>
-    <li>Untuk melihat hasil perubahan Anda boleh <code>Login As</code> sebagai Mahasiswa pada <a href="?list_mhs_aktif">List Mahasiswa Aktif</a>, kemudian cek pada Menu Pembayaran</li>
+    <li>Untuk melihat hasil perubahan Anda boleh <code>Login As</code> sebagai Mahasiswa pada <a href="?master_mhs">List Mahasiswa Aktif</a>, kemudian cek pada Menu Pembayaran</li>
   </ul>
 </div>
 

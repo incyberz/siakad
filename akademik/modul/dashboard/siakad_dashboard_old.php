@@ -1,9 +1,8 @@
 <h3 class="page-header"><i class="fa fa-laptop"></i>SIAKAD Dashboard</h3>
 <p style="background-color: #ffa;padding: 10px"><b>Today</b>: <?=date('D, d-M-Y H:i', strtotime('now'))?> | <b>Petugas</b>: <?=$nama_user?> | <b>Login as</b>: <?=$login_as?>  </p>
 <style>.kanan{text-align:right !important}</style>
-
-<script type="text/javascript" src="../assets/js/echarts.min.js"></script>
-
+<!-- <script src="../assets/vendor/echarts/echarts.min.js"></script> -->
+<script src="../assets/js/echarts.min.js"></script>
 
 <?php 
 $tahun_skg = date('Y');
@@ -11,7 +10,6 @@ $ta_baru = strtotime('today')>=date('Y-m-d',strtotime("$tahun_skg-7-1"));
 $tahun_ajar_skg = $ta_baru ? $tahun_skg : $tahun_skg-1;
 $ganjil_genap = $ta_baru ? 'Ganjil' : 'Genap';
 include '../include/include_rid_prodi.php';
-include '../include/include_rid_jalur.php';
 
 # ======================================================
 # PROGRESS MANAGE
@@ -39,14 +37,10 @@ $jumlah_mhs_aktif = mysqli_num_rows($q);
 // $rprodi = ['TI','RPL','SI','MI','KA']; //zzz
 for ($i=0; $i < count($rid_prodi); $i++){
 	$jumlah_mhs_aktif_prodi[$rid_prodi[$i]] = 0;
-	// $jumlah_sudah_bayar_prodi[$rid_prodi[$i]] = 0;
-	// $jumlah_sudah_krs_prodi[$rid_prodi[$i]] = 0;
-} 
-for ($i=0; $i < count($rid_jalur); $i++){
-	$jumlah_mhs_aktif_jalur[$rid_jalur[$i]] = 0;
+	$jumlah_sudah_bayar_prodi[$rid_prodi[$i]] = 0;
+	$jumlah_sudah_krs_prodi[$rid_prodi[$i]] = 0;
 } 
 $jumlah_mhs_aktif_unprodi = 0;
-$jumlah_mhs_aktif_unjalur = 0;
 $jumlah_belum_bayar = 0;
 $jumlah_belum_krs = 0;
 
@@ -55,25 +49,15 @@ while ($d = mysqli_fetch_assoc($q)) {
 	$id_prodi=$d['id_prodi'];
 	if($id_prodi!=''){
 		$jumlah_mhs_aktif_prodi[$id_prodi]++;
-		// if($d['status_bayar_manual']){
-		// 	$jumlah_sudah_bayar_prodi[$id_prodi]++;
-		// 	$jumlah_sudah_bayar++;
-		// } 
-		// if($d['status_krs_manual']){
-		// 	$jumlah_sudah_krs_prodi[$id_prodi]++;
-		// 	$jumlah_sudah_krs++;
-		// } 
-    $id_jalur=$d['id_jalur'];
-    if($id_jalur!=''){
-      $jumlah_mhs_aktif_jalur[$id_jalur]++;
-    }else{
-      $jumlah_mhs_aktif_unjalur++;
-    }
-
-  }else{
-    $jumlah_mhs_aktif_unprodi++;
-  }
-
+		if($d['status_bayar_manual']){
+			$jumlah_sudah_bayar_prodi[$id_prodi]++;
+			$jumlah_sudah_bayar++;
+		} 
+		if($d['status_krs_manual']){
+			$jumlah_sudah_krs_prodi[$id_prodi]++;
+			$jumlah_sudah_krs++;
+		} 
+	}
 }
 
 
@@ -109,13 +93,11 @@ $tb_header[$chart_no] = ['Program Studi','Persen','Jumlah'];
 $satuan[$chart_no] = 'Mhs';
 $sub_judul_chart[$chart_no] = "$jumlah_mhs_aktif Mhs Aktif";
 $rlabel[$chart_no] = [];
-$rlink[$chart_no] = [];
 $rsum[$chart_no] = [];
 $rwarna[$chart_no] = '';
 foreach ($rid_prodi as $id_prodi){
 	array_push($rsum[$chart_no],$jumlah_mhs_aktif_prodi[$id_prodi]);
 	array_push($rlabel[$chart_no],$rjenjang_prodi[$id_prodi].'-'.$rprodi[$id_prodi]);
-	array_push($rlink[$chart_no],'?master_mhs&status_mhs=1&id_prodi='.$id_prodi);
 	$rwarna[$chart_no] .= '"'. $rwarna_prodi[$id_prodi].'",';
 }
 $chart_jumlah[$chart_no] = array_sum($rsum[$chart_no]);
@@ -124,26 +106,18 @@ $chart_jumlah[$chart_no] = array_sum($rsum[$chart_no]);
 # ======================================================
 $chart_no = 2;
 # ======================================================
-$judul_item[$chart_no] = 'Jalur Daftar';
-$judul_chart[$chart_no] = 'Jalur Daftar';
-$tb_header[$chart_no] = ['Jalur Daftar','Persen','Jumlah'];
+$judul_item[$chart_no] = 'Program Studi';
+$judul_chart[$chart_no] = 'Student Body';
+$tb_header[$chart_no] = ['Program Studi','Persen','Jumlah'];
 $satuan[$chart_no] = 'Mhs';
 $sub_judul_chart[$chart_no] = "$jumlah_mhs_aktif Mhs Aktif";
 $rlabel[$chart_no] = [];
 $rsum[$chart_no] = [];
-$rlink[$chart_no] = [];
 $rwarna[$chart_no] = '';
-foreach ($rid_jalur as $id_jalur){
-	array_push($rsum[$chart_no],$jumlah_mhs_aktif_jalur[$id_jalur]);
-	array_push($rlabel[$chart_no],$rjalur[$id_jalur]);
-	array_push($rlink[$chart_no],'?master_mhs&status_mhs=1&id_jalur='.$id_jalur);
-	$rwarna[$chart_no] .= '"'. $rwarna_jalur[$id_jalur].'",';
-}
-if($jumlah_mhs_aktif_unjalur){
-  array_push($rsum[$chart_no],$jumlah_mhs_aktif_unjalur);
-  array_push($rlabel[$chart_no],'NULL');
-	array_push($rlink[$chart_no],'?master_mhs&status_mhs=1&id_jalur=null');
-  $rwarna[$chart_no] .= '"#ff0000",';
+foreach ($rid_prodi as $id_prodi){
+	array_push($rsum[$chart_no],$jumlah_mhs_aktif_prodi[$id_prodi]);
+	array_push($rlabel[$chart_no],$rjenjang_prodi[$id_prodi].'-'.$rprodi[$id_prodi]);
+	$rwarna[$chart_no] .= '"'. $rwarna_prodi[$id_prodi].'",';
 }
 $chart_jumlah[$chart_no] = array_sum($rsum[$chart_no]);
 
@@ -161,7 +135,7 @@ for ($h=1; $h <= count($judul_item); $h++) {
 
     $chart_persen = number_format($rsum[$h][$i]/$chart_jumlah[$h]*100,2);
 
-    $a = "<a href='".$rlink[$h][$i]."' target=_blank>";
+    $a = "<a href='?list_mhs_aktif&q=".$rlabel[$h][$i]."'>";
     $tr.="
     <tr>
       <td class=''>$a".$rlabel[$h][$i]."</a></td>
@@ -237,84 +211,90 @@ for ($h=1; $h <= count($judul_item); $h++) {
   ";
 }
 
-$gf3 = "
-  <div class='col-lg-4'>
-    <div id='gf3' style='height: 100%'></div>
-  </div>
+echo "<div class='row'>$gf</div>";
 
-  <script type='text/javascript'>
-    var dom = document.getElementById('gf3');
+?>
+<div id="grafik2sss" >zzzzz</div>
+<div id="grafik2" >zzzzz</div>
+
+  
+  <!-- <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script> -->
+
+  <script type="text/javascript">
+    var dom = document.getElementById('grafik2');
     var myChart = echarts.init(dom, null, {
       renderer: 'canvas',
-      useDirtyRect: false,
+      useDirtyRect: false
     });
     var app = {};
-
+    
     var option;
 
     option = {
       tooltip: {
         trigger: 'axis',
         axisPointer: {
-          type: 'shadow',
-        },
+          type: 'shadow'
+        }
       },
       legend: {},
       grid: {
         left: '3%',
         right: '4%',
         bottom: '3%',
-        containLabel: true,
+        containLabel: true
       },
       xAxis: [
         {
           type: 'category',
-          data: [2020, 2021, 2022],
-        },
+          data: [2020,2021,2022]
+        }
       ],
       yAxis: [
         {
-          type: 'value',
-        },
+          type: 'value'
+        }
       ],
       series: [
+        
         {
           name: 'Reguler',
           type: 'bar',
-          stack: 'Jalur',
+          stack: 'Ad',
           emphasis: {
-            focus: 'series',
+            focus: 'series'
           },
-          data: [120, 132, 101, 134, 90, 230, 210],
+          data: [120, 132, 101, 134, 90, 230, 210]
         },
         {
           name: 'KIP',
           type: 'bar',
-          stack: 'Jalur',
+          stack: 'Ad',
           emphasis: {
-            focus: 'series',
+            focus: 'series'
           },
-          data: [220, 182, 191, 234, 290, 330, 310],
+          data: [220, 182, 191, 234, 290, 330, 310]
         },
         {
           name: 'KIP-C',
           type: 'bar',
-          stack: 'Jalur',
+          stack: 'Ad',
           emphasis: {
-            focus: 'series',
+            focus: 'series'
           },
-          data: [150, 232, 201, 154, 190, 330, 410],
+          data: [150, 232, 201, 154, 190, 330, 410]
         },
         {
           name: 'MBKM',
           type: 'bar',
-          stack: 'Jalur',
+          stack: 'Ad',
           emphasis: {
-            focus: 'series',
+            focus: 'series'
           },
-          data: [150, 232, 201, 154, 190, 330, 410],
-        },
-      ],
+          data: [150, 232, 201, 154, 190, 330, 410]
+        }
+        
+      ]
     };
 
     if (option && typeof option === 'object') {
@@ -323,13 +303,6 @@ $gf3 = "
 
     window.addEventListener('resize', myChart.resize);
   </script>
-";
-
-echo "<div class='row'>
-  $gf
-</div>";
-
-?>
 
 
 
@@ -343,14 +316,3 @@ echo "<div class='row'>
   .td-jumlah {font-weight:bold; color: white !important; background: #999; font-family:consolas }
 </style>
 
-
-
-
-
-
-
-
-
-
-
-   

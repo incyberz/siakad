@@ -159,7 +159,7 @@ $tr_krs="
 $i=0;
 $rid_krs = [];
 $prodi = $rprodi[$id_prodi];
-$registran = "<a target=_blank href='?list_mhs_aktif&keyword=$prodi-$angkatan&keyword2=$prodi-$angkatan'>0 of 0</a>"; 
+$registran = "<a target=_blank href='?master_mhs&keyword=$prodi-$angkatan&keyword2=$prodi-$angkatan'>0 of 0</a>"; 
 $jumlah_mhs_aktif = 0;
 $tanggal_awal_smt = '';
 $tanggal_akhir_smt = '';

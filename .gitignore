@@ -19,6 +19,7 @@ tendik
 uploads
 
 *.sql
+*.html
 
 *.zip
 *.rar
