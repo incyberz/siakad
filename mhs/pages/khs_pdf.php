@@ -1,6 +1,6 @@
 <?php
 ob_start();
-$dm=1;
+$dm=0;
 require('../../pdf/fpdf/fpdf.php');
 
 class PDF extends FPDF

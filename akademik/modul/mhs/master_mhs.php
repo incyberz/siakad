@@ -151,6 +151,8 @@ $id_jalur = $_GET['id_jalur'] ?? '';
 <div id=hasil_ajax></div>
 
 <script>
+  var get_csv = 0;
+  var id_mhs = 0;
   $(function(){
     $('.filter_select').change(function(){
       let keyword = $('#keyword').val().replace("'", "`").trim();
@@ -161,11 +163,12 @@ $id_jalur = $_GET['id_jalur'] ?? '';
       let shift = $('#shift_filter').val();
       let limit = $('#limit').val();
       let order_by = $('#order_by').val();
-      let link_ajax = `modul/mhs/master_mhs_fetch.php?angkatan=${angkatan}&id_prodi=${id_prodi}&id_jalur=${id_jalur}&shift=${shift}&status_mhs=${status_mhs}&order_by=${order_by}&limit=${limit}&keyword=${keyword}`;
+      let link_ajax = `modul/mhs/master_mhs_fetch.php?angkatan=${angkatan}&id_prodi=${id_prodi}&id_jalur=${id_jalur}&shift=${shift}&status_mhs=${status_mhs}&order_by=${order_by}&limit=${limit}&keyword=${keyword}&get_csv=${get_csv}`;
       $.ajax({
         url:link_ajax,
         success:function(a){
           $('#hasil_ajax').html(a);
+          get_csv=0;
         }
       })
     });
@@ -187,6 +190,12 @@ $id_jalur = $_GET['id_jalur'] ?? '';
         $(this).addClass('bg_red');
       }
     })
+    
+    $('#btn_get_csv').click(function(){
+      get_csv = 1;
+      $('.filter_select').change();  
+    })
+
   })
 
   $('#keyword').on('keypress',function(e) {
@@ -199,4 +208,63 @@ $id_jalur = $_GET['id_jalur'] ?? '';
       }
     }
   });
+
+  $(document).on('click','.edit_mhs',function(){
+    if($(this).text()=='Edit'){
+      let tid = $(this).prop('id');
+      let rid = tid.split('__');
+      id_mhs = rid[1];
+      $('.tr_mhs').hide();
+      $('#info_data_sisa').hide();
+      $('#tr_edit').show();
+      $('#tr_mhs__'+id_mhs).show();
+      $(this).text('Cancel');
+
+      let id_prodi = $('#id_prodi__'+id_mhs).text();
+      let angkatan = $('#angkatan__'+id_mhs).text();
+      let id_jalur = $('#id_jalur__'+id_mhs).text();
+      let shift = $('#shift__'+id_mhs).text();
+      let nama_mhs = $('#nama_mhs__'+id_mhs).text();
+      let nim = $('#nim__'+id_mhs).text();
+      let status_mhs = $('#status_mhs_filter').val();
+
+      // console.log(id_mhs,id_prodi,angkatan,id_jalur,shift,nama_mhs,nim);
+      $('#edit_prodi').val(id_prodi);
+      $('#edit_jalur').val(id_jalur);
+      $('#edit_angkatan').val(angkatan);
+      $('#edit_shift').val(shift);
+      $('#edit_nama_mhs').val(nama_mhs);
+      $('#edit_nim').val(nim);
+      $('#edit_status_mhs').val(status_mhs);
+    }else{
+      $(this).text('Edit')
+      $('.tr_mhs').show();
+      $('#info_data_sisa').show();
+      $('#tr_edit').hide();
+    }
+
+  })
+
+  $(document).on('click','#btn_save',function(){
+    let id_prodi = $('#edit_prodi').val();
+    let id_jalur = $('#edit_jalur').val();
+    let angkatan = $('#edit_angkatan').val();
+    let shift = $('#edit_shift').val();
+    let nama_mhs = $('#edit_nama_mhs').val();
+    let nim = $('#edit_nim').val();
+    let status_mhs = $('#edit_status_mhs').val();
+    // console.log(id_mhs, id_prodi,id_jalur,angkatan,shift,nama_mhs,nim,status_mhs);
+    let link_ajax = `modul/mhs/master_mhs_save.php?id_mhs=${id_mhs}&nim=${nim}&angkatan=${angkatan}&id_prodi=${id_prodi}&id_jalur=${id_jalur}&shift=${shift}&status_mhs=${status_mhs}&nama_mhs=${nama_mhs}&nim=${nim}`;
+    $.ajax({
+      url:link_ajax,
+      success:function(a){
+        if(a.trim()=='sukses'){
+          location.replace('?master_mhs&keyword='+nim);
+        }else{
+          alert(a);
+        }
+      }
+    })
+  })
+
 </script>

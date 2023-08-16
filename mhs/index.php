@@ -4,7 +4,7 @@
 # ========================================================
 session_start();
 $nama_mhs='';
-$dm=1;
+$dm=0;
 if (0) { session_unset(); exit();}
 include "../config.php";
 include "../include/nomor_ikmi.php";

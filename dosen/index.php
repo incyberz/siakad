@@ -1,7 +1,7 @@
 <?php
 session_start();
 // session_destroy(); exit;
-$dm=1;
+$dm=0;
 include "../config.php";
 
 # ========================================================

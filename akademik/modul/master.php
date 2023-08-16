@@ -13,10 +13,10 @@ include 'master_pesan_handler.php';
 # ==============================================================
 # GET PARAMS
 # ==============================================================
-$page = isset($_GET['p'])?$_GET['p']:'';
-$aksi = isset($_GET['aksi'])?$_GET['aksi']:'';
-$id = isset($_GET['id'])?$_GET['id']:'';
-$keyword = isset($_POST['keyword'])?$_POST['keyword']:'';
+$page = $_GET['p']??'';
+$aksi = $_GET['aksi']??'';
+$id = $_GET['id']??'';
+$keyword = $_POST['keyword']??'';
 
 if($page==''){
   # ==============================================================
@@ -26,6 +26,8 @@ if($page==''){
   // new patch :: redirect to manage
   die('<script>location.replace("?manage")</script>'); 
 
+}elseif($page='mhs'){
+  die('<script>location.replace("?master_mhs")</script>'); 
 }else{
 
   # ==============================================================
