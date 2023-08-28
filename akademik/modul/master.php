@@ -26,7 +26,7 @@ if($page==''){
   // new patch :: redirect to manage
   die('<script>location.replace("?manage")</script>'); 
 
-}elseif($page='mhs'){
+}elseif($page=='mhs'){
   die('<script>location.replace("?master_mhs")</script>'); 
 }else{
 

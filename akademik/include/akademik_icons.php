@@ -12,26 +12,14 @@
   }
 </style>
 <?php
-$aksi = [
-'delete',
-'edit',
-'new',
-'drop',
-'assign',
-'merge',
-'help',
-'login_as',
-'detail',
-'check',
-'wa',
-'back',
-'prev',
-'next',
-'pdf',
-'csv',
-'warning'
-];
+$path_icons = '../assets/img/icons';
+$files = scandir($path_icons);
+$arr_aksi = [];
+foreach ($files as $key => $file) {
+  $tmp = explode('.',$file);
+  if(strlen($tmp[0])>0) array_push($arr_aksi,$tmp[0]);
+}
 
-foreach ($aksi as $key => $value) {
-  $img_aksi[$value] = "<img class='img_aksi' src='../assets/img/icons/$value.png'>";
+foreach ($arr_aksi as $key => $aksi) {
+  $img_aksi[$aksi] = "<img class='img_aksi' src='$path_icons/$aksi.png'>";
 }

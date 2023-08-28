@@ -283,6 +283,7 @@ $rnomor_semester = [];
 $total_teori = 0;
 $total_praktik = 0;
 $total_mk = 0;
+$tr_mbkm = '';
 $i=0;
 while ($d=mysqli_fetch_assoc($q)) {
   $i++; 
@@ -299,7 +300,8 @@ while ($d=mysqli_fetch_assoc($q)) {
   a.bobot_praktik,
   a.prasyarat,
   b.id as id_kurikulum_mk, 
-  (SELECT count(1) FROM tb_kurikulum_mk WHERE id_mk=a.id) as jumlah_assign_mk  
+  (SELECT count(1) FROM tb_kurikulum_mk WHERE id_mk=a.id) as jumlah_assign_mk,  
+  (SELECT count(1) FROM tb_nilai WHERE id_kurikulum_mk=b.id limit 1) as sub_trx_nilai  
 
   FROM tb_mk a 
   JOIN tb_kurikulum_mk b ON a.id=b.id_mk 
@@ -323,15 +325,19 @@ while ($d=mysqli_fetch_assoc($q)) {
     $jumlah_teori[$d['id_semester']] += $d2['bobot_teori'];
     $jumlah_praktik[$d['id_semester']] += $d2['bobot_praktik'];
 
-    $hapus = $d2['jumlah_assign_mk'] > 1 ? '' : "<span class='btn_aksi' id='hapus__mk__$d2[id_mk]__$d[id_semester]'>$img_aksi[delete]</span>";
-    $drop = "<span class='btn_aksi' id='drop__mk__$d2[id_kurikulum_mk]__$d[id_semester]'>$img_aksi[drop]</span>";
+    $hapus = $d2['jumlah_assign_mk'] > 1 ? "<span onclick='alert(\"Tidak bisa hapus MK ini karena dipakai di Kurikulum lain.\")'>$img_aksi[delete_disabled]</span>" : "<span class='btn_aksi' id='hapus__mk__$d2[id_mk]__$d[id_semester]'>$img_aksi[delete]</span>";
+    $drop = $d2['sub_trx_nilai'] ? "<span onclick='alert(\"Tidak bisa Drop MK karena sudah ada trx-nilai pada MK ini.\")'>$img_aksi[drop_disabled]</span>" : "<span class='btn_aksi' id='drop__mk__$d2[id_mk]'>$img_aksi[drop]</span>";
     $merge = "<a href='?merge_mk&id_kurikulum_mk=$d2[id_kurikulum_mk]' target=_blank onclick='return confirm(\"Menuju laman Merge MK?\")'>$img_aksi[merge]</a>";
+    
+    //sub trx
+    $total_trx = $d2['sub_trx_nilai']; // only nilai zzz
+    $detail = !$d2['sub_trx_nilai'] ? '' : " <a target=_blank onclick='return confirm(\"Menuju detail trx MK ini?\")' href=?trx_mk&id_kurikulum_mk=$d2[id_kurikulum_mk]>$img_aksi[detail]</a> | <span class=kecil>$total_trx trx</span>";
 
     $merah = ($d2['bobot_teori'] + $d2['bobot_praktik'])==0 ? ' style="color:red; font-weight:bold" ' : '';
 
     $editable = $d2['jumlah_assign_mk'] > 1 ? '' : 'editable';
 
-    $tr.="
+    $ctr="
     <tr id='tr__$d2[id_mk]'>
       <td>$j<span class=debug>$d2[id_mk]</span></td>
       <td class='$editable' id='kode__mk__$d2[id_mk]'>$d2[kode_mk]</td>
@@ -344,11 +350,17 @@ while ($d=mysqli_fetch_assoc($q)) {
             <td>$drop</td>
             <td>$hapus</td>
             <td>$merge</td>
+            <td style='padding-left:15px !important'>$detail</td>
           </tr>
         </table>
       </td> 
     </tr>    
     ";
+    if(strpos('salt'.strtoupper($d2['kode_mk']),'MBKM')>0){
+      $tr_mbkm.=$ctr;
+    }else{
+      $tr.=$ctr;
+    }
   } //end while list MK
 
   $total_teori +=   $jumlah_teori[$d['id_semester']];
@@ -396,6 +408,7 @@ while ($d=mysqli_fetch_assoc($q)) {
         $tr
         
       </table>
+
       <div class='text-right'>
         <a href='?assign_mk&id_kurikulum=$id_kurikulum&id_semester=$d[id_semester]&no_semester=$d[no_semester]&nama_kurikulum=$nama_kurikulum' class='btn btn-primary btn-sm'>Assign MK</a>
         <button class='btn btn-primary btn-sm btn_aksi' id='tambah_dan_assign__mk__$d[id_semester]__$d[no_semester]'>Tambah MK</button>
@@ -407,7 +420,26 @@ while ($d=mysqli_fetch_assoc($q)) {
   if($i % 2 ==0) $semesters .= '</div><div class=row>';
 } // end while semesters
 
-
+$semesters.= "
+<div class='wadah' style='margin:15px'>
+  <div class='semester-ke'>
+    Mata Kuliah MBKM
+  </div>
+  <table class='table tb-semester-mk'>
+    <thead>
+      <th>No</th>
+      <th>Kode</th>
+      <th>Mata Kuliah</th>
+      <th>Teori</th>
+      <th>Praktik</th>
+      <th colspan=3 style='text-align:center'>Aksi</th>
+    </thead>
+    
+    $tr_mbkm
+    
+  </table>
+</div>
+";
 
 $total_sks = $total_praktik + $total_teori;
 
@@ -538,50 +570,41 @@ $back_to
       let rid = tid.split('__');
       let aksi = rid[0];
       let tabel = rid[1];
-      let id = rid[2];
+      let id_mk = rid[2];
+      let id_kurikulum = $('#id_kurikulum').text();
 
       if(aksi=='hapus' || aksi=='drop'){
         let y = aksi=='hapus' ? confirm('Yakin untuk menghapus data ini?\n\nPERHATIAN! Data MK akan hilang dari database.') 
         : confirm('Yakin untuk dropping data ini?\n\nDrop = melepas tanpa menghapus data');
         if(!y) return;
         let link_ajax = '';
-        let kolom_acuan = '';
-        let acuan = '';
-        let tabel2 = '';
-        let kolom_acuan2 = '';
-        let acuan2 = '';
 
         if(tabel=='semester'){
-          // kolom_acuan = 'id';
-          // acuan = id;
-          // link_ajax = `../ajax_global/ajax_global_delete.php?tabel=tb_${tabel}&kolom_acuan=${kolom_acuan}&acuan=${acuan}&`;
+          // delete semester not available
+
         }else if(tabel=='mk'){
-          let tabel_semester = 'semester';
-          kolom_acuan = 'id_semester';
-          acuan = rid[3]; //id_semester
-          tabel2 = 'kurikulum_mk';
-          kolom_acuan2 = 'id_mk';
-          acuan2 = id; //id_mk
           if(aksi=='hapus'){
-            link_ajax = `../ajax_global/ajax_global_drop_and_delete.php?tabel=${tabel}&kolom_acuan=${kolom_acuan}&acuan=${acuan}&tabel2=${tabel2}&kolom_acuan2=${kolom_acuan2}&acuan2=${acuan2}&`;
+            link_ajax = `ajax_akademik/ajax_hapus_mk_kurikulum.php?`;
           }else if(aksi=='drop'){
-            link_ajax = `../ajax_global/ajax_global_drop.php?tabel=tb_${tabel_semester}&kolom_acuan=${kolom_acuan}&acuan=${acuan}&tabel2=${tabel2}&kolom_acuan2=${kolom_acuan2}&acuan2=${acuan2}&`;
+            link_ajax = `ajax_akademik/ajax_drop_mk_kurikulum.php?id_kurikulum=${id_kurikulum}&id_mk=${id_mk}&`;
           }
         }else{
           alert('Belum ada ajax target untuk aksi tabel: '+tabel);
           return;
         }
 
-        // console.log(link_ajax); return;
+        // console.log(link_ajax, id_kurikulum, id_mk); 
+        // return;
 
         $.ajax({
           url:link_ajax,
           success:function(a){
+            console.log(a);
             if(a.trim()=='sukses'){
               if(tabel=='mk'){
-                $('#tr__'+id).fadeOut();
+                $('#tr__'+id_mk).fadeOut();
               }else if(tabel=='semester'){
-                $('#semester__'+id).fadeOut();
+                $('#semester__'+id_mk).fadeOut();
               }
             }else{
               console.log(a);

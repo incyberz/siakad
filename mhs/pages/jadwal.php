@@ -4,6 +4,10 @@ $debug='';
 $debug.="semester:$semester | ";
 $debug.="id_semester:$id_semester | ";
 
+$id_sesi_skg='';
+$timestamp_masuk = '';
+$timestamp_keluar = '';
+
 // dek awal_kuliah == awal_sesi zzz here
 
 $jadwal = div_alert('danger', 'Belum ada MK pada Semester ini. Segera Lapor Petugas!');

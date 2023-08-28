@@ -4,6 +4,7 @@
 # ========================================================
 session_start();
 $nama_mhs='';
+$kelas_ta = '';
 $dm=0;
 if (0) { session_unset(); exit();}
 include "../config.php";
