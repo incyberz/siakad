@@ -361,7 +361,7 @@ while ($d=mysqli_fetch_assoc($q)) {
     }else{
       $tr.=$ctr;
     }
-  } //end while list MK
+  } //end while list MK 
 
   $total_teori +=   $jumlah_teori[$d['id_semester']];
   $total_praktik +=   $jumlah_praktik[$d['id_semester']];
