@@ -117,6 +117,10 @@ ORDER BY $order_by LIMIT $limit
 // echo "<pre>$s</pre>";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
+$img_aksi['delete'] = "<img src='../assets/img/icons/delete.png' height=20px>";
+$img_aksi['login_as'] = "<img src='../assets/img/icons/login_as.png' height=20px>";
+$img_aksi['edit'] = "<img src='../assets/img/icons/edit.png' height=20px>";
+
 while ($d=mysqli_fetch_assoc($q)) {
   $id_mhs = $d['id_mhs'];
   $jalur = $d['id_jalur']=='' ? $null : $rjalur[$d['id_jalur']];
@@ -124,6 +128,7 @@ while ($d=mysqli_fetch_assoc($q)) {
   $nama_mhs = ucwords(strtolower($d['nama_mhs']));
   $nama_mhs = "<span id=nama_mhs__$id_mhs>$nama_mhs</span>";
   $nim = "<span id=nim__$id_mhs>$d[nim]</span>";
+  $login_as = "<a href='?login_as&nim=$d[nim]' target=_blank onclick='return confirm(\"Login as Mhs ini?\")'>$img_aksi[login_as]</a>";
   $nama = $order_by=='a.nama' ? "$nama_mhs | $nim" : "$nim | $nama_mhs";
   $kelas_ta = $d['kelas_ta']=='' ? $unset : "$d[kelas_ta] ~ TA.$d[tahun_ajar]";
   $kelas_ta = "<a href='?manage_grup_kelas&id_kurikulum=$d[id_kurikulum]' target=_blank onclick='return confirm(\"Menuju manage kelas untuk Mhs ini?\")'>$kelas_ta</a>";
@@ -133,10 +138,13 @@ while ($d=mysqli_fetch_assoc($q)) {
     <td id=angkatan__$id_mhs>$d[angkatan]</td>
     <td>$jalur<span class=debug id=id_jalur__$id_mhs>$d[id_jalur]</span></td>
     <td class=proper id=shift__$id_mhs>$d[shift]</td>
-    <td>$nama</td>
+    <td>$nama </td>
     <td>$d[semester]</td>
     <td>$kelas_ta</td>
-    <td><span id=edit__$id_mhs class='edit_mhs pointer blue'>Edit</span> | Delete</td>
+    <td><span id=edit__$id_mhs class='edit_mhs pointer blue'>$img_aksi[edit]</span> 
+      $img_aksi[delete]
+      $login_as 
+    </td>
   </tr>
   ";
 }

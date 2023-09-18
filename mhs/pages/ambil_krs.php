@@ -5,6 +5,7 @@ $tnow = strtotime('now');
 $undef = '<code>undefined</code>';
 $null = '<code>null</code>';
 $valid_tanggal=0;
+$bio_updated = 0;
 $is_lunas=0;
 $info_lunas = '';
 
@@ -86,7 +87,7 @@ if($id_semester==''){
   }
 
   $krs = $tr;  
-}else{
+}else{ // id_semester is OK
 
   
   $s = "SELECT a.id as id_semester, a.*, b.angkatan, b.jenjang, b.id as id_kalender,
@@ -121,6 +122,9 @@ if($id_semester==''){
   
   $link = $d['awal_krs']=='' ? div_alert('danger',"Penanggalan default KRS masih kosong. Segera lapor petugas!") : '';
   
+  # ===============================================
+  # LOGIC AWAL KRS
+  # ===============================================
   if($d['awal_krs']==''){
     $info_krs = '';
   }else{
@@ -128,7 +132,7 @@ if($id_semester==''){
     $tkrs_akhir = strtotime($d['akhir_krs']);
     if($d['tanggal_krs']==''){
       if($tkrs_awal<$tnow AND $tkrs_akhir>=$tnow){
-        $info_krs = div_alert('success','<h3 class="darkblue tebal">KRS sedang berlangsung.</h3>Saat ini KRS sudah dapat diakses oleh Anda. Silahkan catat Paket Mata Kuliahnya lalu klik tombol <code>Ambil KRS</code> !');
+        $info_krs = div_alert('success','<h3 class="darkblue tebal">KRS sedang berlangsung.</h3>Saat ini KRS sudah dapat diakses oleh Anda. Silahkan catat Paket Mata Kuliahnya, penuhi persyaratannya, lalu klik tombol <code>Ambil KRS</code> !');
         $valid_tanggal = 1;
       }else if($tnow<$tkrs_awal){
         $info_krs = div_alert('danger','Belum masuk masa KRS. Tunggu hingga Petugas Akademik memberikan informasinya.');
@@ -143,6 +147,17 @@ if($id_semester==''){
     }
   }
   
+  # ===============================================
+  # LOGIC UPDATED BIODATA
+  # ===============================================
+  $s5 = "SELECT * FROM tb_biodata WHERE nim='$nim' AND id_semester=$id_semester";
+  $q5 = mysqli_query($cn,$s5) or die(mysqli_error($cn));
+  if(mysqli_num_rows($q5)>1) die(div_alert('danger','Duplicate biodata detected.'));
+  if(mysqli_num_rows($q5)==1){
+    $bio_updated=1;
+  }
+
+
   $info_mk = '';
   $pilihan_mk = '';
   if($d['jumlah_mk']<1){
@@ -195,142 +210,148 @@ if($id_semester==''){
       </tr>";
       $tb_mk = "<table class=table>$mk$row_total</table>";
 
-      if($valid_tanggal){
-        if($is_lunas){
-          # ===========================================
-          # JIKA SUDAH LUNAS DAN VALID TANGGAL
-          # ===========================================
-          $btn_ambil_krs = "
-          <form method=post>
-            $info_lunas
-            <input class=debug name=id_semester value=$id_semester>
-            <input class=debug name=id_mhs value=$id_mhs>
-            <button class='btn btn-primary btn-block' name=btn_ambil_krs>Ambil KRS</button>
-          </form>
-          ";
-        }else{
-          # ===========================================
-          # VALID TANGGAL TAPI BELUM LUNAS 
-          # ===========================================
-          $s = "SELECT * 
-          FROM tb_syarat_biaya a 
-          JOIN tb_biaya b ON a.id_biaya=b.id 
-          WHERE a.event='KRS' 
-          AND a.angkatan=$angkatan 
-          AND a.id_prodi=$id_prodi 
-          AND b.untuk_semester=$semester  
-          ";
-
-          $s3 = "SELECT a.*,a.id as id_biaya,
-          (
-            SELECT 1 FROM tb_bayar 
-            WHERE id_biaya=a.id 
-            AND id_mhs='$id_mhs' 
-          ) sudah_bayar,   
-          (
-            SELECT persen_biaya FROM tb_syarat_biaya 
-            WHERE id_biaya=a.id 
-            AND event='KRS' 
-            AND angkatan=$angkatan 
-            AND id_prodi=$id_prodi 
-          ) persen_biaya,   
-          (
-            SELECT nominal FROM tb_biaya_angkatan 
-            WHERE id_biaya=a.id 
-            AND angkatan=$angkatan 
-            AND id_prodi=$id_prodi 
-          ) nominal   
-          FROM tb_biaya a 
-          WHERE a.untuk_semester=$semester";
-          $q3 = mysqli_query($cn,$s3) or die(mysqli_error($cn));
-          $div_biaya = '';
-          $k=0;
-          while ($d3=mysqli_fetch_assoc($q3)) {
-            $k++;
-            $id_biaya = $d3['id_biaya'];
-            $persen_biaya = $d3['persen_biaya'] ?? 100;
-            $nominal = $d3['nominal'] ?? $d3['nominal_default'];
-            $nominal_show = number_format($nominal,0);
-            $minimal_bayar = $nominal * $persen_biaya / 100;
-            $minimal_bayar_show = number_format($minimal_bayar,0);
-
-            if($d3['sudah_bayar']){
-              $s4 = "SELECT 
-              a.*,
-              a.nominal as nominal_bayar,
-              (SELECT nama FROM tb_user WHERE id=a.verif_by) verifikator 
-
-              FROM tb_bayar a 
-              WHERE a.id_biaya=$id_biaya and a.id_mhs=$id_mhs
-              ";
-              echo $s4;
-              $q4 = mysqli_query($cn,$s4) or die(mysqli_error($cn));
-              if(mysqli_num_rows($q4)==0) die('Data pembayaran tidak ditemukan.');
-              $d4 = mysqli_fetch_assoc($q4);
-
-              $nominal_bayar = $d4['nominal_bayar'];
-              $catatan = $d4['catatan'];
-              $verif_by = $d4['verif_by'];
-              $verif_date = $d4['verif_date'];
-              $verif_status = $d4['verif_status'];
-              $alasan_reject = $d4['alasan_reject'];
-              $verifikator = $d4['verifikator'];
-
-              $pembayaran_anda = number_format($nominal_bayar,0).',-';
-              if($nominal_bayar==$nominal){
-                if($verif_status){
-                  $lunas_info =  "<span class=green>Lunas</span>";
-                }else{
-                  $lunas_info =  "<span class=darkred>Belum diverifikasi</span>";
-                }
-                
-              }else{
-                if($verif_status){
-                  $lunas_info =  "<span class=darkred>Bayar Sebagian</span>";
-                }else{
-                  $lunas_info =  "<span class=darkred>Belum diverifikasi</span>";
-                }
-
-              }
-            }else{
-              $nominal_bayar = '';
-              $catatan = '';
-              $verif_by = '';
-              $verif_date = '';
-              $verif_status = '';
-              $alasan_reject = '';
-              $verifikator = '';
-
-              $pembayaran_anda = '0,-';
-              $lunas_info = "<span class=red>Belum melakukan pembayaran</span>";
-            }
-
-            $div_biaya .= "
-            <div class=grid_biaya>
-              <div class='darkblue mtb mt2 pt1'>$k. </div><div class='darkblue mtb mt2 pt1'>$d3[nama]<div class='kecil consolas'>Rp $nominal_show</div></div>
-              <div>&nbsp;</div><div class='kecil miring mt1 abu'>Minimal bayar: $persen_biaya% <div class='kecil miring consolas abu'>(Rp $minimal_bayar_show)</div></div>
-
-              <div>&nbsp;</div>
-              <div class='kecil darkblue mt1'>
-                Pembayaran Anda: <span class=consolas>Rp $pembayaran_anda</span> 
-                <div class='kecil'>$lunas_info</div>
-              </div>
-            </div>
+      if($bio_updated){
+        if($valid_tanggal){
+          if($is_lunas){
+            # ===========================================
+            # JIKA SUDAH LUNAS DAN VALID TANGGAL
+            # ===========================================
+            $btn_ambil_krs = "
+            <form method=post>
+              $info_lunas
+              <input class=debug name=id_semester value=$id_semester>
+              <input class=debug name=id_mhs value=$id_mhs>
+              <button class='btn btn-primary btn-block' name=btn_ambil_krs>Ambil KRS</button>
+            </form>
             ";
-          }
-          
+          }else{ //belum lunas
+            # ===========================================
+            # VALID TANGGAL TAPI BELUM LUNAS 
+            # ===========================================
+            $s = "SELECT * 
+            FROM tb_syarat_biaya a 
+            JOIN tb_biaya b ON a.id_biaya=b.id 
+            WHERE a.event='KRS' 
+            AND a.angkatan=$angkatan 
+            AND a.id_prodi=$id_prodi 
+            AND b.untuk_semester=$semester  
+            ";
 
-          $info_lunas = "
-          <div class='wadah gradasi-merah'>
-            <h5>Persyaratan Keuangan</h5>
-            $div_biaya 
-            <div class='mtb mt2 pt1 mb1'>Belum bisa KRS. Masih ada persyaratan keuangan yang harus Anda penuhi.</div>
-            <a class='btn btn-primary btn-sm' href=?pembayaran&untuk_semester=$semester>Cek Pembayaran Semester $semester</a>
-          </div>";
-          $btn_ambil_krs = "$info_lunas<button class='btn btn-danger btn-block' disabled>Ambil KRS</button>";
+            $s3 = "SELECT a.*,a.id as id_biaya,
+            (
+              SELECT 1 FROM tb_bayar 
+              WHERE id_biaya=a.id 
+              AND id_mhs='$id_mhs' 
+            ) sudah_bayar,   
+            (
+              SELECT persen_biaya FROM tb_syarat_biaya 
+              WHERE id_biaya=a.id 
+              AND event='KRS' 
+              AND angkatan=$angkatan 
+              AND id_prodi=$id_prodi 
+            ) persen_biaya,   
+            (
+              SELECT nominal FROM tb_biaya_angkatan 
+              WHERE id_biaya=a.id 
+              AND angkatan=$angkatan 
+              AND id_prodi=$id_prodi 
+              AND shift='$shift' 
+            ) nominal   
+            FROM tb_biaya a 
+            WHERE a.untuk_semester=$semester";
+            $q3 = mysqli_query($cn,$s3) or die(mysqli_error($cn));
+            $div_biaya = '';
+            $k=0;
+            while ($d3=mysqli_fetch_assoc($q3)) {
+              $k++;
+              $id_biaya = $d3['id_biaya'];
+              $persen_biaya = $d3['persen_biaya'] ?? 100;
+              $nominal = $d3['nominal'] ?? $d3['nominal_default'];
+              $nominal_show = number_format($nominal,0);
+              $minimal_bayar = $nominal * $persen_biaya / 100;
+              $minimal_bayar_show = number_format($minimal_bayar,0);
+
+              if($d3['sudah_bayar']){
+                $s4 = "SELECT 
+                a.*,
+                a.nominal as nominal_bayar,
+                (SELECT nama FROM tb_user WHERE id=a.verif_by) verifikator 
+
+                FROM tb_bayar a 
+                WHERE a.id_biaya=$id_biaya and a.id_mhs=$id_mhs
+                ";
+                echo $s4;
+                $q4 = mysqli_query($cn,$s4) or die(mysqli_error($cn));
+                if(mysqli_num_rows($q4)==0) die('Data pembayaran tidak ditemukan.');
+                $d4 = mysqli_fetch_assoc($q4);
+
+                $nominal_bayar = $d4['nominal_bayar'];
+                $catatan = $d4['catatan'];
+                $verif_by = $d4['verif_by'];
+                $verif_date = $d4['verif_date'];
+                $verif_status = $d4['verif_status'];
+                $alasan_reject = $d4['alasan_reject'];
+                $verifikator = $d4['verifikator'];
+
+                $pembayaran_anda = number_format($nominal_bayar,0).',-';
+                if($nominal_bayar==$nominal){
+                  if($verif_status){
+                    $lunas_info =  "<span class=green>Lunas</span>";
+                  }else{
+                    $lunas_info =  "<span class=darkred>Belum diverifikasi</span>";
+                  }
+                  
+                }else{
+                  if($verif_status){
+                    $lunas_info =  "<span class=darkred>Bayar Sebagian</span>";
+                  }else{
+                    $lunas_info =  "<span class=darkred>Belum diverifikasi</span>";
+                  }
+
+                }
+              }else{
+                $nominal_bayar = '';
+                $catatan = '';
+                $verif_by = '';
+                $verif_date = '';
+                $verif_status = '';
+                $alasan_reject = '';
+                $verifikator = '';
+
+                $pembayaran_anda = '0,-';
+                $lunas_info = "<span class=red>Belum melakukan pembayaran</span>";
+              }
+
+              $div_biaya .= "
+              <div class=grid_biaya>
+                <div class='darkblue mtb mt2 pt1'>$k. </div><div class='darkblue mtb mt2 pt1'>$d3[nama]<div class='kecil consolas'>Rp $nominal_show</div></div>
+                <div>&nbsp;</div><div class='kecil miring mt1 abu'>Minimal bayar: $persen_biaya% <div class='kecil miring consolas abu'>(Rp $minimal_bayar_show)</div></div>
+
+                <div>&nbsp;</div>
+                <div class='kecil darkblue mt1'>
+                  Pembayaran Anda: <span class=consolas>Rp $pembayaran_anda</span> 
+                  <div class='kecil'>$lunas_info</div>
+                </div>
+              </div>
+              ";
+            }
+            
+
+            $info_lunas = "
+            <div class='wadah gradasi-merah'>
+              <h5>Persyaratan Keuangan</h5>
+              $div_biaya 
+              <div class='mtb mt2 pt1 mb1'>Belum bisa KRS. Masih ada persyaratan keuangan yang harus Anda penuhi.</div>
+              <a class='btn btn-primary btn-sm' href=?pembayaran&untuk_semester=$semester>Cek Pembayaran Semester $semester</a>
+            </div>";
+            $btn_ambil_krs = "$info_lunas<button class='btn btn-danger btn-block' disabled>Belum bisa Ambil KRS</button>";
+          }
+        }else{ // diluar tanggal KRS
+          $btn_ambil_krs = div_alert('danger','Tanggal KRS sudah tutup/belum dibuka. Silahkan cek tanggal KRS diatas, jika ada kekeliruan segera hubungi Petugas.');
         }
-      }else{
-        $btn_ambil_krs = '';
+      }else{ // update biodata dahulu
+        $btn_ambil_krs = div_alert('danger',"Biodata belum diupdate. | <a href='?isi_biodata&id_semester=$id_semester'>Isi/Update Biodata</a>");
+        //  '<span class="btn btn-danger btn-block" disabled>Biodata belum diupdate</span>';
       }
   
       $pilihan_mk.= "
