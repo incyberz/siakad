@@ -1,9 +1,12 @@
 <?php
-$judul = 'Pengisian KRS';
-$undef = '<span style="color:#f77; font-style:italic">undefined</span>';
-$null = '<code class=miring>null</code>';
-$belum_ada = '<code class=miring>belum ada</code>';
-$jumlah_mk = $null;
+// $judul = 'Pengisian KRS';
+// $undef = '<span style="color:#f77; font-style:italic">undefined</span>';
+// $null = '<code class=miring>null</code>';
+// $belum_ada = '<code class=miring>belum ada</code>';
+// $jumlah_mk = $null;
+echo "<span class=debug>id_semester<span id=id_semester>$id_semester</span></span>";
+if(!isset($id_semester)||$id_semester=='') die(div_alert('danger','Index id_semester tidak valid.'));
+
 
 
 
@@ -954,7 +957,19 @@ if(mysqli_num_rows($q)>1){
     })
 
     $("input[type=text]").keyup(function(){
-      console.log($(this).prop("id"))
+      let nim = $('#nim').text();
+      let id_semester = $('#id_semester').text();
+      //zzz here
+      // console.log($(this).prop("id"),nim,id_semester);
+      let id = $(this).prop("id");
+
+      let link_ajax = `pages/isi_biodata_autosave.php?id=${id}&nim=${nim}&id_semester=${id_semester}&`;
+      $.ajax({
+        url:link_ajax,
+        success:function(a){
+          console.log(a);
+        }
+      })
     })
   })
 
