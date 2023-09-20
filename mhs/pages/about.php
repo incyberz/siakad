@@ -3,45 +3,55 @@
 
     <div class="section-title">
       <h2>About</h2>
-      <p>Ini adalah laman untuk memperkenalkan diri Anda.</p>
+      <p>Ini adalah laman biodata Anda.</p>
     </div>
 
-    <div class="alert alert-info">Comming soon...</div>
+    <?php 
+    // $s = "DESCRIBE tb_biodata";
+    // $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+    // $kolom = [];
+    // while ($d=mysqli_fetch_assoc($q)) {
+    //   $kolom[$d['Field']] = '';
+    // }
 
-    <!-- <div class="row">
-      <div class="col-lg-4" data-aos="fade-right">
-        <img src="<?=$img_profile ?>" class="img-fluid" alt="">
-      </div>
-      <div class="col-lg-8 pt-4 pt-lg-0 content" data-aos="fade-left">
-        <h3><?=$about_header ?></h3>
-        <p class="font-italic">
-          <?=$about_subheader ?>
-        </p>
-        <div class="row">
-          <div class="col-lg-6">
-            <ul>
-              <li><i class="icofont-rounded-right"></i> <strong>Tempat Lahir:</strong> <?=$tempat_lahir_mhs ?></li>
-              <li><i class="icofont-rounded-right"></i> <strong>Tanggal Lahir:</strong> <?=$tanggal_lahir_mhs ?></li>
-              <li><i class="icofont-rounded-right"></i> <strong>Status:</strong> <?=$status_pernikahan ?></li>
-              <li><i class="icofont-rounded-right"></i> <strong>Jumlah anak:</strong> <?=$jumlah_anak ?></li>
-            </ul>
+    $ragama = ['','ISLAM', 'KATOLIK', 'PROTESTAN','HINDU','BUDHA','LAINNYA'];
+    $rstatus_menikah = ['','BELUM MENIKAH', 'MENIKAH', 'JANDA','DUDA'];
+    $rwarga_negara = ['','WARGA NEGARA INDONESIA', 'WARGA NEGARA ASING'];
+
+    $s = "SELECT b.nomor as semester, a.* FROM tb_biodata a 
+    JOIN tb_semester b ON a.id_semester=b.id WHERE nim='$nim'";
+    $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+    if(mysqli_num_rows($q)>0){
+      $d=mysqli_fetch_assoc($q);
+
+      foreach ($d as $key => $value) {
+        if($key=='id_semester') continue;
+        if($key=='agama' and $value!='') $value = $ragama[$value];
+        if($key=='status_menikah' and $value!='') $value = $rstatus_menikah[$value];
+        if($key=='warga_negara' and $value!='') $value = $rwarga_negara[$value];
+        $kolom = strtoupper(str_replace('_',' ',$key));
+        $value = $value=='' ? '-' : $value;
+        echo "
+        <div style='border-top:solid 1px #ccc;padding:5px'>
+          <div class=row>
+            <div class=col-lg-4>
+              <span class='kecil abu'>$kolom :</span>
+            </div>
+            <div class=col-lg-8>
+              $value
+            </div>
           </div>
-          <div class="col-lg-6">
-            <ul>
-              <li><i class="icofont-rounded-right"></i> <strong>Pendidikan:</strong> <?=$pendidikan_mhs ?></li>
-              <li><i class="icofont-rounded-right"></i> <strong>Lulusan:</strong> <?=$lulusan_mhs ?></li>
-              <li><i class="icofont-rounded-right"></i> <strong>Jabatan:</strong> <?=$jabatan_mhs ?></li>
-              <li><i class="icofont-rounded-right"></i> <strong>Divisi:</strong> <?=$divisi_mhs ?></li>
-            </ul>
-          </div>
-        </div>
-        <p>
-          <?=$about_details ?>
-        </p>
-      </div>
-    </div> -->
+        </div>";
+      }
+    }else{
+      echo div_alert('info','Anda belum mengisi biodata.');
+    }
+    
+
+    ?>
 
     <div class="p-2 mt-4" style="border-top:solid 1px #ccc">
+      <a href="?isi_biodata">Isi/Ubah Biodata</a> | 
       <a href="?ubah_password">Ubah Password</a> | 
     </div>
 

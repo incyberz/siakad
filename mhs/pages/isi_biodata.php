@@ -12,29 +12,10 @@ if(!isset($id_semester)||$id_semester=='') die(div_alert('danger','Index id_seme
 
 if (isset($_POST['btn_submit_biodata'])) {
 
-  echo '<pre>';
-  var_dump($_POST);
-  echo '</pre>';
-  exit;
-
-
-  $angkatan = $_POST['angkatan'];
-  $id_prodi = $_POST['id_prodi'];
-  $s = "SELECT id,nominal_default FROM tb_krs_manual";
+  $s = "UPDATE tb_biodata SET tanggal_submit=CURRENT_TIMESTAMP WHERE nim='$nim'";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  $values = '';
-  
-  while ($d=mysqli_fetch_assoc($q)) {
-    $id = $d['id'];
-    $nominal = $d['nominal_default'];
-    $values .= "('$id','$angkatan','$id_prodi','$nominal'),";
-    
-  }
-  $s = "INSERT INTO tb_krs_mk_manual (id_krs,angkatan,id_prodi,nominal) VALUES $values".'__';
-  $s = str_replace(',__','',$s);
-  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  echo div_alert('success', 'Set Nominal Default success. Redirecting ...');
-  echo "<script>location.replace('?manage_krs&angkatan=$angkatan&id_prodi=$id_prodi')</script>";
+  echo div_alert('success', 'Update Biodata sukses. Redirecting ...');
+  echo "<script>location.replace('?about')</script>";
   exit;
 
 }
@@ -154,6 +135,19 @@ if(mysqli_num_rows($q)>1){
   $alamat_kerja_donatur = '';
   $telepon_kerja_donatur = '';
 
+  $domisili_as_ktp_checked = '';
+  $sudah_bekerja_checked = '';
+  $sudah_bekerja_hideit = 'hideit';
+  $punya_wali_checked = '';
+  $punya_donatur_checked = '';
+
+  $yang_membiayai_1_selected = ''; 
+  $yang_membiayai_2_selected = ''; 
+  $yang_membiayai_3_selected = ''; 
+  $yang_membiayai_4_selected = ''; 
+
+  $donatur_hideit = 'hideit';
+
 }else{ // sudah isi biodata
   $d=mysqli_fetch_assoc($q);
 
@@ -162,7 +156,7 @@ if(mysqli_num_rows($q)>1){
   $tempat_lahir = $d['tempat_lahir'];
   $tanggal_lahir = $d['tanggal_lahir'];
   $gender = $d['gender'];
-  $golongan_darah = $d['golongan_darah'];
+  $golongan_darah = $d['golongan_darah'] ?? '-';
   $alamat_blok = $d['alamat_blok'];
   $alamat_rt = $d['alamat_rt'];
   $alamat_rw = $d['alamat_rw'];
@@ -217,133 +211,166 @@ if(mysqli_num_rows($q)>1){
   $no_wa_ibu = $d['no_wa_ibu'];
   $tempat_kerja_ibu = $d['tempat_kerja_ibu'];
   $pendidikan_ibu = $d['pendidikan_ibu'];
-  $hubungan_wali = $d['hubungan_wali'];
-  $nama_wali = $d['nama_wali'];
-  $pekerjaan_wali = $d['pekerjaan_wali'];
-  $no_wa_wali = $d['no_wa_wali'];
-  $tempat_kerja_wali = $d['tempat_kerja_wali'];
-  $pendidikan_wali = $d['pendidikan_wali'];
+  // $hubungan_wali = $d['hubungan_wali'];
+  // $nama_wali = $d['nama_wali'];
+  // $pekerjaan_wali = $d['pekerjaan_wali'];
+  // $no_wa_wali = $d['no_wa_wali'];
+  // $tempat_kerja_wali = $d['tempat_kerja_wali'];
+  // $pendidikan_wali = $d['pendidikan_wali'];
   $anak_ke = $d['anak_ke'];
   $jumlah_saudara = $d['jumlah_saudara'];
   $yang_membiayai = $d['yang_membiayai'];
-  $nama_donatur = $d['nama_donatur'];
-  $alamat_donatur = $d['alamat_donatur'];
-  $no_wa_donatur = $d['no_wa_donatur'];
-  $hubungan_donatur = $d['hubungan_donatur'];
-  $pekerjaan_donatur = $d['pekerjaan_donatur'];
-  $jabatan_donatur = $d['jabatan_donatur'];
-  $tempat_kerja_donatur = $d['tempat_kerja_donatur'];
-  $alamat_kerja_donatur = $d['alamat_kerja_donatur'];
-  $telepon_kerja_donatur = $d['telepon_kerja_donatur'];
+  // $nama_donatur = $d['nama_donatur'];
+  // $alamat_donatur = $d['alamat_donatur'];
+  // $no_wa_donatur = $d['no_wa_donatur'];
+  // $hubungan_donatur = $d['hubungan_donatur'];
+  // $pekerjaan_donatur = $d['pekerjaan_donatur'];
+  // $jabatan_donatur = $d['jabatan_donatur'];
+  // $tempat_kerja_donatur = $d['tempat_kerja_donatur'];
+  // $alamat_kerja_donatur = $d['alamat_kerja_donatur'];
+  // $telepon_kerja_donatur = $d['telepon_kerja_donatur'];
+
+  $punya_wali_checked = $d['nama_wali']=='' ? '' : 'checked';
+  $punya_donatur_checked = $d['nama_donatur']=='' ? '' : 'checked';
   
-  $nik = '1111222233334444';
-  $nama = 'Iin Sholihin';
-  $tempat_lahir = 'Sumedang';
-  $tanggal_lahir = '1987-06-11';
+  $yang_membiayai_1_selected = $yang_membiayai==1 ? 'selected' : ''; 
+  $yang_membiayai_2_selected = $yang_membiayai==2 ? 'selected' : ''; 
+  $yang_membiayai_3_selected = $yang_membiayai==3 ? 'selected' : ''; 
+  $yang_membiayai_4_selected = $yang_membiayai==4 ? 'selected' : ''; 
+
+  $donatur_hideit = $d['nama_donatur']=='' ? 'hideit' : '';
+
+
+  $hubungan_wali = $d['hubungan_wali'] ?? '-';
+  $nama_wali = $d['nama_wali'] ?? '-';
+  $pekerjaan_wali = $d['pekerjaan_wali'] ?? '-';
+  $no_wa_wali = $d['no_wa_wali'] ?? '-';
+  $tempat_kerja_wali = $d['tempat_kerja_wali'] ?? '-';
+  $pendidikan_wali = $d['pendidikan_wali'] ?? '-';
   
-  $gender_L_checked = 'checked';
-  $gender_P_checked = '';
+  $nama_donatur = $d['nama_donatur'] ?? '-';
+  $alamat_donatur = $d['alamat_donatur'] ?? '-';
+  $no_wa_donatur = $d['no_wa_donatur'] ?? '-';
+  $hubungan_donatur = $d['hubungan_donatur'] ?? '-';
+  $pekerjaan_donatur = $d['pekerjaan_donatur'] ?? '-';
+  $jabatan_donatur = $d['jabatan_donatur'] ?? '-';
+  $tempat_kerja_donatur = $d['tempat_kerja_donatur'] ?? '-';
+  $alamat_kerja_donatur = $d['alamat_kerja_donatur'] ?? '-';
+  $telepon_kerja_donatur = $d['telepon_kerja_donatur'] ?? '-';
+
+  // $nik = '1111222233334444';
+  // $nama = 'Iin Sholihin';
+  // $tempat_lahir = 'Sumedang';
+  // $tanggal_lahir = '1987-06-11';
   
-  $golongan_darah = '-';
-  $alamat_blok = 'Blok Utara';
-  $alamat_rt = 2;
-  $alamat_rw = 6;
-  $alamat_desa = 'Babakan';
-  $alamat_kecamatan = 'Ciwaringin';
+  $gender_L_checked = $gender=='L' ? 'checked' : '';
+  $gender_P_checked = $gender=='P' ? 'checked' : '';
   
-  $agama_1_checked = 'checked';
-  $agama_2_checked = '';
-  $agama_3_checked = '';
-  $agama_4_checked = '';
-  $agama_5_checked = '';
-  $agama_6_checked = '';
+  // $golongan_darah = '-';
+  // $alamat_blok = 'Blok Utara';
+  // $alamat_rt = 2;
+  // $alamat_rw = 6;
+  // $alamat_desa = 'Babakan';
+  // $alamat_kecamatan = 'Ciwaringin';
   
-  $suku = 'Sunda';
+  $agama_1_checked = $agama=='1' ? 'checked' : '';
+  $agama_2_checked = $agama=='2' ? 'checked' : '';
+  $agama_3_checked = $agama=='3' ? 'checked' : '';
+  $agama_4_checked = $agama=='4' ? 'checked' : '';
+  $agama_5_checked = $agama=='5' ? 'checked' : '';
+  $agama_6_checked = $agama=='6' ? 'checked' : '';
   
-  $status_menikah_1_checked = 'checked';
-  $status_menikah_2_checked = '';
-  $status_menikah_3_checked = '';
-  $status_menikah_4_checked = '';
+  // $suku = 'Sunda';
   
-  $warga_negara_1_checked = 'checked';
-  $warga_negara_2_checked = '';
+  $status_menikah_1_checked = $status_menikah=='1' ? 'checked' : '';
+  $status_menikah_2_checked = $status_menikah=='2' ? 'checked' : '';
+  $status_menikah_3_checked = $status_menikah=='3' ? 'checked' : '';
+  $status_menikah_4_checked = $status_menikah=='4' ? 'checked' : '';
   
-  $no_wa = '087729007318';
-  $email = 'iin@gmail.com';
-  $facebook = '-';
-  $instagram = '-';
+  $warga_negara_1_checked = $warga_negara=='1' ? 'checked' : '';
+  $warga_negara_2_checked = $warga_negara=='2' ? 'checked' : '';
   
-  $alamat_blok_domisili = 'Blok Utara';
-  $alamat_rt_domisili = 2;
-  $alamat_rw_domisili = 6;
-  $alamat_desa_domisili = 'Babakan';
-  $alamat_kecamatan_domisili = 'Ciwaringin';
+  // $no_wa = '087729007318';
+  // $email = 'iin@gmail.com';
+  // $facebook = '-';
+  // $instagram = '-';
+  
+  // $alamat_blok_domisili = 'Blok Utara';
+  // $alamat_rt_domisili = 2;
+  // $alamat_rw_domisili = 6;
+  // $alamat_desa_domisili = 'Babakan';
+  // $alamat_kecamatan_domisili = 'Ciwaringin';
   
   
-  $sd_nama = 'SDN 1';
-  $sd_alamat = 'Tanjungsari';
-  $sd_provinsi = 'jabar';
-  $sd_tahun = 1999;
+  // $sd_nama = 'SDN 1';
+  // $sd_alamat = 'Tanjungsari';
+  // $sd_provinsi = 'jabar';
+  // $sd_tahun = 1999;
   
-  $sltp_nama = 'SLTPN 1';
-  $sltp_alamat = 'Tanjungsari';
-  $sltp_provinsi = 'jabar';
-  $sltp_tahun = 2002;
+  // $sltp_nama = 'SLTPN 1';
+  // $sltp_alamat = 'Tanjungsari';
+  // $sltp_provinsi = 'jabar';
+  // $sltp_tahun = 2002;
   
-  $slta_nama = 'SMAN 1';
-  $slta_alamat = 'Tanjungsari';
-  $slta_provinsi = 'jabar';
-  $slta_tahun = 2005;
+  // $slta_nama = 'SMAN 1';
+  // $slta_alamat = 'Tanjungsari';
+  // $slta_provinsi = 'jabar';
+  // $slta_tahun = 2005;
   
-  $program_ikmi = 'D3-MI';
-  $tahun_ikmi = 2001;
-  $jurusan_ikmi = 'komputer';
+  // $program_ikmi = 'D3-MI';
+  // $tahun_ikmi = 2001;
+  // $jurusan_ikmi = 'komputer';
   
-  $univ_lain = '-';
-  $tahun_univ_lain = '-';
-  $fakultas_univ_lain = '-';
-  $jurusan_univ_lain = '-';
-  $nim_asal = '-';
+  // $univ_lain = '-';
+  // $tahun_univ_lain = '-';
+  // $fakultas_univ_lain = '-';
+  // $jurusan_univ_lain = '-';
+  // $nim_asal = '-';
   
-  $bekerja_sebagai = '-';
-  $jabatan_bekerja = '-';
-  $instansi_bekerja = '-';
-  $alamat_bekerja = '-';
+  // $bekerja_sebagai = '-';
+  // $jabatan_bekerja = '-';
+  // $instansi_bekerja = '-';
+  // $alamat_bekerja = '-';
   
-  $di_cirebon_sejak = '2020-01-12';
-  $hubungan_tinggal = '-';
+  // $di_cirebon_sejak = '2020-01-12';
+  // $hubungan_tinggal = '-';
   
-  $nama_ayah = 'Koswara';
-  $pekerjaan_ayah = 'petani';
-  $no_wa_ayah = '-';
-  $tempat_kerja_ayah = '-';
-  $pendidikan_ayah = 'SD';
+  // $nama_ayah = 'Koswara';
+  // $pekerjaan_ayah = 'petani';
+  // $no_wa_ayah = '-';
+  // $tempat_kerja_ayah = '-';
+  // $pendidikan_ayah = 'SD';
   
-  $nama_ibu = 'Koswara';
-  $pekerjaan_ibu = 'petani';
-  $no_wa_ibu = '-';
-  $tempat_kerja_ibu = '-';
-  $pendidikan_ibu = 'SD';
+  // $nama_ibu = 'Koswara';
+  // $pekerjaan_ibu = 'petani';
+  // $no_wa_ibu = '-';
+  // $tempat_kerja_ibu = '-';
+  // $pendidikan_ibu = 'SD';
   
-  $nama_wali = 'Koswara';
-  $pekerjaan_wali = 'petani';
-  $no_wa_wali = '-';
-  $tempat_kerja_wali = '-';
-  $pendidikan_wali = 'SD';
-  $hubungan_wali = '-';
+  // $nama_wali = 'Koswara';
+  // $pekerjaan_wali = 'petani';
+  // $no_wa_wali = '-';
+  // $tempat_kerja_wali = '-';
+  // $pendidikan_wali = 'SD';
+  // $hubungan_wali = '-';
   
-  $anak_ke = 1;
-  $jumlah_saudara=1;
+  // $anak_ke = 1;
+  // $jumlah_saudara=1;
   
-  $nama_donatur = 'Donatur';
-  $alamat_donatur = 'alamat_donatur';
-  $no_wa_donatur = 'no_wa_donatur';
-  $hubungan_donatur = 'hubungan_donatur';
-  $pekerjaan_donatur = 'pekerjaan_donatur';
-  $jabatan_donatur = 'jabatan_donatur';
-  $tempat_kerja_donatur = 'tempat_kerja_donatur';
-  $alamat_kerja_donatur = 'alamat_kerja_donatur';
-  $telepon_kerja_donatur = 'telepon_kerja_donatur';  
+  // $nama_donatur = 'Donatur';
+  // $alamat_donatur = 'alamat_donatur';
+  // $no_wa_donatur = 'no_wa_donatur';
+  // $hubungan_donatur = 'hubungan_donatur';
+  // $pekerjaan_donatur = 'pekerjaan_donatur';
+  // $jabatan_donatur = 'jabatan_donatur';
+  // $tempat_kerja_donatur = 'tempat_kerja_donatur';
+  // $alamat_kerja_donatur = 'alamat_kerja_donatur';
+  // $telepon_kerja_donatur = 'telepon_kerja_donatur';  
+
+  $domisili_as_ktp_checked = ($alamat_blok==$alamat_blok_domisili AND $alamat_blok!='') ? 'checked' : '';
+  $sudah_bekerja_checked = $bekerja_sebagai=='' ? '' : 'checked';
+  $sudah_bekerja_hideit = $bekerja_sebagai=='' ? 'hideit' : '';
+
 }
 
 
@@ -357,7 +384,7 @@ if(mysqli_num_rows($q)>1){
       <div>TAHUN AJAR <?=$tahun_ajar?></div>
       <div>SEMESTER <?=$semester?></div>
 
-      <style>h1{font-size:24px}h2{color:#4444ff; font-weight: 600;font-size:20px}</style>
+      <style>h1{font-size:24px}h2{color:#4444ff; font-weight: 600;font-size:20px}.bg_green{background:#cfc !important;}.bg_red{background:#fcc !important;}</style>
       <div class="wadah mt-3">
         <h2>DATA KEPENDUDUKAN</h2>
       
@@ -382,8 +409,8 @@ if(mysqli_num_rows($q)>1){
         </div>
 
         <div class="form-group">
-          <label><input required type="radio" name=gender value='L' <?=$gender_L_checked?>> Laki-laki</label>
-          <label><input required type="radio" name=gender value='P' <?=$gender_P_checked?>> Perempuan</label>
+          <label><input required type="radio" id=gender name=gender value='L' <?=$gender_L_checked?>> Laki-laki</label>
+          <label><input required type="radio" id=gender name=gender value='P' <?=$gender_P_checked?>> Perempuan</label>
         </div>
 
         <div class="form-group">
@@ -418,12 +445,12 @@ if(mysqli_num_rows($q)>1){
         </div>
 
         <div class="form-group">
-          <label><input required type="radio" name=agama value='1' <?=$agama_1_checked?>> Islam</label>
-          <label><input required type="radio" name=agama value='2' <?=$agama_2_checked?>> Katolik</label>
-          <label><input required type="radio" name=agama value='3' <?=$agama_3_checked?>> Protestan</label>
-          <label><input required type="radio" name=agama value='4' <?=$agama_4_checked?>> Hindu</label>
-          <label><input required type="radio" name=agama value='5' <?=$agama_5_checked?>> Budha</label>
-          <label><input required type="radio" name=agama value='6' <?=$agama_6_checked?>> Lainnya</label>
+          <label><input required type="radio" id=agama name=agama value='1' <?=$agama_1_checked?>> Islam</label>
+          <label><input required type="radio" id=agama name=agama value='2' <?=$agama_2_checked?>> Katolik</label>
+          <label><input required type="radio" id=agama name=agama value='3' <?=$agama_3_checked?>> Protestan</label>
+          <label><input required type="radio" id=agama name=agama value='4' <?=$agama_4_checked?>> Hindu</label>
+          <label><input required type="radio" id=agama name=agama value='5' <?=$agama_5_checked?>> Budha</label>
+          <label><input required type="radio" id=agama name=agama value='6' <?=$agama_6_checked?>> Lainnya</label>
         </div>
 
         <div class="form-group">
@@ -433,15 +460,15 @@ if(mysqli_num_rows($q)>1){
         </div>
 
         <div class="form-group">
-          <label><input required type="radio" name=status_menikah value='1' <?=$status_menikah_1_checked?>> Belum Menikah</label>
-          <label><input required type="radio" name=status_menikah value='2' <?=$status_menikah_2_checked?>> Menikah</label>
-          <label><input required type="radio" name=status_menikah value='3' <?=$status_menikah_3_checked?>> Janda</label>
-          <label><input required type="radio" name=status_menikah value='4' <?=$status_menikah_4_checked?>> Duda</label>
+          <label><input required type="radio" id=status_menikah name=status_menikah value='1' <?=$status_menikah_1_checked?>> Belum Menikah</label>
+          <label><input required type="radio" id=status_menikah name=status_menikah value='2' <?=$status_menikah_2_checked?>> Menikah</label>
+          <label><input required type="radio" id=status_menikah name=status_menikah value='3' <?=$status_menikah_3_checked?>> Janda</label>
+          <label><input required type="radio" id=status_menikah name=status_menikah value='4' <?=$status_menikah_4_checked?>> Duda</label>
         </div>
 
         <div class="form-group">
-          <label><input required type="radio" name=warga_negara value='1' <?=$warga_negara_1_checked?>> WNI</label>
-          <label><input required type="radio" name=warga_negara value='2' <?=$warga_negara_2_checked?>> WNA</label>
+          <label><input required type="radio" id=warga_negara name=warga_negara value='1' <?=$warga_negara_1_checked?>> WNI</label>
+          <label><input required type="radio" id=warga_negara name=warga_negara value='2' <?=$warga_negara_2_checked?>> WNA</label>
         </div>
 
       </div>
@@ -457,7 +484,7 @@ if(mysqli_num_rows($q)>1){
 
         <div class="form-group">
           <label for="email">Email</label>
-          <input required maxlength=100 type="email" class="form-control" id=email name=email value='<?=$email?>'>
+          <input required maxlength=100 type="text" class="form-control" id=email name=email value='<?=$email?>'>
         </div>
 
         <div class="form-group">
@@ -473,30 +500,9 @@ if(mysqli_num_rows($q)>1){
         </div>
 
         <div class="wadah">
-          <label><input type="checkbox" name=is_domisili_as_ktp id=is_domisili_as_ktp> Alamat domisili saya sama dengan alamat di KTP</label>
+          <label><input type="checkbox" name=is_domisili_as_ktp id=is_domisili_as_ktp <?=$domisili_as_ktp_checked ?>> Alamat domisili saya sama dengan alamat di KTP</label>
           <div class="form-group">
-            <script>
-              $(function(){
-                $("#is_domisili_as_ktp").click(function(){
-                  if($(this).prop("checked")){
-                    $("#alamat_blok_domisili").val($("#alamat_blok").val());
-                    $("#alamat_rt_domisili").val($("#alamat_rt").val());
-                    $("#alamat_rw_domisili").val($("#alamat_rw").val());
-                    $("#alamat_desa_domisili").val($("#alamat_desa").val());
-                    $("#alamat_kecamatan_domisili").val($("#alamat_kecamatan").val());
-                    // $("#alamat_blok_domisili").prop("disabled",true);
-                    $("#blok_domisili").fadeOut();
-                  }else{
-                    $("#blok_domisili").fadeIn();
-                    $("#alamat_blok_domisili").val("");
-                    $("#alamat_rt_domisili").val("");
-                    $("#alamat_rw_domisili").val("");
-                    $("#alamat_desa_domisili").val("");
-                    $("#alamat_kecamatan_domisili").val("");
-                  }
-                })
-              })
-            </script>
+            
           </div>
           <div id="blok_domisili">
             <div class="form-group">
@@ -639,27 +645,27 @@ if(mysqli_num_rows($q)>1){
             <div id="cek_pernah_kuliah__details" class="hideit">
               <div class="form-group">
                 <label for="univ_lain">Univ/Akademik/Diploma</label>
-                <input required minlength=1 maxlength=50 type="text" class="form-control" id=univ_lain name=univ_lain value='<?=$univ_lain?>'>
+                <input minlength=1 maxlength=50 type="text" class="form-control" id=univ_lain name=univ_lain value='<?=$univ_lain?>'>
               </div>
 
               <div class="form-group">
                 <label for="tahun_univ_lain">Tahun</label>
-                <input required minlength=1 maxlength=50 type="text" class="form-control" id=tahun_univ_lain name=tahun_univ_lain value='<?=$tahun_univ_lain?>'>
+                <input minlength=1 maxlength=50 type="text" class="form-control" id=tahun_univ_lain name=tahun_univ_lain value='<?=$tahun_univ_lain?>'>
               </div>
 
               <div class="form-group">
                 <label for="fakultas_univ_lain">Fakultas</label>
-                <input required minlength=1 maxlength=50 type="text" class="form-control" id=fakultas_univ_lain name=fakultas_univ_lain value='<?=$fakultas_univ_lain?>'>
+                <input minlength=1 maxlength=50 type="text" class="form-control" id=fakultas_univ_lain name=fakultas_univ_lain value='<?=$fakultas_univ_lain?>'>
               </div>
 
               <div class="form-group">
                 <label for="nim_asal">NIM Asal</label>
-                <input required minlength=1 maxlength=50 type="text" class="form-control" id=nim_asal name=nim_asal value='<?=$nim_asal?>'>
+                <input minlength=1 maxlength=50 type="text" class="form-control" id=nim_asal name=nim_asal value='<?=$nim_asal?>'>
               </div>
 
               <div class="form-group">
                 <label for="jurusan_univ_lain">Jurusan</label>
-                <input required minlength=1 maxlength=50 type="text" class="form-control" id=jurusan_univ_lain name=jurusan_univ_lain value='<?=$jurusan_univ_lain?>'>
+                <input minlength=1 maxlength=50 type="text" class="form-control" id=jurusan_univ_lain name=jurusan_univ_lain value='<?=$jurusan_univ_lain?>'>
               </div>            
             </div>
 
@@ -671,11 +677,11 @@ if(mysqli_num_rows($q)>1){
       <div class="wadah">
         <h2>DATA PEKERJAAN</h2>
         <div class="form-group">
-          <input type="checkbox" id="cek_sudah_bekerja" class="toggle">
+          <input type="checkbox" id="cek_sudah_bekerja" class="" <?=$sudah_bekerja_checked?>>
           <label for="cek_sudah_bekerja">Saya sudah bekerja</label>
         </div>
 
-        <div class="hideit" id=cek_sudah_bekerja__details>
+        <div class="zzz<?=$sudah_bekerja_hideit?>" id=cek_sudah_bekerja__details>
 
           <div class="form-group">
             <label for="bekerja_sebagai">Sebagai</label>
@@ -785,7 +791,7 @@ if(mysqli_num_rows($q)>1){
   
         <div class="wadah mt-2 gradasi-hijau">
           <div class="form-group">
-            <input type="checkbox" id="cek_punya_wali" class="toggle">
+            <input type="checkbox" id="cek_punya_wali" class="toggle" <?=$punya_wali_checked?>>
             <label for="cek_punya_wali">Saya punya Wali (selain Ayah/Ibu)</label>
           </div>
 
@@ -846,14 +852,14 @@ if(mysqli_num_rows($q)>1){
         <div class="form-group">
           <label for="yang_membiayai">Selain dana Beasiswa (jika ada), saya dibiayai oleh:</label>
           <select class="form-control" name="yang_membiayai" id="yang_membiayai">
-            <option value="1">Biaya Dari Ayah/Ibu</option>
-            <option value="2">Biaya Sendiri</option>
-            <option value="3">Biaya Dari Ibu</option>
-            <option value="4">Biaya Dari Saudara Lainnya</option>
+            <option value="1" <?=$yang_membiayai_1_selected?>>Biaya Dari Ayah/Ibu</option>
+            <option value="2" <?=$yang_membiayai_2_selected?>>Biaya Sendiri</option>
+            <option value="3" <?=$yang_membiayai_3_selected?>>Biaya Dari Ibu</option>
+            <option value="4" <?=$yang_membiayai_4_selected?>>Biaya Dari Saudara Lainnya</option>
           </select>
         </div>
-        
-        <div class="wadah hideit" id=yang_membiayai__details>
+
+        <div class="wadah zzz<?=$donatur_hideit?>" id=yang_membiayai__details>
           SAUDARA LAINNYA YANG MEMBIAYAI PENDIDIKAN
           <div class="form-group">
             <label for="nama_donatur">Nama Saudara</label>
@@ -909,17 +915,17 @@ if(mysqli_num_rows($q)>1){
       <div class="wadah">
         <label>
           <input type="checkbox" name="" id=""> 
+          Saya sudah melakukan perubahan biodata dengan data terbaru saya saat ini. 
+        </label>
+
+        <label>
+          <input type="checkbox" name="" id=""> 
           Demikian biodata ini saya isi dengan sebenar-benarnya. 
         </label>
 
-        <div class="wadah">
+        <!-- <div class="wadah">
           <div>Last update: none</div>
-          <label>
-            <input type="checkbox" name="" id=""> 
-            Saya sudah melakukan perubahan biodata dengan data terbaru saya saat ini. 
-          </label>
-
-        </div>
+        </div> -->
         
 
         <div class="form-group" style="">
@@ -940,6 +946,10 @@ if(mysqli_num_rows($q)>1){
 
 <script>
   $(function(){
+
+    let nim = $('#nim').text();
+    let id_semester = $('#id_semester').text();
+
     $(".toggle").click(function(){
       let tid = $(this).prop('id');
       let c = $(this).prop('checked');
@@ -948,28 +958,183 @@ if(mysqli_num_rows($q)>1){
       $("#"+tid+"__details").fadeToggle();
     })
 
-    $("#yang_membiayai").change(function(){
-      if($(this).val()==4){
-        $("#yang_membiayai__details").fadeIn()
-      }else{
-        $("#yang_membiayai__details").fadeOut()
-      }
-    })
 
-    $("input[type=text]").keyup(function(){
-      let nim = $('#nim').text();
-      let id_semester = $('#id_semester').text();
-      //zzz here
-      // console.log($(this).prop("id"),nim,id_semester);
+    
+    $("input[type=radio]").click(function(){
       let id = $(this).prop("id");
+      let value = $(this).val();
 
-      let link_ajax = `pages/isi_biodata_autosave.php?id=${id}&nim=${nim}&id_semester=${id_semester}&`;
+      let link_ajax = `pages/isi_biodata_autosave.php?kolom=${id}&nim=${nim}&id_semester=${id_semester}&value=${value}`;
+      console.log(id,value,link_ajax);
       $.ajax({
         url:link_ajax,
         success:function(a){
           console.log(a);
+          $("#"+id).addClass("bg_green");
+          $("#"+id).val(value);
         }
       })
+    });
+
+    $("input[type=date]").focusout(function(){
+      let id = $(this).prop("id");
+      let value = $(this).val();
+
+      let link_ajax = `pages/isi_biodata_autosave.php?kolom=${id}&nim=${nim}&id_semester=${id_semester}&value=${value}`;
+      $.ajax({
+        url:link_ajax,
+        success:function(a){
+          $("#"+id).addClass("bg_green");
+          $("#"+id).val(value);
+        }
+      })
+    });
+
+    $("input[type=text]").focusout(function(){
+      let kolom = $(this).prop("id");
+      let value = $(this).val().trim().toUpperCase().replace("'", "").replace(";", "").replace('"', "");
+      if(value==''){
+        return;
+      }
+
+      if(
+        (kolom=='nik' && value.length!=16) || 
+        (kolom=='nama' && value.length<3) 
+      ){
+        $(this).val('');
+        $(this).addClass('bg_red');
+        return;
+      }
+
+      let link_ajax = `pages/isi_biodata_autosave.php?kolom=${kolom}&nim=${nim}&id_semester=${id_semester}&value=${value}`;
+      console.log(link_ajax);
+      $.ajax({
+        url:link_ajax,
+        success:function(a){
+          console.log(a);
+          $("#"+kolom).removeClass("bg_red");
+          $("#"+kolom).addClass("bg_green");
+          $("#"+kolom).val(value);
+        }
+      })
+    })
+
+    
+    $("#is_domisili_as_ktp").click(function(){
+      if($(this).prop("checked")){
+        let y = confirm("Alamat domisili akan disamakan dengan alamat KTP. Lanjut?");
+        if(y){
+          $("#alamat_blok_domisili").val($("#alamat_blok").val());
+          $("#alamat_rt_domisili").val($("#alamat_rt").val());
+          $("#alamat_rw_domisili").val($("#alamat_rw").val());
+          $("#alamat_desa_domisili").val($("#alamat_desa").val());
+          $("#alamat_kecamatan_domisili").val($("#alamat_kecamatan").val());
+
+          let link_ajax = `pages/isi_biodata_autosave.php?kolom=set_domisili_as_ktp&nim=${nim}&id_semester=${id_semester}&value=value`;
+          $.ajax({
+            url:link_ajax,
+            success:function(a){
+              if(a.trim()=='sukses'){
+                alert('Sukses set alamat domisili = alamat KTP.');
+              }else{
+                alert(a)
+              }
+            }
+          })
+
+        }else{
+          $(this).prop("checked",false);
+        }
+        // $("#alamat_blok_domisili").prop("disabled",true);
+        // $("#blok_domisili").fadeOut();
+      }else{
+        // $("#blok_domisili").fadeIn();
+        // $("#alamat_blok_domisili").val("");
+        // $("#alamat_rt_domisili").val("");
+        // $("#alamat_rw_domisili").val("");
+        // $("#alamat_desa_domisili").val("");
+        // $("#alamat_kecamatan_domisili").val("");
+      }
+    })
+    
+    $("#cek_sudah_bekerja").click(function(){
+      if(!$(this).prop("checked")){
+        let y = confirm("Data pekerjaan akan dihapus. Lanjut?");
+        if(y){
+          $("#bekerja_sebagai").val('-');
+          $("#jabatan_bekerja").val('-');
+          $("#instansi_bekerja").val('-');
+          $("#alamat_bekerja").val('-');
+
+          let link_ajax = `pages/isi_biodata_autosave.php?kolom=set_tidak_bekerja&nim=${nim}&id_semester=${id_semester}&value=value`;
+          $.ajax({
+            url:link_ajax,
+            success:function(a){
+              if(a.trim()=='sukses'){
+                alert('Hapus data pekerjaan sukses.');
+              }else{
+                alert(a)
+              }
+            }
+          })
+
+        }else{
+          $(this).prop("checked",true);
+        }
+        // $("#alamat_blok_domisili").prop("disabled",true);
+        // $("#blok_domisili").fadeOut();
+      }else{
+        $("#bekerja_sebagai").val('');
+        $("#jabatan_bekerja").val('');
+        $("#instansi_bekerja").val('');
+        $("#alamat_bekerja").val('');
+        alert('Silahkan isi data pekerjaan Anda.');
+      }
+    })
+    
+    $("#yang_membiayai").change(function(){
+
+      if($(this).val()==4){
+        $("#yang_membiayai__details").fadeIn();
+
+        $("#nama_donatur").val('');
+        $("#alamat_donatur").val('');
+        $("#no_wa_donatur").val('');
+        $("#hubungan_donatur").val('');
+        $("#pekerjaan_donatur").val('');
+        $("#jabatan_donatur").val('');
+        $("#tempat_kerja_donatur").val('');
+        $("#alamat_kerja_donatur").val('');
+        $("#telepon_kerja_donatur").val('');
+        alert('Silahkan Anda isi data Donatur lainnya.');
+      }else{
+        $("#yang_membiayai__details").fadeOut()
+
+        $("#nama_donatur").val('-');
+        $("#alamat_donatur").val('-');
+        $("#no_wa_donatur").val('-');
+        $("#hubungan_donatur").val('-');
+        $("#pekerjaan_donatur").val('-');
+        $("#jabatan_donatur").val('-');
+        $("#tempat_kerja_donatur").val('-');
+        $("#alamat_kerja_donatur").val('-');
+        $("#telepon_kerja_donatur").val('-');
+        alert('Data Donatur telah dihapus.');
+      }
+      
+      let value = $(this).val();
+      let link_ajax = `pages/isi_biodata_autosave.php?kolom=yang_membiayai&nim=${nim}&id_semester=${id_semester}&value=${value}`;
+      $.ajax({
+        url:link_ajax,
+        success:function(a){
+          if(a.trim()=='sukses'){
+            // alert('Sukses set alamat domisili = alamat KTP.');
+            $("#yang_membiayai").addClass('bg_green');
+          }else{
+            alert(a)
+          }
+        }
+      })      
     })
   })
 

@@ -150,7 +150,7 @@ if($id_semester==''){
   # ===============================================
   # LOGIC UPDATED BIODATA
   # ===============================================
-  $s5 = "SELECT * FROM tb_biodata WHERE nim='$nim' AND id_semester=$id_semester";
+  $s5 = "SELECT * FROM tb_biodata WHERE nim='$nim' AND id_semester=$id_semester AND tanggal_submit is not null";
   $q5 = mysqli_query($cn,$s5) or die(mysqli_error($cn));
   if(mysqli_num_rows($q5)>1) die(div_alert('danger','Duplicate biodata detected.'));
   if(mysqli_num_rows($q5)==1){
