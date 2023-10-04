@@ -17,7 +17,7 @@ a.nama as nama_mhs,
 (
   SELECT b.kelas FROM tb_kelas_ta b
   JOIN tb_kelas_ta_detail c ON b.id=c.id_kelas_ta 
-  WHERE c.id_mhs=a.id) as kelas  
+  WHERE c.nim=a.id) as kelas  
 
 FROM tb_mhs a 
 WHERE (a.nim like '%$keyword%' OR a.nama like '%$keyword%') 

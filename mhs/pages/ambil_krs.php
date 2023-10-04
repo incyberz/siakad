@@ -6,6 +6,10 @@ $undef = '<code>undefined</code>';
 $null = '<code>null</code>';
 $valid_tanggal=0;
 $bio_updated = 0;
+$ktp_updated = 0;
+$punya_ijazah = 0;
+$punya_kk = 0;
+
 $is_lunas=0;
 $info_lunas = '';
 
@@ -157,6 +161,21 @@ if($id_semester==''){
     $bio_updated=1;
   }
 
+  # ===============================================
+  # LOGIC UPDATED KTP
+  # ===============================================
+  // $ktp_updated = 1; //zzz here
+
+  # ===============================================
+  # LOGIC PUNYA KK
+  # ===============================================
+  $punya_kk = 1; //ZZZ here
+
+  # ===============================================
+  # LOGIC PUNYA IJAZAH
+  # ===============================================
+  $punya_ijazah = 1; //ZZZ here
+
 
   $info_mk = '';
   $pilihan_mk = '';
@@ -210,7 +229,7 @@ if($id_semester==''){
       </tr>";
       $tb_mk = "<table class=table>$mk$row_total</table>";
 
-      if($bio_updated){
+      if($bio_updated and $ktp_updated and $punya_ijazah and $punya_kk){
         if($valid_tanggal){
           if($is_lunas){
             # ===========================================
@@ -350,9 +369,35 @@ if($id_semester==''){
           $btn_ambil_krs = div_alert('danger','Tanggal KRS sudah tutup/belum dibuka. Silahkan cek tanggal KRS diatas, jika ada kekeliruan segera hubungi Petugas.');
         }
       }else{ // update biodata dahulu
-        $btn_ambil_krs = div_alert('danger',"Biodata belum diupdate. | <a href='?isi_biodata&id_semester=$id_semester'>Isi/Update Biodata</a>");
-        //  '<span class="btn btn-danger btn-block" disabled>Biodata belum diupdate</span>';
+
+        $btn_ambil_krs = '';
+
+        if($bio_updated){
+          $btn_ambil_krs .= div_alert('info','Biodata sudah terupdate.');
+        }else{
+          $btn_ambil_krs .= div_alert('danger',"Biodata belum diupdate. | <a href='?isi_biodata&id_semester=$id_semester'>Isi/Update Biodata</a>");
+        }
+
+        if($ktp_updated){
+          $btn_ambil_krs .= div_alert('info','KTP sudah terupdate.');
+        }else{
+          $btn_ambil_krs .= div_alert('danger',"KTP belum diupdate. | <a href='?upload&file=ktp'>Upload KTP</a>");
+        }
+
+        if($punya_ijazah){
+          $btn_ambil_krs .= div_alert('info','Sudah upload ijazah.'); //zzz here
+        }else{
+          $btn_ambil_krs .= div_alert('danger',"Ijazah belum diupdate. | <a href='?upload&file=ijazah'>Upload Ijazah</a>");
+        }
+
+        if($punya_kk){
+          $btn_ambil_krs .= div_alert('info','Sudah upload KK.'); //zzz here
+        }else{
+          $btn_ambil_krs .= div_alert('danger',"KK belum diupdate. | <a href='?upload&file=kk'>Upload KK</a>");
+        }
       }
+
+      
   
       $pilihan_mk.= "
       <div class='wadah gradasi-hijau'>
