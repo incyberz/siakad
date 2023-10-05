@@ -164,17 +164,34 @@ if($id_semester==''){
   # ===============================================
   # LOGIC UPDATED KTP
   # ===============================================
-  // $ktp_updated = 1; //zzz here
+  $s5 = "SELECT id_semester_upload_ktp FROM tb_biodata WHERE nim='$nim'";
+  $q5 = mysqli_query($cn,$s5) or die(mysqli_error($cn));
+  if(mysqli_num_rows($q5)==1){
+    $d5=mysqli_fetch_assoc($q5);
+    if($d5['id_semester_upload_ktp']==$id_semester){
+      if(file_exists("uploads/$folder_uploads/$nim-ktp.jpg")){
+        $ktp_updated=1;
+      }else{
+        $s5 = "UPDATE tb_biodata SET id_semester_upload_ktp=NULL WHERE nim='$nim'";
+        $q5 = mysqli_query($cn,$s5) or die(mysqli_error($cn));
+      }
+    }
+  }
+
 
   # ===============================================
   # LOGIC PUNYA KK
   # ===============================================
-  $punya_kk = 1; //ZZZ here
+  if(file_exists("uploads/$folder_uploads/$nim-kk.jpg")){
+    $punya_kk=1;
+  }
 
   # ===============================================
   # LOGIC PUNYA IJAZAH
   # ===============================================
-  $punya_ijazah = 1; //ZZZ here
+  if(file_exists("uploads/$folder_uploads/$nim-ijazah.jpg")){
+    $punya_ijazah=1;
+  }
 
 
   $info_mk = '';
@@ -381,19 +398,19 @@ if($id_semester==''){
         if($ktp_updated){
           $btn_ambil_krs .= div_alert('info','KTP sudah terupdate.');
         }else{
-          $btn_ambil_krs .= div_alert('danger',"KTP belum diupdate. | <a href='?upload&file=ktp'>Upload KTP</a>");
+          $btn_ambil_krs .= div_alert('danger',"KTP belum diupdate. | <a href='?upload&file=ktp' target=_blank>Upload KTP</a>");
         }
 
         if($punya_ijazah){
-          $btn_ambil_krs .= div_alert('info','Sudah upload ijazah.'); //zzz here
+          $btn_ambil_krs .= div_alert('info','Sudah upload ijazah.');
         }else{
-          $btn_ambil_krs .= div_alert('danger',"Ijazah belum diupdate. | <a href='?upload&file=ijazah'>Upload Ijazah</a>");
+          $btn_ambil_krs .= div_alert('danger',"Belum upload ijazah. | <a href='?upload&file=ijazah' target=_blank>Upload Ijazah</a>");
         }
 
         if($punya_kk){
-          $btn_ambil_krs .= div_alert('info','Sudah upload KK.'); //zzz here
+          $btn_ambil_krs .= div_alert('info','Sudah upload KK.');
         }else{
-          $btn_ambil_krs .= div_alert('danger',"KK belum diupdate. | <a href='?upload&file=kk'>Upload KK</a>");
+          $btn_ambil_krs .= div_alert('danger',"Belum upload Kartu Keluarga. | <a href='?upload&file=kk' target=_blank>Upload KK</a>");
         }
       }
 

@@ -1,30 +1,51 @@
 <section id="rank_mhs" class="about">
   <div class="container">
 
+    <?php
+    if(isset($_POST['btn_upload'])){
+      echo "Sedang proses uploading... jangan ditutup atau di-close browser!<hr>";
+      // echo '<pre>';
+      // var_dump($_FILES);
+      // echo '</pre>';
+
+      $folder = "uploads/$folder_uploads";
+      if(!file_exists($folder)) mkdir($folder);
+      if(move_uploaded_file($_FILES['file_upload']['tmp_name'],"$folder/$nim-$_POST[file].jpg")){
+        if($_POST['file']=='ktp'){
+          $s = "INSERT INTO tb_biodata (nim, id_semester, id_semester_upload_ktp) VALUES ('$nim',$id_semester,$id_semester) ON DUPLICATE KEY UPDATE id_semester_upload_ktp = $id_semester ";
+          $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+        }
+
+        echo div_alert('success','Upload sukses.');
+      }else{
+        die(div_alert('danger','Upload gagal.'));
+      }
+      ;
+
+      exit;
+    }
+
+    $file = $_GET['file'] ?? die(erid('file'));
+
+
+    ?>
     <div class="section-title">
-      <h2>Rank Mahasiswa</h2>
-      <p>Di STMIK IKMI Cirebon dalam Sistem Informasi Akademik telah tercatat sebagai:
-      <ul>
-        <li><span style="color: green; font-weight: bold">Mahasiswa Aktif Angkatan 2017</span></li>
-        <li><strong>Prodi</strong>: Teknik Informatika</li>
-        <li><strong>Semester</strong>: 8</li>
-        <li><strong>Konsentrasi</strong>: Android Programming</li>
-        <li><strong>IPK Terakhir</strong>: 3.78</li>
-        <li style="border: solid 1px #aaa; padding: 15px; border-radius: 10px; margin: 10px 0; list-style: none; background-color: #cfa"><strong>Presensi Kuliah</strong>: <span style="color: blue; font-size: 40px">98.87%</span> (215 of 217 sessions)</li>
-        <li style="border: solid 1px #aaa; padding: 15px; border-radius: 10px; margin: 10px 0; list-style: none; background-color: #cfa"><strong>Rank Mahasiswa</strong>: <span style="color: blue; font-size: 60px"><strong>6</strong><sup>th</sup></span><strong style="font-size: 30px"> of <span style="color: brown">376</span></strong> informatics students</li>
-      </ul></p>
+      <h2>Upload Persyaratan</h2>
+      <p>Silahkan upload file persyaratan Anda:</p>
     </div>
-<!-- 
-    <div class="row">
-      <div class="col-lg-10" data-aos="fade-right">
-        <ul>
-          <li><i class="icofont-rounded-right"></i> <strong>Tempat Lahir:</strong> <?=$tempat_lahir_mhs ?></li>
-          <li><i class="icofont-rounded-right"></i> <strong>Tanggal Lahir:</strong> <?=$tanggal_lahir_mhs ?></li>
-          <li><i class="icofont-rounded-right"></i> <strong>Status:</strong> <?=$status_pernikahan ?></li>
-          <li><i class="icofont-rounded-right"></i> <strong>Jumlah anak:</strong> <?=$jumlah_anak ?></li>
-        </ul>
-      </div>
+
+    <div class="wadah" data-aos="fade-right">
+      <p>File yang harus Anda upload : <b><u><?=$file?></u></b></p>
+      <form method=post enctype='multipart/form-data'>
+        <input type="hidden" name=file id=file value='<?=$file?>'>
+        <input type="file" name=file_upload id=file_upload accept='.jpg'>
+        <div class="kecil miring abu mt1 mb1">Format gambar: JPG</div>
+
+        <div class='mt-2'>
+          <button class='btn btn-primary btn-block' name=btn_upload>Upload</button>
+        </div>
+      </form>
     </div>
- -->
+
   </div>
 </section>
