@@ -20,7 +20,8 @@ $unsetting_count_bau = $d['unsetting_count_bau'];
       // }
       ?>
       <li class=proper><a href="?"><i class="icon_easel_alt"></i>Dashboard</a></li>
-      <li class=proper><a href="?manage_master"><i class="icon_genius"></i>Master</a></li>
+      <li class=proper><a href="?master&p=mhs"><i class="icon_genius"></i>Master Mhs</a></li>
+      <li class=proper><a href="?manage_master"><i class="icon_genius"></i>Masters</a></li>
       <li class=proper><a href="?manage"><i class="icon_genius"></i>Manage <span class="badge badge-danger"><?=$unsetting_count_baak?></span></a></li>
       <!-- <li class=proper><a href="?master&p=kalender"><i class="icon_genius"></i>Manage Kalender</a></li>
       <li class=proper><a href="?master&p=kurikulum"><i class="icon_genius"></i>Manage Kurikulum</a></li>

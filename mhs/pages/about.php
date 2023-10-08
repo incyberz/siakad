@@ -2,10 +2,16 @@
   <div class="container">
 
     <div class="section-title">
-      <h2>About</h2>
-      <p>Ini adalah laman biodata Anda.</p>
-    </div>
+      <h2>Tentang Saya</h2>
+      <div class="p-2 mt-4" style="border-top:solid 1px #ccc">
+        <a href="?isi_biodata">Isi/Ubah Biodata</a> | 
+        <a href="?my_docs">Dokumen Saya</a> | 
+        <a href="?ubah_password">Ubah Password</a> 
+      </div>
 
+    </div>
+    
+    <p class="mt4 pt2" style="border-top:solid 1px #ccc">Berikut adalah biodata Anda:</p>
     <?php 
     // $s = "DESCRIBE tb_biodata";
     // $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
@@ -50,10 +56,6 @@
 
     ?>
 
-    <div class="p-2 mt-4" style="border-top:solid 1px #ccc">
-      <a href="?isi_biodata">Isi/Ubah Biodata</a> | 
-      <a href="?ubah_password">Ubah Password</a> | 
-    </div>
 
   </div>
 </section>

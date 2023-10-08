@@ -5,7 +5,7 @@
 session_start();
 $nama_mhs='';
 $kelas_ta = '';
-$dm=0;
+$dm=1;
 if (0) { session_unset(); exit();}
 include "../config.php";
 include "../include/nomor_ikmi.php";

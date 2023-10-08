@@ -16,11 +16,13 @@
           $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
         }
 
-        echo div_alert('success','Upload sukses.');
+        echo div_alert('success','Upload sukses. Auto-Redirecting to Dokumen saya...');
+        echo "<script>setTimeout(() => location.replace('?my_docs'), 2000)</script>";
       }else{
         die(div_alert('danger','Upload gagal.'));
       }
       ;
+      
 
       exit;
     }

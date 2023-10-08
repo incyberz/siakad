@@ -396,19 +396,19 @@ if($id_semester==''){
         }
 
         if($ktp_updated){
-          $btn_ambil_krs .= div_alert('info','KTP sudah terupdate.');
+          $btn_ambil_krs .= div_alert('info',"Sudah upload ktp | <a href='uploads/$folder_uploads/$nim-ktp.jpg' target=_blank onclick='return confirm(\"Ingin melihat dokumen ini di TAB baru?\")'>Lihat</a> | <a href='?upload&file=ktp' target=_blank onclick='return confirm(\"Ingin re-upload dokumen ini?\")'>Reupload ktp</a>");
         }else{
           $btn_ambil_krs .= div_alert('danger',"KTP belum diupdate. | <a href='?upload&file=ktp' target=_blank>Upload KTP</a>");
         }
 
         if($punya_ijazah){
-          $btn_ambil_krs .= div_alert('info','Sudah upload ijazah.');
+          $btn_ambil_krs .= div_alert('info',"Sudah upload ijazah | <a href='uploads/$folder_uploads/$nim-ijazah.jpg' target=_blank onclick='return confirm(\"Ingin melihat dokumen ini di TAB baru?\")'>Lihat</a> | <a href='?upload&file=ijazah' target=_blank onclick='return confirm(\"Ingin re-upload dokumen ini?\")'>Reupload Ijazah</a>");
         }else{
           $btn_ambil_krs .= div_alert('danger',"Belum upload ijazah. | <a href='?upload&file=ijazah' target=_blank>Upload Ijazah</a>");
         }
 
         if($punya_kk){
-          $btn_ambil_krs .= div_alert('info','Sudah upload KK.');
+          $btn_ambil_krs .= div_alert('info',"Sudah upload kk | <a href='uploads/$folder_uploads/$nim-kk.jpg' target=_blank onclick='return confirm(\"Ingin melihat dokumen ini di TAB baru?\")'>Lihat</a> | <a href='?upload&file=kk' target=_blank onclick='return confirm(\"Ingin re-upload dokumen ini?\")'>Reupload kk</a>");
         }else{
           $btn_ambil_krs .= div_alert('danger',"Belum upload Kartu Keluarga. | <a href='?upload&file=kk' target=_blank>Upload KK</a>");
         }

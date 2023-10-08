@@ -198,7 +198,9 @@ while ($d=mysqli_fetch_assoc($q)) {
   (
     SELECT id FROM tb_jadwal WHERE id_kurikulum_mk=b.id AND shift='$shift') as id_jadwal, 
   (
-    SELECT awal_kuliah FROM tb_jadwal WHERE id_kurikulum_mk=b.id AND shift='$shift') as awal_kuliah 
+    SELECT awal_kuliah FROM tb_jadwal WHERE id_kurikulum_mk=b.id AND shift='$shift') as awal_kuliah, 
+  (
+    SELECT akhir_kuliah FROM tb_jadwal WHERE id_kurikulum_mk=b.id AND shift='$shift') as akhir_kuliah 
 
 
   FROM tb_mk a 
@@ -229,16 +231,20 @@ while ($d=mysqli_fetch_assoc($q)) {
 
     // opt jam without selected
     $opt_jam = '';
+    $opt_jam_akhir = '';
     foreach ($rjam[$shift] as $jam) {
       $jam_show = $jam<10 ? '0'.$jam : $jam;
       $opt_jam.= "<option value='$jam'>$jam_show</option>";
+      $opt_jam_akhir.= "<option value='$jam'>$jam_show</option>";
     }
     // opt menit without selected
     $opt_menit = '';
+    $opt_menit_akhir = '';
     for ($i=0; $i < 12; $i++) { 
       $menit = $i*5;
       $menit_show = $menit<10 ? '0'.$menit : $menit;
       $opt_menit.= "<option value='$menit'>$menit_show</option>";
+      $opt_menit_akhir.= "<option value='$menit'>$menit_show</option>";
     }
     
 
@@ -249,38 +255,50 @@ while ($d=mysqli_fetch_assoc($q)) {
       $tanggal_awal_kuliah = date('Y-m-d',strtotime($d2['awal_kuliah_uts']));
       $select_jam = '';
       $select_menit = '';
-    }else{ // awal_kuliah berisi
-      $jam_awal = date('H:i',strtotime($d2['awal_kuliah']));
+    }else{ // awal_kuliah telah diisi
+      $awal_kuliah = date('H:i',strtotime($d2['awal_kuliah']));
+      $akhir_kuliah = $d2['akhir_kuliah'] ?? date('Y-m-d H:i',strtotime($d2['awal_kuliah'])+($bobot*45*60));
+      $akhir_kuliah_show = date('H:i',strtotime($akhir_kuliah));
+      $awal_kuliah_show = '<span class=green>'.date('D, d-M-Y',strtotime($d2['awal_kuliah']))." Pukul $awal_kuliah - $akhir_kuliah_show $img_aksi[check]</span>";
+
       $select_jam = date('H',strtotime($d2['awal_kuliah']));
       $select_menit = date('i',strtotime($d2['awal_kuliah']));
+      $select_jam_akhir = date('H',strtotime($akhir_kuliah));
+      $select_menit_akhir = date('i',strtotime($akhir_kuliah));
       
-      $jam_akhir = date('H:i',strtotime($d2['awal_kuliah'])+($bobot*45*60));
-
-      $awal_kuliah_show = '<span class=green>'.date('D, d-M-Y',strtotime($d2['awal_kuliah']))." Pukul $jam_awal - $jam_akhir $img_aksi[check]</span>";
-      // $disabled_set = 'disabled';
-
+      
       $tanggal_awal_kuliah = date('Y-m-d',strtotime($d2['awal_kuliah']));
       $debug = "<div class=debug style=background:yellow>
         tanggal_awal_kuliah2:<span id=tanggal_awal_kuliah2__$id_jadwal>$tanggal_awal_kuliah</span> | 
         select_jam2:<span id=select_jam2__$id_jadwal>$select_jam</span> | 
         select_menit2:<span id=select_menit2__$id_jadwal>$select_menit</span> | 
+        select_jam_akhir2:<span id=select_jam_akhir2__$id_jadwal>$select_jam_akhir</span> | 
+        select_menit_akhir2:<span id=select_menit_akhir2__$id_jadwal>$select_menit_akhir</span> | 
       </div>";
 
 
       $opt_jam = '';
+      $opt_jam_akhir = '';
       foreach ($rjam[$shift] as $jam) {
-        $selected = $select_jam==$jam ? 'selected' : '';
-        // echo "<div class=debug>$select_jam :: $jam</div>";
         $jam_show = $jam<10 ? '0'.$jam : $jam;
+
+        $selected = $select_jam==$jam ? 'selected' : '';
         $opt_jam.= "<option value='$jam' $selected>$jam_show</option>";
+
+        $selected = $select_jam_akhir==$jam ? 'selected' : '';
+        $opt_jam_akhir.= "<option value='$jam' $selected>$jam_show</option>";
       }
 
       $opt_menit = '';
       for ($i=0; $i < 12; $i++) { 
         $menit = $i*5;
-        $selected = $select_menit==$menit ? 'selected' : '';
         $menit_show = $menit<10 ? '0'.$menit : $menit;
+
+        $selected = $select_menit==$menit ? 'selected' : '';
         $opt_menit.= "<option value='$menit' $selected>$menit_show</option>";
+
+        $selected = $select_menit_akhir==$menit ? 'selected' : '';
+        $opt_menit_akhir.= "<option value='$menit' $selected>$menit_show</option>";
       }
     } //// end awal_kuliah berisi
 
@@ -301,6 +319,20 @@ while ($d=mysqli_fetch_assoc($q)) {
             $opt_menit
           </select>
         </div>
+        <div>
+          s.d
+        </div>
+        <div>
+          <select id=select_jam_akhir__$id_jadwal class='akhir_kuliah_triger form-control'>
+            $opt_jam_akhir
+          </select>
+        </div>
+        <div>
+          <select id=select_menit_akhir__$id_jadwal class='akhir_kuliah_triger form-control'>
+            $opt_menit_akhir
+          </select>
+        </div>
+
         <div id=blok_btn_set__$id_jadwal class=hideit>$btn_set</div>
         $debug
       </div>
@@ -319,7 +351,7 @@ while ($d=mysqli_fetch_assoc($q)) {
         </div>
         <div class=darkblue>$jadwal_show | Dosen: $nama_dosen</div>
       </td>
-      <td width=40% class=''>$blok_awal_kuliah</td>
+      <td width=60% class=''>$blok_awal_kuliah</td>
     </tr>    
     ";
   } //end while list MK
