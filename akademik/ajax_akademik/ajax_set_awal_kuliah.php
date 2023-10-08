@@ -8,14 +8,16 @@ include 'akademik_only.php';
 # ================================================
 $id_jadwal = $_GET['id_jadwal'] ?? die(erid("id_jadwal"));
 $awal_kuliah = $_GET['awal_kuliah'] ?? die(erid("awal_kuliah"));
+$akhir_kuliah = $_GET['akhir_kuliah'] ?? die(erid("akhir_kuliah"));
 $bobot = $_GET['bobot'] ?? die(erid("bobot"));
 $confirm = $_GET['confirm'] ?? 0;
 
-$akhir_kuliah = date('Y-m-d H:i',strtotime($awal_kuliah)+$bobot*45*60);
+// $akhir_kuliah = date('Y-m-d H:i',strtotime($awal_kuliah)+$bobot*45*60); // bukan lagi auto
+// $jam_akhir_kuliah = date('H:i',strtotime($akhir_kuliah));
 
-$s = "UPDATE tb_jadwal SET awal_kuliah='$awal_kuliah' WHERE id='$id_jadwal'";
+// $s = "UPDATE tb_jadwal SET awal_kuliah='$awal_kuliah',akhir_kuliah='$akhir_kuliah' WHERE id='$id_jadwal'";
 
-// get id_semester
+// get id_semester from data jadwal untuk cek bentrok
 $s = "SELECT a.id,a.nomor as no, c.shift, b.id_kurikulum  
 FROM tb_semester a 
 JOIN tb_kurikulum_mk b ON a.id=b.id_semester
@@ -55,7 +57,7 @@ $akhir_kuliah_show = date('H:i',strtotime($akhir_kuliah));
 while ($d=mysqli_fetch_assoc($q)) {
   if($d['id']==$id_jadwal) continue;
   $d_taw = strtotime($d['awal_kuliah']);
-  $d_tak = $d_taw+($d['bobot']*45*60);
+  $d_tak = $d['akhir_kuliah']!='' ? strtotime($d['akhir_kuliah']) : $d_taw+($d['bobot']*45*60); //tidak lagi auto
   $d_ak = date('Y-m-d H:i',$d_tak);
 
   $d_aw_show = date('H:i',$d_taw);
@@ -89,7 +91,7 @@ while ($d=mysqli_fetch_assoc($q)) {
 }
 
 if($confirm){
-  $s = "UPDATE tb_jadwal SET awal_kuliah='$awal_kuliah' WHERE id=$id_jadwal";
+  $s = "UPDATE tb_jadwal SET awal_kuliah='$awal_kuliah',akhir_kuliah='$akhir_kuliah' WHERE id='$id_jadwal'";
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 }
 die('sukses');

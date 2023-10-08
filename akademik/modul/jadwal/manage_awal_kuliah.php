@@ -323,17 +323,18 @@ while ($d=mysqli_fetch_assoc($q)) {
           s.d
         </div>
         <div>
-          <select id=select_jam_akhir__$id_jadwal class='akhir_kuliah_triger form-control'>
+          <select id=select_jam_akhir__$id_jadwal class='awal_kuliah_triger form-control'>
             $opt_jam_akhir
           </select>
         </div>
         <div>
-          <select id=select_menit_akhir__$id_jadwal class='akhir_kuliah_triger form-control'>
+          <select id=select_menit_akhir__$id_jadwal class='awal_kuliah_triger form-control'>
             $opt_menit_akhir
           </select>
         </div>
 
         <div id=blok_btn_set__$id_jadwal class=hideit>$btn_set</div>
+        <div id=ket_error_durasi__$id_jadwal class='red small miring'></div>
         $debug
       </div>
       <div id=hasil_ajax__$id_jadwal></div>
@@ -454,48 +455,21 @@ $blok_semesters
       let rid = tid.split('__');
       let id_jadwal = rid[1];
 
-      let jap = $('#tanggal_awal_kuliah__'+id_jadwal).val() + ' ' 
-        + $('#select_jam__'+id_jadwal).val() + ':'
-        + $('#select_menit__'+id_jadwal).val();
-        
-      let jap2 = $('#tanggal_awal_kuliah2__'+id_jadwal).text() + ' ' 
-        + $('#select_jam2__'+id_jadwal).text() + ':'
-        + $('#select_menit2__'+id_jadwal).text();
+      let jam_awal = parseInt($('#select_jam__'+id_jadwal).val());
+      let menit_awal = parseInt($('#select_menit__'+id_jadwal).val());
 
-      // console.log(tid, id_jadwal, jap, jap2);
-      $('#set__'+id_jadwal).prop('disabled',0);
-      
-      let aksi = 'set';
-      let bobot = $('#bobot__'+id_jadwal).text();
+      let jam_akhir = parseInt($('#select_jam_akhir__'+id_jadwal).val());
+      let menit_akhir = parseInt($('#select_menit_akhir__'+id_jadwal).val());
 
-      if(aksi=='set'){
-        // validasi konflik jam untuk mhs zzz here
-        let awal_kuliah = $('#tanggal_awal_kuliah__'+id_jadwal).val()
-          + ' '
-          + $('#select_jam__'+id_jadwal).val()
-          + ':'
-          + $('#select_menit__'+id_jadwal).val()
-          ;
-        
-        let link_ajax = `ajax_akademik/ajax_set_awal_kuliah.php?id_jadwal=${id_jadwal}&awal_kuliah=${awal_kuliah}&bobot=${bobot}&`;
-        $.ajax({
-          url:link_ajax,
-          success:function(a){
-            console.log(a);
-            if(a.trim()=='sukses'){
-              // location.reload(); // ambil cepat zzz
-              $('#blok_btn_set__'+id_jadwal).fadeIn();
-              $('#hasil_ajax__'+id_jadwal).html('');
-            }else{
-              $('#blok_btn_set__'+id_jadwal).hide();
-              // alert(a);
-              $('#hasil_ajax__'+id_jadwal).html(a);
-            }
-          }
-        })
+      let durasi_kuliah = (jam_akhir*60+menit_akhir) - (jam_awal*60+menit_awal);
+
+      if(durasi_kuliah>=60 && durasi_kuliah<181){
+        $('#blok_btn_set__'+id_jadwal).fadeIn();
+        $('#hasil_ajax__'+id_jadwal).html('');
+        $('#ket_error_durasi__'+id_jadwal).text('');
       }else{
-        alert(`aksi ${aksi} belum terdapat handler.`);
-        return;
+        $('#blok_btn_set__'+id_jadwal).hide();
+        $('#ket_error_durasi__'+id_jadwal).text('Durasi kuliah minimal 60 menit dan maksimal 180 menit');
       }
     });
 
@@ -516,7 +490,17 @@ $blok_semesters
           + $('#select_menit__'+id_jadwal).val()
           ;
         
-        let link_ajax = `ajax_akademik/ajax_set_awal_kuliah.php?id_jadwal=${id_jadwal}&awal_kuliah=${awal_kuliah}&bobot=${bobot}&confirm=1`;
+        let akhir_kuliah = $('#tanggal_awal_kuliah__'+id_jadwal).val()
+          + ' '
+          + $('#select_jam_akhir__'+id_jadwal).val()
+          + ':'
+          + $('#select_menit_akhir__'+id_jadwal).val()
+          ;
+        
+        let link_ajax = `ajax_akademik/ajax_set_awal_kuliah.php?id_jadwal=${id_jadwal}&awal_kuliah=${awal_kuliah}&akhir_kuliah=${akhir_kuliah}&bobot=${bobot}&confirm=1`;
+        // alert(link_ajax); 
+        // return;
+
         $.ajax({
           url:link_ajax,
           success:function(a){

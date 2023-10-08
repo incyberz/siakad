@@ -38,6 +38,7 @@ $unsetting_count_bau = $d['unsetting_count_bau'];
       <!-- <li class=proper><a onclick="belom()"><i class="icon_genius"></i><span class=merah>KHS</span></a></li> -->
       <li class=proper><a href="?ambil_krs"><i class="icon_genius"></i>KRS</a></li>
       <li class=proper><a href="?khs"><i class="icon_genius"></i>KHS</a></li>
+      <li class=proper><a href="?sesi_mingguan"><i class="icon_genius"></i>Sesi Hari ini</a></li>
       <!-- <li class=proper><a onclick="belom()"><i class="icon_genius"></i><span class=merah>Transkrip</span></a></li> -->
 
       <?php 

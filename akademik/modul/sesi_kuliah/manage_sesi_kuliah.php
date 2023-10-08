@@ -189,7 +189,7 @@ if(mysqli_num_rows($q)==0){
     $tr_active = ($tsesi>=strtotime($ahad_skg) and $tsesi<strtotime($ahad_depan)) ? 'tr_active' : '';
     $minggu_aktif = $tr_active=='tr_active' ? '<span class="kecil miring biru">(minggu aktif)</span>':'';
     $sesi_mgg_ini = $tr_active=='tr_active' ? "<span class=red>($selisih_hari hari lagi)</span>":$x_hari_lagi;
-    $sesi_hari_ini = strtotime(date('Y-m-d',$tsesi))==$ttoday ? '<span class="miring merah">(sesi hari ini)</span>' : $sesi_mgg_ini;
+    $sesi_mingguan = strtotime(date('Y-m-d',$tsesi))==$ttoday ? '<span class="miring merah">(sesi hari ini)</span>' : $sesi_mgg_ini;
 
     $list_ruang = '<span class="red kecil miring">--none--</span>';
     if($d['jumlah_ruang']>0){
@@ -221,7 +221,7 @@ if(mysqli_num_rows($q)==0){
     <tr class='$tr_active'>
       <td class='upper gradasi-$gradasi'>
         $d[pertemuan_ke] 
-        <br>$lampau$sesi_hari_ini 
+        <br>$lampau$sesi_mingguan 
         <br>$minggu_aktif
       </td>
       <td class='upper gradasi-$gradasi'>

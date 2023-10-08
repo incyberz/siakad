@@ -34,6 +34,7 @@ switch ($c[0]){
   case 'reset_assign_ruang': $konten = 'modul/sesi/reset_assign_ruang.php';break;
   case 'reset_presensi_dosen': $konten = 'modul/sesi/reset_presensi_dosen.php';break;
   case 'reset_presensi_mhs': $konten = 'modul/sesi/reset_presensi_mhs.php';break;
+  case 'sesi_mingguan': $konten = 'modul/sesi/sesi_mingguan.php';break;
   
   case 'cek_all_sesi': $konten = 'modul/sesi_kuliah/cek_all_sesi.php';break;
   
