@@ -4,7 +4,6 @@
 $id_jadwal = $_GET['id_jadwal'] ?? die(erid('id_jadwal'));
 
 include 'include/akademik_icons.php';
-$unset = '<span class="red consolas miring">unset</span>';
 
 
 # ==============================================================

@@ -1,6 +1,11 @@
 <h1>Manage Awal Perkuliahan</h1>
 <p>Manage Awal Perkuliah hanya bisa dilakukan setelah adanya Penjadwalan Dosen dan Penanggalan Semester.</p>
 <?php 
+include 'include/akademik_icons.php';
+
+if(isset($_GET['debug'])){
+  if($_GET['debug']==0) echo "<style>.debug{display:none}</style>";
+}
 $id_kurikulum = $_GET['id_kurikulum'] ?? '';
 if($id_kurikulum==''){
 
@@ -255,11 +260,13 @@ while ($d=mysqli_fetch_assoc($q)) {
       $tanggal_awal_kuliah = date('Y-m-d',strtotime($d2['awal_kuliah_uts']));
       $select_jam = '';
       $select_menit = '';
+      $lanjut_ke = '';
     }else{ // awal_kuliah telah diisi
       $awal_kuliah = date('H:i',strtotime($d2['awal_kuliah']));
       $akhir_kuliah = $d2['akhir_kuliah'] ?? date('Y-m-d H:i',strtotime($d2['awal_kuliah'])+($bobot*45*60));
       $akhir_kuliah_show = date('H:i',strtotime($akhir_kuliah));
       $awal_kuliah_show = '<span class=green>'.date('D, d-M-Y',strtotime($d2['awal_kuliah']))." Pukul $awal_kuliah - $akhir_kuliah_show $img_aksi[check]</span>";
+      $lanjut_ke = "<div class='kecil'><a href='?manage_sesi_detail&id_jadwal=$id_jadwal' target=_blank>Manage Sesi Detail $img_aksi[next] </a></div>";
 
       $select_jam = date('H',strtotime($d2['awal_kuliah']));
       $select_menit = date('i',strtotime($d2['awal_kuliah']));
@@ -337,6 +344,7 @@ while ($d=mysqli_fetch_assoc($q)) {
         <div id=ket_error_durasi__$id_jadwal class='red small miring'></div>
         $debug
       </div>
+      $lanjut_ke
       <div id=hasil_ajax__$id_jadwal></div>
     ";
 

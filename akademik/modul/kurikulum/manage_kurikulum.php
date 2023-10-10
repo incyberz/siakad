@@ -14,6 +14,7 @@
 </style>
 <?php
 include 'include/include_rid_prodi.php';
+include 'include/akademik_icons.php';
 
 $id_kurikulum = $_GET['id_kurikulum'] ?? '';
 if($id_kurikulum==''){
@@ -193,7 +194,6 @@ if($id_kurikulum==''){
   }
 }
 
-include 'include/akademik_icons.php';
 
 
 # ==============================================================
@@ -326,6 +326,8 @@ while ($d=mysqli_fetch_assoc($q)) {
     $jumlah_praktik[$d['id_semester']] += $d2['bobot_praktik'];
 
     $hapus = $d2['jumlah_assign_mk'] > 1 ? "<span onclick='alert(\"Tidak bisa hapus MK ini karena dipakai di Kurikulum lain.\")'>$img_aksi[delete_disabled]</span>" : "<span class='btn_aksi' id='hapus__mk__$d2[id_mk]__$d[id_semester]'>$img_aksi[delete]</span>";
+    $next_pagi = "<a href='?manage_jadwal_dosen&id_kurikulum=$id_kurikulum&shift=pagi' onclick='return confirm(\"Set dosen pagi?\")' target=_blank>$img_aksi[next]</a>";
+    $next_sore = "<a href='?manage_jadwal_dosen&id_kurikulum=$id_kurikulum&shift=sore' onclick='return confirm(\"Set dosen sore?\")' target=_blank>$img_aksi[next]</a>";
     $drop = $d2['sub_trx_nilai'] ? "<span onclick='alert(\"Tidak bisa Drop MK karena sudah ada trx-nilai pada MK ini.\")'>$img_aksi[drop_disabled]</span>" : "<span class='btn_aksi' id='drop__mk__$d2[id_mk]'>$img_aksi[drop]</span>";
     $merge = "<a href='?merge_mk&id_kurikulum_mk=$d2[id_kurikulum_mk]' target=_blank onclick='return confirm(\"Menuju laman Merge MK?\")'>$img_aksi[merge]</a>";
     
@@ -347,6 +349,8 @@ while ($d=mysqli_fetch_assoc($q)) {
       <td>
         <table class=tb_aksi>
           <tr>
+            <td>$next_pagi</td>
+            <td>$next_sore</td>
             <td>$drop</td>
             <td>$hapus</td>
             <td>$merge</td>

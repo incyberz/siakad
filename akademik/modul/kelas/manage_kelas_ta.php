@@ -5,10 +5,45 @@ $id_kurikulum = $_GET['id_kurikulum'] ?? '';
 if(!$kelas || $kelas<1) die('<script>location.replace("?manage_kelas")</script>');
 echo "<h1>Manage Kelas TA</h1><p>Proses assign Grup Kelas <a href='?manage_grup_kelas&id_kurikulum=$id_kurikulum'>$kelas</a> dengan Tahun Ajar tertentu.</p>";
 
+
+$s = "SELECT a.*, b.jenjang 
+FROM tb_kelas a 
+JOIN tb_prodi b ON a.id_prodi=b.id 
+WHERE a.kelas='$kelas'";
+$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+if(mysqli_num_rows($q)==0) die(div_alert('danger','Data kelas tidak ada.'));
+$d=mysqli_fetch_assoc($q);
+$angkatan = $d['angkatan'];
+$jenjang = $d['jenjang'];
+
+
+
+# ==============================================================
+# KELAS TA YANG SUDAH ADA
+# ==============================================================
+$s = "SELECT * FROM tb_kelas_ta WHERE kelas='$kelas'";
+$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+$arr_kelas_ta = [];
+while ($d=mysqli_fetch_assoc($q)) {
+  array_push($arr_kelas_ta,$d['tahun_ajar']);
+}
+
+
 # ==============================================================
 # GET OPTION ANGKATAN / TAHUN_AJAR
 # ==============================================================
-$rta = [2020,2021,2022,2023,2024]; // zzz default | tidak sesuai db
+$tahun_jenjang['D3'] = 3;
+$tahun_jenjang['S1'] = 4;
+$rta = [];
+$s = "SELECT * FROM tb_tahun_ajar";
+$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+while ($d=mysqli_fetch_assoc($q)) {
+  if($d['angkatan'] >= $angkatan AND $d['angkatan'] < ($angkatan+$tahun_jenjang[$jenjang])){
+    if(!in_array($d['tahun_ajar'],$arr_kelas_ta)){
+      array_push($rta,"$d[tahun_ajar]");
+    }
+  }
+}
 
 
 # ==============================================================
@@ -60,9 +95,12 @@ $shift = $d['shift'];
 # GET DATA KELAS TA
 # ==============================================================
 $tr = '';
-$s = "SELECT a.id as id_kelas_ta, a.*, 
-(SELECT count(1) FROM tb_kelas_ta_detail WHERE id_kelas_ta=a.id) jumlah_peserta_mhs
-FROM tb_kelas_ta a WHERE a.kelas='$kelas' 
+$s = "SELECT a.id as id_kelas_ta, a.*, b.gg, b.angkatan,
+(SELECT count(1) FROM tb_kelas_ta_detail 
+WHERE id_kelas_ta=a.id) jumlah_peserta_mhs
+FROM tb_kelas_ta a 
+JOIN tb_tahun_ajar b ON a.tahun_ajar=b.tahun_ajar 
+WHERE a.kelas='$kelas' 
 ORDER BY tahun_ajar 
 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
@@ -79,7 +117,7 @@ if(mysqli_num_rows($q)==0){
     $tr.="
       <tr>
         <td>$i</td>
-        <td>$kelas ~ TA$d[tahun_ajar]</td>
+        <td>$kelas ~ TA-$d[angkatan]-$d[gg]</td>
         <td>$d[jumlah_peserta_mhs] | <a href='?manage_peserta&id_kelas_ta=$id_kelas_ta&id_kurikulum=$id_kurikulum'>manage peserta mhs</td>
         <td>$btn_hapus</td>
       </tr>
@@ -96,7 +134,7 @@ foreach ($rta as $value){
 }
 
 
-$tr_tambah = "
+$tr_tambah = count($rta)==0 ? "<tr><td colspan=4><div class='kecil miring abu'>Semua tahun ajar jenjang $jenjang sudah ditambahkan.</div></td></tr>" : "
 <tr>
   <td>#</td>
   <td colspan=3>

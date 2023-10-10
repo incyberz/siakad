@@ -221,6 +221,8 @@ if(mysqli_num_rows($q)==0){
       $btn_assign_multi_ruang = "<a href='?assign_ruang&id_sesi=$d[id_sesi]' class='btn btn-info btn-sm'>assign multi ruang</a>";
     }
 
+    $btn_hapus_sesi = "<div class=mt1><a class='btn btn-danger btn-sm' href='?master&p=sesi&aksi=hapus&id=$d[id_sesi]' onclick='return confirm(\"Yakin untuk hapus sesi ini? Menghapus sesi akan mengurangi jumlah pertemuan (akan kurang dari 16x pertemuan).\")' target=_blank>Hapus Sesi</a></div>";
+
     $today2 = date('Y-m-d');
 
     # ========================================================
@@ -243,22 +245,25 @@ if(mysqli_num_rows($q)==0){
         <br>$minggu_aktif
       </td>
       <td class='upper gradasi-$gradasi'>
-        <a href='?master&p=sesi&aksi=update&id=$d[id_sesi]' class='tebal' target='_blank'>$d[nama_sesi]</a>
-        <br><i>Pengajar</i>: <a href='?master&p=dosen&id=$d[id_dosen]' target=_blank  onclick='return confirm(\"Ingin menuju Laman Master Dosen?\")'>$d[nama_dosen]</a> 
+        <a href='?master&p=sesi&aksi=update&id=$d[id_sesi]' class='tebal' target='_blank' onclick='return confirm(\"Nama sesi sebaiknya diubah oleh dosennya sendiri. Ingin mengubah nama sesi di TAB baru??\")'>$d[nama_sesi]</a>
+        <br><i>Pengajar</i>: <a href='?lihat_dosen&id_dosen=$d[id_dosen]' target=_blank  onclick='return confirm(\"Ingin melihat detail Dosen?\")'>$d[nama_dosen]</a> 
         <a href='?login_as_dosen&id_dosen=$d[id_dosen]' onclick='return confirm(\"Ingin Login sebagai Dosen ini?\")' target=_blank>$img_aksi[login_as]</a>
         <br>$bobot SKS x 50 menit
         
       </td>
       <td class='upper gradasi-$gradasi'>
-        $hari<br>$tanggal_sesi
-        <br>$jam_masuk - $jam_keluar
+        $hari<br><a href='?master&p=sesi&aksi=update&id=$d[id_sesi]' target=_blank onclick='return confirm(\"Yakin untuk mengubah Jam Sesi di TAB baru?\")'>$tanggal_sesi
+        <br>$jam_masuk - $jam_keluar</a>
       </td>
       <td class='upper gradasi-$gradasi kecil hideit'>
         Dosen: $presensi_dosen_show
         <br>Mhs: $jumlah_presensi_mhs mhs
       </td>
       <td class='upper gradasi-$gradasi'>$list_ruang</td>
-      <td class='upper gradasi-$gradasi'>$btn_assign_multi_ruang</td>
+      <td class='upper gradasi-$gradasi'>
+        $btn_assign_multi_ruang
+        <br>$btn_hapus_sesi
+      </td>
     </tr>"; 
   }
 

@@ -45,7 +45,6 @@ switch ($c[0]){
   case 'manage_peserta': $konten = 'modul/peserta/manage_peserta.php';break;
 
 
-  case 'monitoring_sks_dosen': $konten = 'modul/dosen/monitoring_sks_dosen.php';break;
   case 'manage_presensi': $konten = 'modul/presensi/manage_presensi.php';break;
   case 'manage_presensi_per_mhs': $konten = 'modul/presensi/manage_presensi_per_mhs.php';break;
   case 'presensi': $konten = 'modul/presensi/presensi_per_mahasiswa.php';break;
@@ -64,8 +63,11 @@ switch ($c[0]){
   case 'rekap_mhs_aktif': $konten = 'modul/mhs/rekap_mhs_aktif.php';break;
   case 'master_mhs': $konten = 'modul/mhs/master_mhs.php';break;
   case 'login_as': $konten = 'modul/mhs/login_as.php';break;
+
   case 'login_as_dosen': $konten = 'modul/dosen/login_as_dosen.php';break;
-  
+  case 'monitoring_sks_dosen': $konten = 'modul/dosen/monitoring_sks_dosen.php';break;
+  case 'lihat_dosen': $konten = 'modul/dosen/lihat_dosen.php';break;
+
   case 'pembayaran_home': $konten = 'modul/pembayaran/pembayaran_home.php';break;
   case 'pembayaran_manual': $konten = 'modul/pembayaran/pembayaran_manual.php';break;
   case 'rekap_pembayaran_manual': $konten = 'modul/pembayaran/rekap_pembayaran_manual.php';break;

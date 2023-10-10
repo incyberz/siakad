@@ -1,6 +1,8 @@
 <h1>Manage Jadwal Dosen</h1>
 <p>Proses assign Dosen Koordinator tiap MK dan rekap SKS Dosen.</p>
 <?php
+include 'include/akademik_icons.php';
+
 $judul = "<h1>Manage Jadwal Dosen</h1><p>Proses assign Dosen Koordinator tiap MK dan rekap SKS Dosen.</p>";
 $id_kurikulum = $_GET['id_kurikulum'] ?? die('<script>location.replace("?manage_jadwal")</script>');
 $shift = $_GET['shift'] ?? '';
@@ -152,6 +154,9 @@ while ($d=mysqli_fetch_assoc($q)) {
       <td>
         <button disabled id='btn_apply__$d2[id_kurikulum_mk]__$d2[id_dosen]' class='btn_apply btn btn-$primary btn-sm'>Apply</button>
       </td>
+      <td>
+        <a href='?manage_awal_kuliah&id_kurikulum=$id_kurikulum&shift=$shift' target=_blank onclick='return confirm(\"Menuju Set Awal Kuliah?\")'>$img_aksi[next]</a>
+      </td>
     </tr>    
     ";
 
@@ -193,6 +198,7 @@ while ($d=mysqli_fetch_assoc($q)) {
           <th>No</th>
           <th>Mata Kuliah</th>
           <th class=proper>Dosen ($shift)</th>
+          <th>Apply</th>
           <th>Aksi</th>
           </thead>
         

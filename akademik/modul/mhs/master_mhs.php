@@ -49,13 +49,6 @@ include '../include/include_rangkatan.php';
 # =============================================================
 $null = '<span class="red miring kecil">null</span>';
 
-# =============================================================
-# GET VARIABEL
-# =============================================================
-$keyword = $_GET['keyword'] ?? '';
-$status_mhs = $_GET['status_mhs'] ?? '';
-$id_prodi = $_GET['id_prodi'] ?? '';
-$id_jalur = $_GET['id_jalur'] ?? '';
 
 # =============================================================
 # BLOK FILTER
