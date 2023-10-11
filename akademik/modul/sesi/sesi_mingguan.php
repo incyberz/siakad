@@ -12,9 +12,10 @@
   margin-bottom:5px
 }.bg_green{ background: #2a2; color:white
 }.bg_red{ background: #fcc;
-}.sesi-next{ background: #cfc;
-}.sesi-now{ background: #afa; border: solid 3px blue;
+}.sesi-next{ background: #cff;
+}.sesi-now{ background: #cfc; border: solid 2px blue;
 }.sesi-prev{ background: #ffa;
+}.sedang-berlangsung{ background: #8f8; border: solid 4px blue;
 }
 </style>
 <?php
@@ -243,21 +244,46 @@ if(mysqli_num_rows($q)){
       $ruang_show = "$unset | <a href='?manage_sesi_detail&id_jadwal=$d[id_jadwal]' target=_blank>Set</a>";
     }
 
-    $eta = strtotime($d['tanggal_sesi']) - strtotime('now');
+    $eta_menit = intval((strtotime($d['tanggal_sesi']) - strtotime('now'))/60);
+    $tanggal_only = date('Y-m-d',strtotime($d['tanggal_sesi']));
+    $eta_day = intval((strtotime($tanggal_only) - strtotime('today'))/(60*60*24));
 
-    if($eta<0){
+    if($eta_day<0){
       $sesi_sty = 'sesi-prev';
+      $info_hari = "<div class='kecil miring abu'>$eta_day hari yang lalu</div>";
+      $info_mulai = '';
+      $mulai_sty = '';
     }else{
-      if($eta > $durasi*60){
-        $sesi_sty = 'sesi-next';
-      }else{
+      if($eta_day == 0){
         $sesi_sty = 'sesi-now';
+        $info_hari = "<div class='kecil miring tebal biru'>hari ini</div>";
+        if($eta_menit < -$durasi){
+          $info_mulai = "<div class='kecil miring darkred'>sudah selesai</div>";
+          $mulai_sty = '';
+        }else{
+          if($eta_menit<=0 and $eta_menit > -$durasi){
+            $info_mulai = "<div class='kecil miring tebal biru'>sedang berlangsung</div>";
+            $mulai_sty = 'sedang-berlangsung';
+          }else{
+            $info_mulai = "<div class='kecil miring abu'>belum dimulai</div>";
+            $mulai_sty = '';
+          }
+        }
+      }else{
+        $info_mulai = '';
+        $sesi_sty = 'sesi-next';
+        $info_hari = "<div class='kecil miring abu'>$eta_day hari lagi</div>";
       }
     }
 
     $tr.= "
-    <tr class='$sesi_sty'>
-      <td>$i $eta $durasi</td>
+    <tr class='$sesi_sty $mulai_sty'>
+      <td>
+        $i
+        $info_hari
+        $info_mulai
+        <div class=debug style=background:yellow>eta_menit:$eta_menit</div>
+      </td>
       <td>
         $d[nama_mk]
         <br>P$d[pertemuan_ke] | $d[nama_sesi]
