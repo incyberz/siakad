@@ -7,7 +7,7 @@ if(isset($_POST['btn_login_dosen'])){
     $_SESSION['siakad_dosen'] = $_POST['username'];
     echo '<script>location.replace("?")</script>';
   }else{
-    $pesan = div_alert('danger','Maaf, username dan password tidak tepat. Silahkan coba kembali!'."zzz  debug <hr>$s");
+    $pesan = div_alert('danger','Maaf, username dan password tidak tepat. Silahkan coba kembali!');
   }
 }
 ?>

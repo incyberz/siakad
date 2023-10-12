@@ -1,378 +1,414 @@
-<?php
-if(isset($_POST['btn_check_in'])||isset($_POST['btn_check_out'])) include 'presensi_process.php';
-$debug='';
-$debug.="semester:$semester | ";
-$debug.="id_semester:$id_semester | ";
-
-$id_sesi_skg='';
-$timestamp_masuk = '';
-$timestamp_keluar = '';
-
-// dek awal_kuliah == awal_sesi zzz here
-
-$jadwal = div_alert('danger', 'Belum ada MK pada Semester ini. Segera Lapor Petugas!');
-$s = "SELECT a.id as id_kurikulum_mk, d.id as id_jadwal, d.awal_kuliah, d.id_dosen,
-(SELECT nama FROM tb_dosen WHERE id=d.id_dosen) nama_dosen
-FROM tb_kurikulum_mk a 
-JOIN tb_mk b ON a.id_mk=b.id 
-JOIN tb_kurikulum c ON a.id_kurikulum=c.id 
-JOIN tb_jadwal d ON d.id_kurikulum_mk=a.id 
-WHERE a.id_semester='$id_semester' 
-AND c.id='$id_kurikulum' 
-";
-$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-$rid_jadwal = [];
-$rawal_kuliah = [];
-$rid_dosen = [];
-$rnama_dosen = [];
-while ($d=mysqli_fetch_assoc($q)) {
-  $rid_jadwal[$d['id_kurikulum_mk']] = $d['id_jadwal'];
-  $rawal_kuliah[$d['id_kurikulum_mk']] = $d['awal_kuliah'];
-  $rid_dosen[$d['id_kurikulum_mk']] = $d['id_dosen'];
-  $rnama_dosen[$d['id_kurikulum_mk']] = $d['nama_dosen'];
+<style>.blok_filter{
+  display: flex; gap:5px
+}.show_records{
+  font-size:small;
+  border:solid 1px #ccc; 
+  display:flex; 
+  gap:15px; 
+  background:white; 
+  border-radius:5px; 
+  padding:5px 10px; 
+  margin-bottom:5px
+}.bg_green{ background: #2a2; color:white
+}.bg_red{ background: #fcc;
+}.sesi-next{ background: #cff;
+}.sesi-now{ background: #cfc; border: solid 2px blue;
+}.sesi-prev{ background: #ffa;
+}.sedang-berlangsung{ background: #8f8; border: solid 4px blue;
 }
+</style>
+<?php
+include '../akademik/include/akademik_icons.php';
+if(isset($_POST['btn_check_in'])||isset($_POST['btn_check_out'])) include 'presensi_process.php';
 
-echo "<pre>";
-var_dump($rawal_kuliah);
-echo "</pre>";
 
-$s = "SELECT a.id as id_kurikulum_mk,
-b.id as id_mk,
-b.nama as nama_mk,
-b.kode as kode_mk,
-(b.bobot_teori+b.bobot_praktik) bobot,
-(
-  SELECT count(1) FROM tb_sesi p 
-  JOIN tb_jadwal q ON p.id_jadwal=q.id 
-  WHERE q.id_kurikulum_mk=a.id 
-  AND q.shift='$shift') jumlah_sesi,    
-(
-  SELECT id FROM tb_jadwal WHERE id_kurikulum_mk=a.id and shift='$shift') id_jadwal    
-FROM tb_kurikulum_mk a 
-JOIN tb_mk b ON a.id_mk=b.id 
-JOIN tb_kurikulum c ON a.id_kurikulum=c.id 
-WHERE a.id_semester='$id_semester' 
-AND c.id='$id_kurikulum' 
+# =======================================================
+# STATUS PRESENSI
+# =======================================================
+# 0 = BELUM SAATNYA PRESENSI | NEXT-JADWAL
+# 1 = BERSIAPLAH UNTUK PRESENSI | JADWAL HARI INI
+# 2 = DOSEN BELUM PRESENSI | JADWAL HARI INI
+# 3 = ANDA BELUM PRESENSI | JADWAL HARI INI
+# 4 = ANDA SUDAH PRESENSI | JADWAL HARI INI AND PAST
+# -1 = ANDA TIDAK PRESENSI | JADWAL HARI INI AND PAST
+$arr_status_presensi = array(
+  -1 => 'Anda tidak presensi',
+  0 => 'Belum saatnya presensi',
+  1 => 'Bersiaplah untuk presensi',
+  2 => 'Dosen belum presensi',
+  3 => 'Silahkan Anda klik presensi',
+  4 => 'Anda sudah presensi'
+);
+$arr_alert_presensi = array(
+  -1 => 'Anda tidak presensi untuk sesi ini dan sesi telah berakhir. Poin presensi Anda 0. Mohon tidak diulangi kembali!',
+  0 => 'Jadwal sesi ini untuk besok-besok. Harap bersabar ya!',
+  1 => 'Hari ini kamu ada jadwal kuliah. Siap-siap presensi ya, jangan telat!',
+  2 => 'Sekarang sudah masuk jam sesi, tetapi dosen kamu belum melakukan presensi. Silahkan tanya dosen atau lapor ke Petugas Akademik!',
+  3 => 'Dosen sudah presensi, saatnya kamu sekarang yang melakukan presensi. Jangan tunggu sesi berakhir!',
+  4 => 'Terimakasih kamu sudah presensi. Poin presensimu sudah dicatat oleh sistem.'
+);
+$arr_warna_presensi = array(
+  -1 => 'red',
+  0 => 'gray',
+  1 => 'darkblue',
+  2 => 'purple',
+  3 => 'blue',
+  4 => 'white'
+);
+$arr_latar_presensi = array(
+  -1 => '#fcc',
+  0 => '#ddd',
+  1 => '#ccf',
+  2 => '#ffa',
+  3 => '#fcc',
+  4 => '#3a3'
+);
 
+# =======================================================
+$kode_presensi = 0;
+$tombol_presensi = '';
+# =======================================================
+
+
+# =======================================================
+# NOTIF KELAS JIKA KELAS-TA IS NULL
+# =======================================================
+$notif_kelas = '';
+if($kelas_ta==''||$kelas_ta==$unset) $notif_kelas = div_alert('danger',"Perhatian! Anda belum dimasukan kedalam Grup Kelas untuk Tahun Ajar $tahun_ajar, sehingga Ruang Kelas untuk Anda belajar belum ditentukan. Segera Laporkan ke Petugas!");
+
+
+# =======================================================
+# SUB JUDUL INFO
+# =======================================================
+$sub_judul = "<div class='mt3 pt1' style='border-top: solid 3px #fcf'>Berikut adalah Jadwal Kuliah untuk Semester $semester tahun ajar $tahun_ajar prodi $prodi-$angkatan kelas $shift</div>
+";
+
+# =============================================================
+# DATE MANAGEMENTS
+# =============================================================
+include '../include/date_managements.php';
+$date_info = "<div class=flexy>
+  <div class='mb2'>Hari ini : <b>$hari_ini_show</b></div>
+  <div>|</div><div>Minggu ini :   s.d $sabtu_skg_show</div>
+</div>";
+
+$date_info = "
+<div>
+  <div class='mb2'>Hari ini : <b>$hari_ini_show</b></div>
+  <div class='row'>
+    <div class='col-lg-2 kecil miring'>
+      Minggu ini: 
+    </div>
+    <div class='col-lg-8'>
+      <div class='kecil miring' style='display:grid; grid-template-columns:auto 30px auto; border: solid 1px #ccc; border-radius: 7px; padding: 5px;'>
+        <div class='kanan'>$senin_skg_show</div> 
+        <div class='tengah'>s.d</div> 
+        <div>$sabtu_skg_show</div>
+      </div>
+    </div>
+  </div>
+</div>
+";
+
+
+# =======================================================
+# CEK JADWAL BELUM BERES
+# =======================================================
+$notif_sesi = '';
+$s = "SELECT 1 FROM tb_kurikulum_mk a
+JOIN tb_kurikulum b ON a.id_kurikulum=b.id 
+JOIN tb_kalender c ON b.id_kalender=c.id 
+WHERE b.id_prodi = '$id_prodi '
+AND c.angkatan = '$angkatan' 
+AND a.id_semester = '$id_semester'
 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-$jumlah_mk = mysqli_num_rows($q);
-$rdiv = [];
-$rdiv_unset = [];
-if(mysqli_num_rows($q)){
+$jumlah_kurikulum_mk = mysqli_num_rows($q);
+
+
+
+# =======================================================
+# BLOK JADWAL PROCESSING
+# =======================================================
+$blok_jadwal = div_alert('danger', 'Belum ada MK pada Semester ini. Segera Lapor Petugas!');
+
+
+
+$s = "SELECT 
+a.id as id_jadwal,
+a.awal_kuliah,
+a.akhir_kuliah,
+c.id as id_kurikulum,
+d.singkatan as prodi,
+e.angkatan,
+(f.bobot_praktik+f.bobot_teori)bobot,
+f.nama as nama_mk,
+g.id as id_dosen_koordinator,  
+g.nama as dosen_koordinator  
+FROM tb_jadwal a 
+JOIN tb_kurikulum_mk b ON a.id_kurikulum_mk=b.id 
+JOIN tb_kurikulum c ON b.id_kurikulum=c.id 
+JOIN tb_prodi d ON c.id_prodi=d.id 
+JOIN tb_kalender e ON c.id_kalender=e.id 
+JOIN tb_mk f ON b.id_mk=f.id 
+JOIN tb_dosen g ON a.id_dosen=g.id 
+WHERE d.id = '$id_prodi '
+AND e.angkatan = '$angkatan '
+AND a.shift='$shift' 
+ORDER BY a.awal_kuliah 
+";
+$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+$jumlah_jadwal = mysqli_num_rows($q);
+if($jumlah_jadwal>0){
+  $blok_jadwal = '';
   $i=0;
   while ($d=mysqli_fetch_assoc($q)) {
     $i++;
-    $id_sesi = ''; //reset
-    $id_jadwal = $d['id_jadwal']; //or null
-    $id_kurikulum_mk = $d['id_kurikulum_mk'];
-    $bobot = $d['bobot'];
-    $nama_dosen = $rnama_dosen[$id_kurikulum_mk] ?? $unset; //dosen koordinator
-    $nama_dosen_show = $nama_dosen==$unset ? $unset : "Dosen: <a href='?info_dosen&id_dosen=$rid_dosen[$id_kurikulum_mk]' onclick='return confirm(\"Ingin menuju laman Detail Dosen?\")'>$rnama_dosen[$id_kurikulum_mk]</a>";
+    $id_dosen = $d['id_dosen_pengajar'] ?? $d['id_dosen_koordinator'];
 
-    $awal_kuliah = $rawal_kuliah[$id_kurikulum_mk] ?? $unset;
-    $akhir_jam_kuliah_show = $awal_kuliah==$unset ? $unset : date('H:i',strtotime($awal_kuliah)+$bobot*45*60);
 
-    $awal_kuliah_show = $awal_kuliah==$unset ? "Jadwal: $unset" : $nama_hari[date('w',strtotime($awal_kuliah))].', '. date('H:i',strtotime($awal_kuliah))." - $akhir_jam_kuliah_show WIB";
+    # ==============================================
+    # GET SESI KULIAH DATA IF EXISTS
+    # ==============================================
+    $id_jadwal = $d['id_jadwal'];
 
-    $nama_mk_show = "<a href='?info_mk&id_mk=$d[id_mk]' onclick='return confirm(\"Ingin menuju laman Info MK ini?\")'>$d[nama_mk] | $d[kode_mk]</a>";
+    $s2 = "SELECT 
+    a.id as id_sesi,
+    a.nama as nama_sesi,
+    a.tanggal_sesi,
+    a.pertemuan_ke,
+    b.id as id_dosen_pengajar,
+    b.nama as dosen_pengajar,
+    (SELECT count(1) FROM tb_assign_ruang WHERE id_sesi=a.id) jumlah_assign_ruang,   
+    (SELECT 1 FROM tb_presensi WHERE id_sesi=a.id and id_mhs='$id_mhs') sudah_presensi,
+    (SELECT 1 FROM tb_presensi_dosen WHERE id_sesi=a.id and id_dosen='$id_dosen') dosen_sudah_presensi   
+    FROM tb_sesi a 
+    JOIN tb_dosen b ON a.id_dosen=b.id 
+    WHERE a.id_jadwal='$id_jadwal' 
+    AND a.tanggal_sesi >= '$senin_skg' AND a.tanggal_sesi < '$ahad_depan' 
+    "; 
+    $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
+    if(mysqli_num_rows($q2)>1) die(div_alert('danger','Tidak boleh ada 2 jadwal sesi dalam satu minggu.'));
 
-    $debug2 = "<span class=debug>jumlah_sesi:$d[jumlah_sesi]</span>";
+    if(mysqli_num_rows($q2)==1){
+      $d2=mysqli_fetch_assoc($q2);
+      $id_sesi = $d2['id_sesi'];
+      $nama_sesi = $d2['nama_sesi'];
+      $tanggal_sesi = $d2['tanggal_sesi'];
+      $dosen_pengajar = $d2['dosen_pengajar'];
+      $id_dosen_pengajar = $d2['id_dosen_pengajar'];
+      $jumlah_assign_ruang = $d2['jumlah_assign_ruang'];
+      $pertemuan_ke = $d2['pertemuan_ke'];
 
-    if($d['jumlah_sesi']!=0 AND $d['jumlah_sesi']!=16){
-      die(div_alert('danger','Jumlah sesi tidak sama dengan NULL atau 16. Segera laporkan ke Petugas!'));
-    }elseif($d['jumlah_sesi']==0){
-      $info_sesi_skg = '';
-      $icon_sesi_skg = '';
-      $nama_sesi_skg = $unset;
-      $tsj='';
-      $awal_sesi_skg = 'Tanggal sesi: '.$unset;
-      $ruang_sesi_skg = 'Ruang: '.$unset;
-      $closed_by_skg = '';
-      $status_presensi_skg = '';
-      // $icon_sesi_skg = "<span style='font-size: 20px; color: #88f'><i class='bx bx-camera-movie'></i></span>";
-    }elseif($d['jumlah_sesi']==16){
-      // $debug3 = 'ada sesi;';
 
-      $senin_skg = date('Y-m-d',strtotime('now') - (date('w',strtotime('now'))-1)*24*60*60);
-      $senin_depan = date('Y-m-d',strtotime($senin_skg)+7*24*60*60);
+      $hari_show = $nama_hari[date('w',strtotime($tanggal_sesi))];
+      $tanggal_show = date('d M Y',strtotime($tanggal_sesi));
+      $pukul_show = date('H:i',strtotime($tanggal_sesi));
 
-      $s2 = "SELECT 
-      a.id as id_sesi,
-      a.nama as nama_sesi,
-      a.tanggal_sesi as awal_sesi,
-      b.id as id_dosen, 
-      b.nama as dosen_pengajar, 
-      b.nidn,
-      (e.bobot_teori+e.bobot_praktik) bobot,
-      (SELECT timestamp_masuk FROM tb_presensi_dosen WHERE id_dosen=b.id AND id_sesi=a.id) presensi_dosen, 
-      (SELECT timestamp_keluar FROM tb_presensi_dosen WHERE id_dosen=b.id AND id_sesi=a.id) timestamp_keluar_dosen, 
-      (SELECT timestamp_masuk FROM tb_presensi WHERE id_mhs=$id_mhs AND id_sesi=a.id) timestamp_masuk, 
-      (SELECT timestamp_keluar FROM tb_presensi WHERE id_mhs=$id_mhs AND id_sesi=a.id) timestamp_keluar 
-      FROM tb_sesi a 
-      JOIN tb_dosen b ON a.id_dosen=b.id 
-      JOIN tb_jadwal c ON a.id_jadwal=c.id 
-      JOIN tb_kurikulum_mk d ON c.id_kurikulum_mk=d.id 
-      JOIN tb_mk e ON d.id_mk=e.id 
-      WHERE a.id_jadwal='$id_jadwal' 
-      AND (a.tanggal_sesi >= '$senin_skg' AND a.tanggal_sesi < '$senin_depan')
-      ";
-      $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
-      while ($d2=mysqli_fetch_assoc($q2)) { // diperbolehkan 2 sesi dalam seminggu
-        $id_sesi = $d2['id_sesi'];
-        $awal_sesi = $d2['awal_sesi'];
-        $akhir_sesi = date('Y-m-d H:i',strtotime($awal_sesi)+$d2['bobot']*45*60);
-        $timestamp_masuk = $d2['timestamp_masuk'];
-        $timestamp_keluar = $d2['timestamp_keluar'];
-        $nama_dosen_show = $nama_dosen==$d2['dosen_pengajar'] ? $nama_dosen_show : "<span class='darkred pointer' onclick='alert(\"TT = Tim Teaching, artinya Dosen ini bekerjasama dengan Dosen Utama dalam proses pengajaran.\")'>Dosen (TT)</span>: <a href='?info_dosen&id_dosen=$d2[id_dosen]' onclick='return confirm(\"Ingin menuju laman Detail Dosen?\")'>$d2[dosen_pengajar]</a>";
+      $durasi = ($d['awal_kuliah']=='' || $d['akhir_kuliah']=='') ? $d['bobot']*45*60 : (strtotime($d['akhir_kuliah'])-strtotime($d['awal_kuliah']))/60;
 
-        $nidn = $d2['nidn'];
+      $jam_akhir = date('H:i', strtotime($d['awal_kuliah'])+$durasi*60);
+      $pukul_show.= " s.d $jam_akhir";
 
-        $cek_in = $timestamp_masuk=='' ? 0 : 1;
-        $cek_out = $timestamp_keluar=='' ? 0 : 1;
+      # =======================================================
+      # ETA CALCULATIONS
+      # =======================================================
+      $eta_menit = intval((strtotime($tanggal_sesi) - strtotime('now'))/60);
+      $tanggal_only = date('Y-m-d',strtotime($tanggal_sesi));
+      $eta_day = intval((strtotime($tanggal_only) - strtotime('today'))/(60*60*24));
+      $eta_day_abs = abs($eta_day);
 
-        $icon_sesi_skg = ''; //zzz
-        // $icon_sesi_skg = "<span style='font-size: 20px; color: #88f'><i class='bx bx-camera-movie'></i></span>"; //zzz
-
-        // $nama_sesi = $d2['nama_sesi'];
-
-        // get senin minggu ini
-        $weekday_awal_sesi = date('w',strtotime($awal_sesi));
-        if($weekday_awal_sesi==0) die(div_alert('danger', "Jadwal hari Ahad tidak diperkenankan. Segera Lapor Petugas!<hr>id_sesi: $id_sesi"));
-
-        // die("$today");
-        $selisih_detik = strtotime('now')-strtotime($awal_sesi);
-
-        if(strtotime($akhir_sesi)<strtotime($senin_skg)){ // lampau
-          $selisih_hari = intval($selisih_detik/(24*60*60));
-          if($selisih_hari>30){
-            $selisih_bulan = intval($selisih_hari/30);
-            $info_lampau = "($selisih_bulan months ago)";
+      if($eta_day<0){
+        $sesi_sty = 'sesi-prev';
+        $info_hari = "<div class='kecil miring abu'>$eta_day_abs hari yang lalu</div>";
+        $info_mulai = '';
+        $mulai_sty = '';
+      }else{
+        if($eta_day == 0){
+          $sesi_sty = 'sesi-now';
+          $info_hari = "<div class='kecil miring tebal biru'>hari ini</div>";
+          if($eta_menit < -$durasi){
+            $info_mulai = "<div class='kecil miring darkred'>sudah selesai</div>";
+            $mulai_sty = '';
           }else{
-            $info_lampau = "($selisih_hari days ago)";
+            if($eta_menit<=0 and $eta_menit > -$durasi){
+              $info_mulai = "<div class='kecil miring tebal biru'>sedang berlangsung</div>";
+              $mulai_sty = 'sedang-berlangsung';
+            }else{
+              $info_mulai = "<div class='kecil miring abu'>belum dimulai</div>";
+              $mulai_sty = '';
+            }
           }
-        }else{ // minggu aktif, dst :: sesi sedang berlangsung atau next
-          $jam_selesai = date('Y-m-d H:i',strtotime($awal_sesi)+$bobot*45*60);
-          $jam_selesai_show = date('H:i',strtotime($jam_selesai));
+        }else{
+          $info_mulai = '';
+          $sesi_sty = 'sesi-next';
+          $info_hari = "<div class='kecil miring abu'>$eta_day hari lagi</div>";
+        }
+      }
 
-          if(strtotime($awal_sesi)>strtotime($senin_depan)){
-            # ============================================================
-            # MINGGU NEXT
-            # ============================================================
-            $info_lampau = 'next sesi';
-            $closed_by = '';
-            $status_presensi = 'next sesi presensi';
-            $tsj='';
-            $nama_sesi_skg='';
-            $id_sesi_skg='';
-            $awal_sesi_skg='';
-            $ruang_sesi_skg='';
-            $info_sesi_skg='';
-            $closed_by_skg='';
-            $status_presensi_skg='';
-          }else{ // minggu aktif
-            # ============================================================
-            # MINGGU AKTIF
-            # ============================================================
 
-            # ============================================================
-            # TIDAK SESUAI JADWAL
-            # ============================================================
-            $pindah_hari = date('w',strtotime($awal_kuliah))==date('w',strtotime($awal_sesi))? 0 : 1;
-            $pindah_jam = date('H',strtotime($awal_kuliah))==date('H',strtotime($awal_sesi))? 0 : 1;
-            if($pindah_hari and $pindah_jam){
-              $tsj = 'Pindah Hari + Pindah Jam';
-            }elseif($pindah_hari){
-              $tsj = 'Pindah Hari';
-            }elseif($pindah_jam){
-              $tsj = 'Pindah Jam';
+      # =======================================================
+      # CEK PRESENSI
+      # =======================================================
+      if($d2['sudah_presensi']){
+        $kode_presensi = 4;
+        $tombol_presensi = '';
+      }else{ //belum presensi dan
+        if($eta_day<0){ //udah lewat 
+          $kode_presensi = -1;
+          $tombol_presensi = '';
+        }elseif($eta_day>0){ //besok-besok
+          $kode_presensi = 0;
+          $tombol_presensi = '';
+        }else{ //hari ini ada jadwal
+          if($d2['dosen_sudah_presensi']){
+            $kode_presensi = 3;
+            $tombol_presensi = "<button class='btn btn-primary btn-block btn-sm' >Presensi</button>";
+          }else{ //dosen belum presensi
+            if($eta_menit>0){
+              $kode_presensi = 1; // sesi belum dimulai
+              $tombol_presensi = "<button class='btn btn-info btn-block btn-sm' disabled>Presensi dalam $eta_menit menit lagi</button>";
             }else{
-              $tsj ='';
-            }
-            $tsj = $tsj=='' ? '' : "<div class='alert alert-info m-0 tengah kecil consolas red'>$tsj</div>";
-
-            $tsj .= "<div>debugging: awal_kuliah | awal_sesi : $awal_kuliah | $awal_sesi</div>";
-
-            # ============================================================
-            # GET RUANG-RUANG
-            # ============================================================
-            $s3 = "SELECT b.nama as nama_ruang FROM tb_assign_ruang a 
-            JOIN tb_ruang b ON a.id_ruang=b.id 
-            WHERE a.id_sesi='$id_sesi'";
-            $q3 = mysqli_query($cn,$s3) or die(mysqli_error($cn));
-            if(mysqli_num_rows($q3)==0){
-              $ruang_sesi_skg = 'Ruang sesi: '. $unset;
-            }else{
-              $ruang_sesi_skg = '__';
-              while ($d3=mysqli_fetch_assoc($q3)) {
-                $ruang_sesi_skg .= ", $d3[nama_ruang]";
-              }
-              $ruang_sesi_skg = str_replace('__, ','',$ruang_sesi_skg);
+              $kode_presensi = 2; //sesi sudah dimulai tapi dosen belum presensi
+              $tombol_presensi = "<button class='btn btn-primary btn-block btn-sm' disabled>Menunggu dosen presensi...</button>";
             }
 
+          }
 
-            $info_lampau = 'jadwal minggu ini.';
-            $selisih_menit = intval($selisih_detik/60);
-            
-            if($selisih_detik<0){
-              // belum berlangsung
-              $selisih_menit = abs($selisih_menit);
-              if($selisih_menit>=60){
-                $selisih_jam = intval($selisih_menit/60);
-                if($selisih_jam>=24){
-                  $selisih_hari = intval($selisih_jam/24);
-                  $info_lampau = "berlangsung dalam $selisih_hari hari lagi";
-                }else{
-                  $info_lampau = "berlangsung dalam $selisih_jam jam lagi";
-                }
-              }else{
-                $info_lampau = "berlangsung dalam $selisih_menit menit lagi";
-              }
-              $info_lampau = "<span class=biru>$info_lampau</span>";
-              $status_presensi = '<span class="biru kecil miring">bersiaplah untuk presensi!</span>';
-              $closed_by='';
-            }else{ // sedang atau sudah berlangsung
-              
+        }
+      }
 
-              
-              $info_lampau = "sedang atau sudah berlangsung | $bobot SKS | $awal_sesi - $jam_selesai";
-              if(strtotime($jam_selesai)>strtotime('now')){ //sedang berlangsung
-                $eta_menit = intval((strtotime($jam_selesai)-strtotime('now'))/60)+1;
-                $info_lampau = "<div class=berlangsung>Sedang Berlangsung s.d $jam_selesai_show ($eta_menit menit lagi)</div>";
-
-                if($d2['presensi_dosen']!=''){
-                  if($d2['timestamp_masuk']==''){
-                    $closed_by = "
-                    <div class='kecil miring abu consolas'>Presention system ready.</div>
-                    <form method=post>
-                      <button class='btn btn-primary btn-block' value='$id_sesi' name=btn_check_in>Check-In</button>
-                    </form>
-                    ";
-                  }elseif($d2['timestamp_keluar']==''){
-                    $closed_by = "<div class='kecil miring green bold consolas mb1' style='font-size:10px'>Check-In at: $d2[timestamp_masuk]</div>";
-                    if($d2['timestamp_keluar_dosen']==''){
-                      $closed_by.= "
-                        <div class='kecil miring abu'>Dosen belum mengakhiri sesi ...</div>
-                        <button class='btn btn-danger btn-block' disabled>Check-Out</button>
-                      ";
-                    }else{
-                      $closed_by.= "
-                        <form method=post>
-                          <button class='btn btn-primary btn-block' value='$id_mhs-$id_sesi' name=btn_check_out>Check-Out</button>
-                        </form>
-                      ";
-                    }                   
-                  }else{
-                    $closed_by = 'all done.'; //zzz debug
-                  }
-                }else{
-                  $closed_by = '<div class="kecil miring abu consolas">Dosen belum presensi ...</div>';
-                  $closed_by .= "<button class='btn btn-danger btn-block' disabled>Isi Presensi</button>";
-                }
-
-                if($cek_in and $cek_out){ //presensi sedang berlangsung
-                  $status_presensi = "<div class=small><span class='green tebal'>Presensi Sudah Lengkap</span></div>";
-                }elseif($cek_in){
-                  $status_presensi = "<div class=small><span class=green>Sudah Check-In</span> | <span class=red>Belum Check-Out</span></div>";
-                }elseif($cek_out){
-                  $status_presensi = "<div class=small><span class=red>Belum Check-In</span> | <span class=green>Sudah Check-Out</span></div>";
-                }else{
-                  $status_presensi = "<div class=small><b>Presensi</b>: <span class=red>Anda Belum Presensi</span></div>";
-                }
-
-              }else{ // telah selesai, tapi dlm minggu aktif
-                $eta_menit = intval((strtotime('now')-strtotime($jam_selesai))/60);
-                if($eta_menit>=60){
-                  $eta_jam = intval($eta_menit/60);
-                  if($eta_jam>=24){
-                    $eta_hari = intval($eta_jam/24);
-                    $eta_show = "$eta_hari hari yang lalu";
-                  }else{
-                    $eta_show = "$eta_jam jam yang lalu";
-                  }
-                }else{
-                  $eta_show = "$eta_menit menit yang lalu";
-                }
-                $closed_by = "<div class='abu small'><i>Closed by system</i></div>";
-
-                $info_lampau = "<span class=red>Sudah Selesai. ($eta_show)</span>";
-                if($cek_in and $cek_out){ //presensi saat telah selesai, tapi dlm minggu aktif
-                  $status_presensi = "<div class=small><span class='green tebal'>Presensi Sudah Lengkap</span></div>";
-                  $info_lampau = "<span class='green'>Sudah Selesai. ($eta_show)</span>";
-                  $closed_by = '';
-                }elseif($cek_in){
-                  $status_presensi = "<div class=small><span class=green>Sudah Check-In</span> | <span class=red>Tidak Check-Out</span></div>";
-                }elseif($cek_out){
-                  $status_presensi = "<div class=small><span class=red>Tidak Check-In</span> | <span class=green>Sudah Check-Out</span></div>";
-                }else{
-                  $status_presensi = "<div class=small><b>Presensi</b>: <span class=red>Anda Tidak Presensi</span></div>";
-                }
+      # =======================================================
+      # APPLY KODE PRESENSI
+      # =======================================================
+      $status_presensi_show = $arr_status_presensi[$kode_presensi];
+      $warna_presensi = $arr_warna_presensi[$kode_presensi];
+      $latar_presensi = $arr_latar_presensi[$kode_presensi];
+      $alert_presensi = $arr_alert_presensi[$kode_presensi];
 
 
-              } //end //telah selesai, tapi dlm minggu aktif
-            }//end // sedang atau sudah berlangsung
+    }else{
+      $id_sesi = '';
+      $nama_sesi = $unset;
+      $tanggal_sesi = '';
+      $dosen_pengajar = '';
+      $id_dosen_pengajar = '';
+      $jumlah_assign_ruang = 0;
+      $pertemuan_ke = '';
+    }
+   
 
-            $awal_sesi_skg = $nama_hari[date('w',strtotime($awal_sesi))].', '.date('d-M-Y H:i',strtotime($awal_sesi)).' - '.$jam_selesai_show;
-            $nama_sesi_skg = "<a href='?info_sesi&id_sesi=$d2[id_sesi]' onclick='return confirm(\"Ingin menuju laman Detail Sesi?\")'>$d2[nama_sesi]</a>";
-            $info_sesi_skg = $info_lampau;
-            $closed_by_skg = $closed_by;
-            $status_presensi_skg = $status_presensi;
-            $id_sesi_skg = $d2['id_sesi'];
 
-          } //end // minggu aktif
-        } //end minggu aktif, dst
-      } //end while d2
-    } //endif jumlah_sesi==16
 
-    $div="  
-    <div class='bg-white mb2' style=';'>
-      <div class=row>
-        <div class='col-lg-5' >
-          <div class='bingkai'>
-            <div class='darkblue tebal'>$awal_kuliah_show <span class=debug>idkmk:$id_kurikulum_mk|idj:$id_jadwal</span></div>
-            <div class=small>$nama_mk_show</div>
-            <div class=small>$nama_dosen_show</div>
+
+
+
+
+
+    # =======================================================
+    # GET RUANGAN
+    # =======================================================
+    if($jumlah_assign_ruang){
+      $ruang_show = "$jumlah_assign_ruang ruangan";
+
+      $s2 = "SELECT a.*,
+      b.nama as mode_sesi,
+      c.nama as nama_ruang  
+      FROM tb_assign_ruang a 
+      JOIN tb_mode_sesi b ON a.id_tipe_sesi=b.id 
+      JOIN tb_ruang c ON a.id_ruang=c.id 
+      WHERE a.id_sesi='$id_sesi'";
+      $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
+      while ($d2=mysqli_fetch_assoc($q2)) {
+        $ruang_show.= " | $d2[nama_ruang]";
+      }
+
+    }else{
+      $ruang_show = "$unset | <span class='kecil red consolas'>belum ditentukan</span>";
+    }
+
+
+
+    # =======================================================
+    # FINAL OUTPUT
+    # =======================================================
+    $blok_jadwal.= "
+    <div class='$sesi_sty $mulai_sty' style='margin: 30px -15px; padding: 15px; border-radius: 7px; border: solid 1px #ddd'>
+      <div class='row '>
+        <div class='col-lg-2'>
+          $i
+          $info_hari
+          $info_mulai
+          <div class='debug kecil' style=background:yellow>
+            eta_menit:$eta_menit
+            <br>id_sesi:$id_sesi
           </div>
         </div>
         <div class='col-lg-4'>
-          <div class='bingkai'>
-            $tsj
-            <div><b>Sesi</b>: $nama_sesi_skg $icon_sesi_skg <span class=debug>id:$id_sesi_skg</span></div>
-            <div class=small>$awal_sesi_skg</div>
-            <div class=small>$ruang_sesi_skg</div>
-            <div class='small miring'>$info_sesi_skg </div>
-          </div>
+          <div class='tebal darkblue mt1'>$d[nama_mk]</div>
+          <div class='kecil miring abu mb1'>P$pertemuan_ke | $nama_sesi</div>
+          Pengajar: 
+          <a href='?lihat_dosen&id_dosen=$id_dosen' target=_blank onclick='return confirm(\"Lihat Profil Dosen di TAB baru?\")'>$dosen_pengajar</a> 
+          
+          <br>$d[bobot] SKS
         </div>
-        <div class=col-lg-3>
-          <div class='bingkai'>
-            $closed_by_skg
-            $status_presensi_skg
-          </div>
+        
+        <div class='col-lg-3'>
+          <div class='tebal darkblue mt1'>$hari_show, $tanggal_show</div>
+          <div class=''>Pukul: $pukul_show</div>
+          <div>Ruang: $ruang_show</div>
+        </div>
+        <div class='col-lg-3'>
+          <div class='kecil miring mt1 abu'>Status Presensi:</div>
+          <div style='color: $warna_presensi; background: $latar_presensi; padding: 5px; border-radius: 9px; font-size: 12px; text-align:center; margin-bottom: 5px; cursor:pointer;' onclick='alert(\"$alert_presensi\")'>$status_presensi_show</div>
+          $tombol_presensi
         </div>
       </div>
     </div>
-    <span class='debug'>$timestamp_masuk | $timestamp_keluar</span>
     ";
-    if($awal_kuliah==$unset){
-      array_push($rdiv_unset,$div);
-    }else{
-      array_push($rdiv,'<span class=debug>'.strtotime($awal_kuliah).'</span>'. $div);
-      sort($rdiv);
-    }
-
   }
-
-
-  $divs='';
-  foreach ($rdiv as $div) $divs.=$div;
-  foreach ($rdiv_unset as $div) $divs.=$div;
-
-  $jadwal = "<div class=wadash style=box-sizing:border-box>$divs</div>";
-
 }
 
-$sub_judul = "<p>Berikut adalah Jadwal Perkuliahan $jenjang-$prodi-$angkatan Semester $semester Kelas <span class=proper>$shift</span> ~ $jumlah_mk MK</p>";
-if($kelas_ta==''||$kelas_ta==$unset) $sub_judul = div_alert('danger',"Perhatian! Anda belum dimasukan kedalam Grup Kelas untuk Tahun Ajar $tahun_ajar, sehingga Ruang Kelas untuk Anda belajar belum ditentukan. Segera Laporkan ke Petugas!").$sub_judul;
+
+if($jumlah_kurikulum_mk==$jumlah_jadwal){
+  $notif_sesi = '';
+}else{
+  $jumlah_unjadwal = $jumlah_kurikulum_mk - $jumlah_jadwal;
+  $notif_sesi = div_alert('danger',"Perhatian! Masih terdapat $jumlah_unjadwal Mata Kuliah yang belum dijadwalkan oleh Petugas. Segera lapor ke Bagian Akademik!");
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ?>
 <style>.bingkai{border-top: solid 1px #ccc; padding: 5px}.berlangsung{border:solid 5px blue;padding:10px; background: linear-gradient(#cfc,#afa);text-align:center}</style>
@@ -380,8 +416,11 @@ if($kelas_ta==''||$kelas_ta==$unset) $sub_judul = div_alert('danger',"Perhatian!
   <div class="container">
     <div class="section-title">
       <h2>Jadwal Kuliah</h2>
-      <?=$sub_judul?>
+      <?=$notif_kelas?>
+      <?=$date_info?>
     </div>
-    <?=$jadwal?>
+    <?=$sub_judul?>
+    <?=$blok_jadwal?>
+    <?=$notif_sesi?>
   </div>
 </section>

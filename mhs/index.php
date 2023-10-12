@@ -5,10 +5,11 @@
 session_start();
 $nama_mhs='';
 $kelas_ta = '';
-$dm=1;
+$dm=0;
 if (0) { session_unset(); exit();}
 include "../config.php";
 include "../include/nomor_ikmi.php";
+include "../include/date_managements.php";
 
 # ========================================================
 # INCLUDE INSHO STYLES
@@ -84,16 +85,6 @@ if(!isset($_SESSION['siakad_mhs'])){
   <script src="../assets/vendor/jquery/jquery.min.js"></script>
 
   <style type="text/css">
-    .var{
-      color: #a6f;
-      /*text-decoration: underline;*/
-    }
-    .debug{
-      background:red;
-      display: nonea;
-      border: solid 3px red;
-      padding: 3px;
-    }
     .foto_profil{
       width: 150px;
       height: 150px;

@@ -80,7 +80,7 @@ if(isset($_SESSION['siakad_dosen'])) {
   # ========================================================
   $s = "SELECT a.*,
   (SELECT nama from tb_prodi where id=a.homebase) as homebase 
-  FROM tb_dosen a WHERE a.username='$_SESSION[siakad_dosen]'";
+  FROM tb_dosen a WHERE (a.username='$_SESSION[siakad_dosen]' OR a.nidn='$_SESSION[siakad_dosen]' )";
   $q = mysqli_query($cn,$s) or die("Error @Index. ".mysqli_error($cn));
   if(mysqli_num_rows($q)!=1) die("No Data. id_dosen:$id_dosen <hr>$s");
   $d_dosen = mysqli_fetch_assoc($q);
@@ -94,9 +94,10 @@ if(isset($_SESSION['siakad_dosen'])) {
   $nama_kec_kab = '';
 
   if($d_dosen['password']=='' || $d_dosen['password']==md5($username)) $password_is_null = 1;
-
-  $passwd = md5($username);
-  echo "<h1>$username | $d_dosen[password] | $passwd</h1>";
+  if(isset($_SESSION['siakad_username'])){ //login as dosen
+     $password_is_null=0;
+     echo "<div class='merah miring consolas'>Skipping process by admin: password dosen ini masih default.</div>";
+  } // end login as dosen
 
 
   $folder_uploads = $d_dosen['folder_uploads'];

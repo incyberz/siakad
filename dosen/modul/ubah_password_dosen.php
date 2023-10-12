@@ -40,7 +40,7 @@ $hideit = $d_dosen['password']==''?'hideit':'';
       <p><?=$depas_note?></p>
     </div>
     
-    <div class="wadah">
+    <div class="wadah gradasi-hijau">
       <form method="post">
         <div class="form-group">
           <label for="username">Username</label>
@@ -51,6 +51,7 @@ $hideit = $d_dosen['password']==''?'hideit':'';
         <div class="form-group <?=$hideit?>">
           <label for="password_lama">Password Lama</label>
           <input type="password" minlength=3 maxlength=20 class="form-control" id="password_lama" name="password_lama" value="<?=$password_lama?>">
+          <small>Password lama adalah password saat ini yang Anda gunakan. Jika Anda lupa dengan password, silahkan hubungi Bagian Akademik untuk Reset Password.</small>
         </div>
 
 
