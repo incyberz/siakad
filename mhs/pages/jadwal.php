@@ -32,6 +32,10 @@ while ($d=mysqli_fetch_assoc($q)) {
   $rnama_dosen[$d['id_kurikulum_mk']] = $d['nama_dosen'];
 }
 
+echo "<pre>";
+var_dump($rawal_kuliah);
+echo "</pre>";
+
 $s = "SELECT a.id as id_kurikulum_mk,
 b.id as id_mk,
 b.nama as nama_mk,
@@ -186,6 +190,8 @@ if(mysqli_num_rows($q)){
               $tsj ='';
             }
             $tsj = $tsj=='' ? '' : "<div class='alert alert-info m-0 tengah kecil consolas red'>$tsj</div>";
+
+            $tsj .= "<div>debugging: awal_kuliah | awal_sesi : $awal_kuliah | $awal_sesi</div>";
 
             # ============================================================
             # GET RUANG-RUANG

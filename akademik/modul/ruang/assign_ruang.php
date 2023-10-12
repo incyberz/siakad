@@ -1,8 +1,8 @@
 <?php
 if(isset($_POST['btn_assign'])){
-  echo '<pre>';
-  var_dump($_POST);
-  echo '</pre>';
+  // echo '<pre>';
+  // var_dump($_POST);
+  // echo '</pre>';
   // exit;
 
   $values = '__';

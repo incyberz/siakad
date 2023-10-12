@@ -308,5 +308,25 @@ if(mysqli_num_rows($q)){
   }
 }
 
-echo $tr=='' ? div_alert('danger', 'Data sesi perkuliahan tidak ada. Silahkan coba filter kembali!') : "<table class=table>$tr</table>";
+if($angkatan=='all'||$id_prodi=='all'||$shift=='all'){
+  $link_opsi = "<hr>
+  <a href='?manage_jadwal'>Manage Jadwal</a> | 
+  <a href='?manage_awal_kuliah'>Manage Awal Kuliah</a>
+  ";
+}else{
+  $s = "SELECT a.id 
+  FROM tb_kurikulum a 
+  JOIN tb_kalender b ON a.id_kalender=b.id 
+  WHERE b.angkatan='$angkatan' 
+  AND a.id_prodi='$id_prodi'";
+  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+  $d=mysqli_fetch_assoc($q);
+  $id_kurikulum = $d['id'];
 
+  $link_opsi = "<hr>
+  <a href='?manage_jadwal_dosen&id_kurikulum=$id_kurikulum&shift=$shift' target=_blank>Manage Jadwal Kurikulum ini</a> | 
+  <a href='?manage_awal_kuliah&id_kurikulum=$id_kurikulum&shift=$shift' target=_blank>Manage Awal Kuliah Kurikulum ini</a>
+  ";
+}
+
+echo $tr=='' ? div_alert('danger', "Data sesi perkuliahan tidak ada. $link_opsi") : "<table class=table>$tr</table>";
