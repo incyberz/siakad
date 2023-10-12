@@ -312,6 +312,7 @@ if($angkatan=='all'||$id_prodi=='all'||$shift=='all'){
   $link_opsi = "<hr>
   <a href='?manage_jadwal'>Manage Jadwal</a> | 
   <a href='?manage_awal_kuliah'>Manage Awal Kuliah</a>
+  <hr>Untuk Manage Jadwal yang lebih spesifik silahkan filter by: <u>Angkatan</u> + <u>Prodi</u> + <u>Shift</u>.
   ";
 }else{
   $s = "SELECT a.id 

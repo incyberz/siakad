@@ -1,13 +1,13 @@
 <?php
 $pesan = '<p>Masukan username dan password untuk mengakses fitur dosen di SIAKAD STMIK IKMI Cirebon.</p>';
 if(isset($_POST['btn_login_dosen'])){
-  $s = "SELECT 1 from tb_user WHERE username='$_POST[username]' and password=md5('$_POST[password]') and id_role=2";
+  $s = "SELECT 1 from tb_dosen WHERE username='$_POST[username]' and (password=md5('$_POST[password]') OR password is null )";
   $q = mysqli_query($cn, $s) or die(mysqli_error($cn));
   if(mysqli_num_rows($q)==1){
     $_SESSION['siakad_dosen'] = $_POST['username'];
     echo '<script>location.replace("?")</script>';
   }else{
-    $pesan = div_alert('danger','Maaf, username dan password tidak tepat. Silahkan coba kembali!');
+    $pesan = div_alert('danger','Maaf, username dan password tidak tepat. Silahkan coba kembali!'."zzz  debug <hr>$s");
   }
 }
 ?>

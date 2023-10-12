@@ -1,23 +1,23 @@
 <?php
-// echo "d_mhs[pass]: $d_mhs[password] post[password]: $_POST[password]";
+// echo "d_mhs[pass]: $d_dosen[password] post[password]: $_POST[password]";
 $hideit='';
 $password='';
 $cpassword='';
 $password_lama='';
-$depas_note = $is_depas?div_alert('warning','Password Anda masih default (masih kosong atau sama dengan NIM). Anda wajib mengubahnya untuk meningkatkan keamanan akun Anda.'):'Silahkan Anda ubah password:';
+$depas_note = $password_is_null?div_alert('danger','Maaf, password Anda masih kosong atau username=password. Anda wajib mengubahnya sebelum mengakses fitur lainnya.'):'Silahkan Anda ubah password:';
 
 if(isset($_POST['btn_ubah_password'])){
   // echo '<pre>';
   // var_dump($_POST);
   // echo '</pre>';
-  if($_POST['password']==$_POST['nim']){
-    echo div_alert('danger', 'Password tidak boleh sama dengan NIM.');
+  if($_POST['password']==$_POST['username']){
+    echo div_alert('danger', 'Password tidak boleh sama dengan Username.');
   }elseif($_POST['password']==$_POST['cpassword']){
-    if($d_mhs['password']!=md5($_POST['password_lama']) and $d_mhs['password']!=''){
+    if($d_dosen['password']!=md5($_POST['password_lama']) and $d_dosen['password']!=''){
       echo div_alert('danger', 'Password lama Anda tidak sesuai.');
     }else{
       $sql_password_lama = $_POST['password_lama']=='' ? 'password IS NULL' : 'password = \''.md5($_POST['password_lama']).'\'';
-      $s = "UPDATE tb_mhs SET password=md5('$_POST[password]') WHERE $sql_password_lama AND nim='$nim'";
+      $s = "UPDATE tb_dosen SET password=md5('$_POST[password]') WHERE $sql_password_lama AND username='$username'";
       // echo $s;
       $q=mysqli_query($cn,$s) or die(mysqli_error($cn));
       // echo '<script>location.replace("?")</script>';
@@ -29,7 +29,7 @@ if(isset($_POST['btn_ubah_password'])){
   }
 }
 
-$hideit = $d_mhs['password']==''?'hideit':'';
+$hideit = $d_dosen['password']==''?'hideit':'';
 
 ?>
 <section id="ubah_password" class="" data-aos="fade-left">
@@ -43,9 +43,9 @@ $hideit = $d_mhs['password']==''?'hideit':'';
     <div class="wadah">
       <form method="post">
         <div class="form-group">
-          <label for="nim">NIM</label>
-          <input type="text" class="form-control" id="nim" value="<?=$nim?>" disabled>
-          <input type="hidden" value="<?=$nim?>" name="nim">
+          <label for="username">Username</label>
+          <input type="text" class="form-control" id="username" value="<?=$username?>" disabled>
+          <input type="hidden" value="<?=$username?>" name="username">
         </div>
 
         <div class="form-group <?=$hideit?>">

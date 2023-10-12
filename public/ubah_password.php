@@ -54,7 +54,7 @@ $hideit = ''; //zzz
 
         <div class="form-group <?=$hideit?>">
           <label for="password_lama">Password Lama</label>
-          <input type="password_lama" minlength=3 maxlength=20 class="form-control" id="password_lama" name="password_lama" value="<?=$password_lama?>">
+          <input type="password" minlength=3 maxlength=20 class="form-control" id="password_lama" name="password_lama" value="<?=$password_lama?>">
         </div>
 
 

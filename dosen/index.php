@@ -14,6 +14,7 @@ include $insho_styles;
 $folder_rps = "../uploads/rps";
 $folder_media_soal = "../uploads/media_soal";
 $unset = '<span class="red consolas miring kecil">unset</span>';
+$password_is_null = 0;
 
 $id_dosen = $_GET['id_dosen'] ?? '';
 
@@ -79,17 +80,23 @@ if(isset($_SESSION['siakad_dosen'])) {
   # ========================================================
   $s = "SELECT a.*,
   (SELECT nama from tb_prodi where id=a.homebase) as homebase 
-  FROM tb_dosen a WHERE a.nidn='$_SESSION[siakad_dosen]'";
+  FROM tb_dosen a WHERE a.username='$_SESSION[siakad_dosen]'";
   $q = mysqli_query($cn,$s) or die("Error @Index. ".mysqli_error($cn));
-  if(mysqli_num_rows($q)!=1) die("No Data. id_dosen:$id_dosen");
+  if(mysqli_num_rows($q)!=1) die("No Data. id_dosen:$id_dosen <hr>$s");
   $d_dosen = mysqli_fetch_assoc($q);
 
+  $username = strtolower($d_dosen['username']);
   $id_dosen = $d_dosen['id'];
   $nama_dosen = $d_dosen['nama'];
   $nama_dosen = ucwords(strtolower($nama_dosen));
   $nama_kec = "Kec: none";
   $nama_kab = "Kab ?";
   $nama_kec_kab = '';
+
+  if($d_dosen['password']=='' || $d_dosen['password']==md5($username)) $password_is_null = 1;
+
+  $passwd = md5($username);
+  echo "<h1>$username | $d_dosen[password] | $passwd</h1>";
 
 
   $folder_uploads = $d_dosen['folder_uploads'];
@@ -110,7 +117,8 @@ if(isset($_SESSION['siakad_dosen'])) {
   $nav = "
     <div style='position:sticky; top:0;padding:5px;border:solid 1px #ccc;background:linear-gradient(#fafffa,#efe);font-size:small; z-index:999;margin-bottom:15px'>
       <a href='?'>Jadwal</a> | 
-      <a href='?mk_saya'>MK Saya</a>  
+      <a href='?mk_saya'>MK Saya</a> | 
+      <a href='?ubah_password_dosen'>Ubah Password</a>  
     </div>
   ";
 }else{
@@ -152,7 +160,13 @@ if(isset($_SESSION['siakad_dosen'])) {
   <div class="container">
     <?=$link_logout?>
     <?=$nav?>
-    <?php include "modul/$parameter.php"; ?>
+    <?php
+    if($password_is_null){
+      include "modul/ubah_password_dosen.php";
+    } else{
+      include "modul/$parameter.php"; 
+    }
+    ?>
   </div>
 </body>
 </html>
