@@ -33,6 +33,7 @@ if ($online_version) {
 
   $db_name = "db_siakad";
   $db_name = "db_siakad_v8";
+  $db_name = "db_siakad_v9_lokal";
 }
 
 $cn = new mysqli($db_server, $db_user, $db_pass, $db_name);

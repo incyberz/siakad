@@ -177,7 +177,7 @@ while ($d=mysqli_fetch_assoc($q)) {
     $s3 = "SELECT 
     a.id as id_sesi,
     a.pertemuan_ke,
-    a.tanggal_sesi,
+    a.awal_sesi,
     (
       SELECT timestamp_masuk FROM tb_presensi WHERE id_mhs=$id_mhs and id_sesi=a.id) as timestamp_masuk, 
     (
@@ -199,7 +199,7 @@ while ($d=mysqli_fetch_assoc($q)) {
       $id_sesi = $d3['id_sesi'];
       $manage_presensi = "<a href='?manage_presensi_per_mhs&id_jadwal=$id_jadwal&id_mhs=$id_mhs'>Manage Presensi per Mhs</a>";
 
-      $tanggal_sesi_show = date('d/m',strtotime($d3['tanggal_sesi']));
+      $tanggal_sesi_show = date('d/m',strtotime($d3['awal_sesi']));
       $td_sesi .= "<td>$no_presensi</td>";
       $td_tgl .= "<td class='small'>$tanggal_sesi_show</td>";
 

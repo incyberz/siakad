@@ -175,7 +175,7 @@ if($jumlah_jadwal>0){
     $s2 = "SELECT 
     a.id as id_sesi,
     a.nama as nama_sesi,
-    a.tanggal_sesi,
+    a.awal_sesi,
     a.pertemuan_ke,
     b.id as id_dosen_pengajar,
     b.nama as dosen_pengajar,
@@ -185,7 +185,7 @@ if($jumlah_jadwal>0){
     FROM tb_sesi a 
     JOIN tb_dosen b ON a.id_dosen=b.id 
     WHERE a.id_jadwal='$id_jadwal' 
-    AND a.tanggal_sesi >= '$senin_skg' AND a.tanggal_sesi < '$ahad_depan' 
+    AND a.awal_sesi >= '$senin_skg' AND a.awal_sesi < '$ahad_depan' 
     "; 
     $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
     if(mysqli_num_rows($q2)>1) die(div_alert('danger','Tidak boleh ada 2 jadwal sesi dalam satu minggu.'));
@@ -194,16 +194,16 @@ if($jumlah_jadwal>0){
       $d2=mysqli_fetch_assoc($q2);
       $id_sesi = $d2['id_sesi'];
       $nama_sesi = $d2['nama_sesi'];
-      $tanggal_sesi = $d2['tanggal_sesi'];
+      $awal_sesi = $d2['awal_sesi'];
       $dosen_pengajar = $d2['dosen_pengajar'];
       $id_dosen_pengajar = $d2['id_dosen_pengajar'];
       $jumlah_assign_ruang = $d2['jumlah_assign_ruang'];
       $pertemuan_ke = $d2['pertemuan_ke'];
 
 
-      $hari_show = $nama_hari[date('w',strtotime($tanggal_sesi))];
-      $tanggal_show = date('d M Y',strtotime($tanggal_sesi));
-      $pukul_show = date('H:i',strtotime($tanggal_sesi));
+      $hari_show = $nama_hari[date('w',strtotime($awal_sesi))];
+      $tanggal_show = date('d M Y',strtotime($awal_sesi));
+      $pukul_show = date('H:i',strtotime($awal_sesi));
 
       $durasi = ($d['awal_kuliah']=='' || $d['akhir_kuliah']=='') ? $d['bobot']*45*60 : (strtotime($d['akhir_kuliah'])-strtotime($d['awal_kuliah']))/60;
 
@@ -213,8 +213,8 @@ if($jumlah_jadwal>0){
       # =======================================================
       # ETA CALCULATIONS
       # =======================================================
-      $eta_menit = intval((strtotime($tanggal_sesi) - strtotime('now'))/60);
-      $tanggal_only = date('Y-m-d',strtotime($tanggal_sesi));
+      $eta_menit = intval((strtotime($awal_sesi) - strtotime('now'))/60);
+      $tanggal_only = date('Y-m-d',strtotime($awal_sesi));
       $eta_day = intval((strtotime($tanggal_only) - strtotime('today'))/(60*60*24));
       $eta_day_abs = abs($eta_day);
 
@@ -290,7 +290,7 @@ if($jumlah_jadwal>0){
     }else{
       $id_sesi = '';
       $nama_sesi = $unset;
-      $tanggal_sesi = '';
+      $awal_sesi = '';
       $dosen_pengajar = '';
       $id_dosen_pengajar = '';
       $jumlah_assign_ruang = 0;

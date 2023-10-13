@@ -81,8 +81,8 @@ while ($d = mysqli_fetch_assoc($q)) {
   JOIN tb_kurikulum_mk c ON c.id=b.id_kurikulum_mk  
   JOIN tb_mk d ON d.id=c.id_mk  
   WHERE a.id_dosen = $d[id_dosen] 
-  AND a.tanggal_sesi >= '2023-4-1' 
-  AND a.tanggal_sesi < '2023-5-1' 
+  AND a.awal_sesi >= '2023-4-1' 
+  AND a.awal_sesi < '2023-5-1' 
   ";
   // die($s3);
   $q3 = mysqli_query($cn,$s3) or die(mysqli_error($cn));

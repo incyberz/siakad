@@ -50,7 +50,7 @@ $back_to = "<div class=mb2>Back to :
 if($id_sesi>0){
   $s = "SELECT 
   concat(a.pertemuan_ke, ' / ',a.nama) as pertemuan_ke,
-  a.tanggal_sesi 
+  a.awal_sesi 
 
   FROM tb_sesi a 
 

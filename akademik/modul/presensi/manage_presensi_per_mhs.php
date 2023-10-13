@@ -79,7 +79,7 @@ $s = "SELECT
 a.id as id_sesi,
 a.pertemuan_ke,
 a.nama as nama_sesi,
-a.tanggal_sesi,
+a.awal_sesi,
 b.nama as nama_dosen,
 (
   SELECT count(1) FROM tb_ruang c 
@@ -109,7 +109,7 @@ $thead = "
 ";
 $tr = '';
 while ($d=mysqli_fetch_assoc($q)) {
-  $tanggal_sesi = date('d-M-y ~ H:i',strtotime($d['tanggal_sesi']));
+  $awal_sesi = date('d-M-y ~ H:i',strtotime($d['awal_sesi']));
   $tanggal_presensi = $d['tanggal_presensi']=='' ? $null : date('d-M-y ~ H:i',strtotime($d['tanggal_presensi']));
   // $jumlah_ruang = $d['jumlah_ruang']=='' ? $null : $d['jumlah_ruang'];
 
@@ -135,7 +135,7 @@ while ($d=mysqli_fetch_assoc($q)) {
   <tr>
     <td>$d[pertemuan_ke]</td>
     <td>$d[nama_sesi]</td>
-    <td>$tanggal_sesi</td>
+    <td>$awal_sesi</td>
     <td>$tanggal_presensi</td>
     <td>$status_presensi</td>
     <td>$d[nama_dosen]</td>

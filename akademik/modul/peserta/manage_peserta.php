@@ -54,7 +54,7 @@ $s = "SELECT a.id as id_mhs, a.*,
   SELECT kelas FROM tb_kelas_ta p 
   JOIN tb_kelas_ta_detail q ON q.id_kelas_ta=p.id 
   WHERE q.nim=a.nim 
-  AND tahun_ajar=$tahun_ajar 
+  AND tahun_ajar='$tahun_ajar' 
   ) kelas_ta  
 FROM tb_mhs a 
 WHERE a.status_mhs=1
@@ -63,6 +63,10 @@ AND a.id_prodi='$id_prodi'
 AND a.shift='$shift' 
 ORDER BY a.nama  
 ";
+
+// echo '<pre>';
+// var_dump($s);
+// echo '</pre>';
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 if(mysqli_num_rows($q)==0){
   $div_mhs = div_alert('danger',"Tidak ada mhs kelas $shift angkatan $angkatan prodi $prodi | <a href='?master&p=mhs&aksi=tambah' target=_blank>Tambah Mhs</a>");

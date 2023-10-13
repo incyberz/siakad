@@ -45,7 +45,7 @@ if(isset($_POST['btn_buat_sesi_default'])){
     pertemuan_ke,
     id_dosen,
     nama,
-    tanggal_sesi
+    awal_sesi
     ) VALUES $values";
     // die($s);
   $q = mysqli_query($cn,$s) or die(mysqli_error($cn));

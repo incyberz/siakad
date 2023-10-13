@@ -125,7 +125,7 @@ a.id as id_sesi,
 a.pertemuan_ke,
 a.nama as nama_sesi,
 a.id_dosen, 
-a.tanggal_sesi,
+a.awal_sesi,
 b.nama as nama_dosen,
 (SELECT count(1) FROM tb_assign_ruang WHERE id_sesi=a.id) as jumlah_ruang, 
 (SELECT count(1) FROM tb_presensi_dosen WHERE id_sesi=a.id) as jumlah_presensi_dosen, 
@@ -154,10 +154,10 @@ if(mysqli_num_rows($q)==0){
   $total_presensi_dosen =0;
   $total_presensi_mhs =0;
   while ($d=mysqli_fetch_assoc($q)) {
-    $tsesi = strtotime($d['tanggal_sesi']);
+    $tsesi = strtotime($d['awal_sesi']);
     $ttoday = strtotime($today);
 
-    $tanggal_sesi = date('d M Y', $tsesi);
+    $awal_sesi = date('d M Y', $tsesi);
     $jam_masuk = date('H:i', $tsesi);
 
     $jam_keluar = date('H:i',strtotime($d['stop_sesi']));
@@ -178,7 +178,7 @@ if(mysqli_num_rows($q)==0){
     $ahad_skg = date('Y-m-d',strtotime("$add_days day",$ttoday));
     $ahad_depan = date('Y-m-d',strtotime("7 day",strtotime($ahad_skg)));
 
-    $selisih_detik = strtotime($tanggal_sesi) - $ttoday;
+    $selisih_detik = strtotime($awal_sesi) - $ttoday;
     $selisih_menit = intval($selisih_detik/60);
     $selisih_jam = intval($selisih_menit/60);
     $selisih_hari = intval($selisih_jam/24);
@@ -231,11 +231,11 @@ if(mysqli_num_rows($q)==0){
         
       </td>
       <td class='upper gradasi-$gradasi'>
-        $hari<br>$tanggal_sesi
+        $hari<br>$awal_sesi
         <br>$jam_masuk
       </td>
       <td class='upper gradasi-$gradasi'>
-        $hari<br>$tanggal_sesi
+        $hari<br>$awal_sesi
         <br>$jam_keluar
       </td>
       <td class='upper gradasi-$gradasi kecil'>

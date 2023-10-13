@@ -61,6 +61,7 @@ $awal_kuliah = $d['awal_kuliah'];
 $nidn_show = $d['nidn'] ?? '-';
 
 $tahun_ajar = $angkatan + intval(($nomor_semester-1)/2);
+$ganjil_genap = ($nomor_semester % 2 == 0) ? 2 : 1;
 
 $unset = '<span class="red consolas miring">unset</span>';
 // $ruang_show = $d['nama_ruang'] ?? $unset;
@@ -73,7 +74,7 @@ $s2 = "SELECT a.kelas, a.id as id_kelas_ta,
 (SELECT count(1) FROM tb_kelas_ta_detail WHERE id_kelas_ta=a.id) jumlah_mhs 
 FROM tb_kelas_ta a 
 JOIN tb_kelas b ON a.kelas=b.kelas 
-WHERE a.tahun_ajar='$tahun_ajar' 
+WHERE a.tahun_ajar='$tahun_ajar$ganjil_genap' 
 AND b.angkatan='$angkatan'
 AND b.id_prodi='$id_prodi'
 AND b.shift='$shift'
@@ -127,7 +128,7 @@ a.id as id_sesi,
 a.pertemuan_ke,
 a.nama as nama_sesi,
 a.id_dosen, 
-a.tanggal_sesi,
+a.awal_sesi,
 b.nama as nama_dosen,
 (e.bobot_teori+e.bobot_praktik) bobot,
 (SELECT count(1) FROM tb_assign_ruang WHERE id_sesi=a.id) as jumlah_ruang, 
@@ -167,10 +168,10 @@ if(mysqli_num_rows($q)==0){
   $total_presensi_mhs =0;
   $total_assign_ruang =0;
   while ($d=mysqli_fetch_assoc($q)) {
-    $tsesi = strtotime($d['tanggal_sesi']);
+    $tsesi = strtotime($d['awal_sesi']);
     $ttoday = strtotime($today);
 
-    $tanggal_sesi = date('d M Y', $tsesi);
+    $awal_sesi = date('d M Y', $tsesi);
     $jam_masuk = date('H:i', $tsesi);
 
     $jam_keluar = date('H:i',$tsesi+$d['bobot']*45*60);
@@ -191,7 +192,7 @@ if(mysqli_num_rows($q)==0){
     $ahad_skg = date('Y-m-d',strtotime("$add_days day",$ttoday));
     $ahad_depan = date('Y-m-d',strtotime("7 day",strtotime($ahad_skg)));
 
-    $selisih_detik = strtotime($tanggal_sesi) - $ttoday;
+    $selisih_detik = strtotime($awal_sesi) - $ttoday;
     $selisih_menit = intval($selisih_detik/60);
     $selisih_jam = intval($selisih_menit/60);
     $selisih_hari = intval($selisih_jam/24);
@@ -221,7 +222,8 @@ if(mysqli_num_rows($q)==0){
       $btn_assign_multi_ruang = "<a href='?assign_ruang&id_sesi=$d[id_sesi]' class='btn btn-info btn-sm'>assign multi ruang</a>";
     }
 
-    $btn_hapus_sesi = "<div class=mt1><a class='btn btn-danger btn-sm' href='?master&p=sesi&aksi=hapus&id=$d[id_sesi]' onclick='return confirm(\"Yakin untuk hapus sesi ini? Menghapus sesi akan mengurangi jumlah pertemuan (akan kurang dari 16x pertemuan).\")' target=_blank>Hapus Sesi</a></div>";
+    $btn_update_sesi = "<a class='btn btn-info btn-sm' href='?master&p=sesi&aksi=update&id=$d[id_sesi]' onclick='return confirm(\"Yakin untuk edit sesi ini?\")' target=_blank>Edit</a>";
+    $btn_hapus_sesi = "<a class='btn btn-danger btn-sm' href='?master&p=sesi&aksi=hapus&id=$d[id_sesi]' onclick='return confirm(\"Yakin untuk hapus sesi ini? Menghapus sesi akan mengurangi jumlah pertemuan (akan kurang dari 16x pertemuan).\")' target=_blank>Hapus</a>";
 
     $today2 = date('Y-m-d');
 
@@ -245,24 +247,29 @@ if(mysqli_num_rows($q)==0){
         <br>$minggu_aktif
       </td>
       <td class='upper gradasi-$gradasi'>
-        <a href='?master&p=sesi&aksi=update&id=$d[id_sesi]' class='tebal' target='_blank' onclick='return confirm(\"Nama sesi sebaiknya diubah oleh dosennya sendiri. Ingin mengubah nama sesi di TAB baru??\")'>$d[nama_sesi]</a>
+        <span class='tebal darkblue'>$d[nama_sesi]</span>
         <br><i>Pengajar</i>: <a href='?lihat_dosen&id_dosen=$d[id_dosen]' target=_blank  onclick='return confirm(\"Ingin melihat detail Dosen?\")'>$d[nama_dosen]</a> 
         <a href='?login_as_dosen&id_dosen=$d[id_dosen]' onclick='return confirm(\"Ingin Login sebagai Dosen ini?\")' target=_blank>$img_aksi[login_as]</a>
         <br>$bobot SKS x 50 menit
         
       </td>
       <td class='upper gradasi-$gradasi'>
-        $hari<br><a href='?master&p=sesi&aksi=update&id=$d[id_sesi]' target=_blank onclick='return confirm(\"Yakin untuk mengubah Jam Sesi di TAB baru?\")'>$tanggal_sesi
-        <br>$jam_masuk - $jam_keluar</a>
+        $hari<br>$awal_sesi
+        <br>$jam_masuk - $jam_keluar
       </td>
       <td class='upper gradasi-$gradasi kecil hideit'>
         Dosen: $presensi_dosen_show
         <br>Mhs: $jumlah_presensi_mhs mhs
       </td>
-      <td class='upper gradasi-$gradasi'>$list_ruang</td>
       <td class='upper gradasi-$gradasi'>
-        $btn_assign_multi_ruang
-        <br>$btn_hapus_sesi
+        $list_ruang
+        <div>$btn_assign_multi_ruang</div>
+      </td>
+      <td class='upper gradasi-$gradasi'>
+        <div class=flexy style='gap:3px'>
+          <div>$btn_update_sesi</div> 
+          <div>$btn_hapus_sesi</div>
+        </div>
       </td>
     </tr>"; 
   }

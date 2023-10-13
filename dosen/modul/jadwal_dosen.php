@@ -61,10 +61,10 @@ $minggu_skg_show = date('d-M-Y',strtotime($senin_skg)).' s.d '.date('d-M-Y',strt
 $tanggal_besok = date('Y-m-d',strtotime('tomorrow'));
 $hari_besok = $nama_hari[date('w',strtotime($tanggal_besok))].', '.date('d-M-Y',strtotime($tanggal_besok));
 
-$and_durasi = $semua ? "AND a.tanggal_sesi >= '$today' " : "AND a.tanggal_sesi >= '$ahad_skg' AND a.tanggal_sesi < '$ahad_depan' ";
-$and_durasi = $lampau ? "AND a.tanggal_sesi < '$today' " : $and_durasi;
-$order_by = $semua ? 'c.id, a.tanggal_sesi' : 'a.tanggal_sesi';
-$order_by = $lampau ? 'c.id, a.tanggal_sesi desc' : $order_by;
+$and_durasi = $semua ? "AND a.awal_sesi >= '$today' " : "AND a.awal_sesi >= '$ahad_skg' AND a.awal_sesi < '$ahad_depan' ";
+$and_durasi = $lampau ? "AND a.awal_sesi < '$today' " : $and_durasi;
+$order_by = $semua ? 'c.id, a.awal_sesi' : 'a.awal_sesi';
+$order_by = $lampau ? 'c.id, a.awal_sesi desc' : $order_by;
 # ===========================================================
 # SELECT JADWAL PADA MINGGU AKTIF
 # ===========================================================
@@ -72,7 +72,7 @@ $s = "SELECT
 a.id as id_sesi, 
 a.nama as nama_sesi, 
 a.id_status_sesi, 
-a.tanggal_sesi,
+a.awal_sesi,
 b.id as id_jadwal,
 b.shift,
 d.id as id_mk,
@@ -118,7 +118,7 @@ while ($d=mysqli_fetch_assoc($q)) {
   $err_presensi=0;
   // $status_sesi = ($d['status_sesi']=='' || $d['status_sesi']==0) ? "<div class='miring kecil red'>--Belum-Terlaksana-</div>" : $d['status_sesi'];
 
-  $awal_sesi = $d['tanggal_sesi'];
+  $awal_sesi = $d['awal_sesi'];
   $bobot = $d['bobot'];
   $akhir_sesi = date('Y-m-d H:i',strtotime($awal_sesi)+$bobot*45*60);
   $bobot_show = "$bobot SKS";

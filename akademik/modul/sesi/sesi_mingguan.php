@@ -137,15 +137,15 @@ echo "<div class=flexy><div class='mb2'>Hari ini : $hari_ini_show</div><div>|</d
 
 
 <?php
-$sql_date = "a.tanggal_sesi >= '$ahad_skg' AND a.tanggal_sesi < '$ahad_depan' ";
-if($range_date==2) $sql_date = "a.tanggal_sesi >= '$hari_ini' AND a.tanggal_sesi < '$besok' "; //hari ini
-if($range_date==3) $sql_date = "a.tanggal_sesi >= '$besok' AND a.tanggal_sesi < '$lusa' "; //besok
-if($range_date==4) $sql_date = "a.tanggal_sesi >= '$senin_skg' AND a.tanggal_sesi < '$selasa_skg' "; //hari senin
-if($range_date==5) $sql_date = "a.tanggal_sesi >= '$selasa_skg' AND a.tanggal_sesi < '$rabu_skg' "; //hari selasa
-if($range_date==6) $sql_date = "a.tanggal_sesi >= '$rabu_skg' AND a.tanggal_sesi < '$kamis_skg' "; //hari rabu
-if($range_date==7) $sql_date = "a.tanggal_sesi >= '$kamis_skg' AND a.tanggal_sesi < '$jumat_skg' "; //hari kamis
-if($range_date==8) $sql_date = "a.tanggal_sesi >= '$jumat_skg' AND a.tanggal_sesi < '$sabtu_skg' "; //hari jumat
-if($range_date==9) $sql_date = "a.tanggal_sesi >= '$sabtu_skg' AND a.tanggal_sesi < '$ahad_depan' "; //hari sabtu
+$sql_date = "a.awal_sesi >= '$ahad_skg' AND a.awal_sesi < '$ahad_depan' ";
+if($range_date==2) $sql_date = "a.awal_sesi >= '$hari_ini' AND a.awal_sesi < '$besok' "; //hari ini
+if($range_date==3) $sql_date = "a.awal_sesi >= '$besok' AND a.awal_sesi < '$lusa' "; //besok
+if($range_date==4) $sql_date = "a.awal_sesi >= '$senin_skg' AND a.awal_sesi < '$selasa_skg' "; //hari senin
+if($range_date==5) $sql_date = "a.awal_sesi >= '$selasa_skg' AND a.awal_sesi < '$rabu_skg' "; //hari selasa
+if($range_date==6) $sql_date = "a.awal_sesi >= '$rabu_skg' AND a.awal_sesi < '$kamis_skg' "; //hari rabu
+if($range_date==7) $sql_date = "a.awal_sesi >= '$kamis_skg' AND a.awal_sesi < '$jumat_skg' "; //hari kamis
+if($range_date==8) $sql_date = "a.awal_sesi >= '$jumat_skg' AND a.awal_sesi < '$sabtu_skg' "; //hari jumat
+if($range_date==9) $sql_date = "a.awal_sesi >= '$sabtu_skg' AND a.awal_sesi < '$ahad_depan' "; //hari sabtu
 
 $sql_keyword = trim($keyword)=='' ? '1' : "(b.nama like '%$keyword%' or e.nama like '%$keyword%')";
 
@@ -154,7 +154,7 @@ $sql_id_prodi = ($id_prodi=='all'||$id_prodi=='') ? '1' : "h.id='$id_prodi'";
 $sql_shift = ($shift=='all'||$shift=='') ? '1' : "c.shift='$shift'";
 
 $s = "SELECT a.id,
-a.tanggal_sesi,
+a.awal_sesi,
 a.pertemuan_ke,
 a.nama as nama_sesi,
 b.id as id_dosen,
@@ -186,7 +186,7 @@ AND $sql_angkatan
 AND $sql_id_prodi 
 AND $sql_shift 
 
-ORDER BY a.tanggal_sesi
+ORDER BY a.awal_sesi
 ";
 // echo '<pre>';
 // echo $s;
@@ -199,9 +199,9 @@ if(mysqli_num_rows($q)){
   while ($d=mysqli_fetch_assoc($q)) {
     $i++;
 
-    $hari_show = $nama_hari[date('w',strtotime($d['tanggal_sesi']))];
-    $tanggal_show = date('d M Y',strtotime($d['tanggal_sesi']));
-    $pukul_show = date('H:i',strtotime($d['tanggal_sesi']));
+    $hari_show = $nama_hari[date('w',strtotime($d['awal_sesi']))];
+    $tanggal_show = date('d M Y',strtotime($d['awal_sesi']));
+    $pukul_show = date('H:i',strtotime($d['awal_sesi']));
 
     $durasi = ($d['awal_kuliah']=='' || $d['akhir_kuliah']=='') ? $d['bobot']*45*60 : (strtotime($d['akhir_kuliah'])-strtotime($d['awal_kuliah']))/60;
 
@@ -227,8 +227,8 @@ if(mysqli_num_rows($q)){
       $ruang_show = "$unset | <a href='?manage_sesi_detail&id_jadwal=$d[id_jadwal]' target=_blank>Set</a>";
     }
 
-    $eta_menit = intval((strtotime($d['tanggal_sesi']) - strtotime('now'))/60);
-    $tanggal_only = date('Y-m-d',strtotime($d['tanggal_sesi']));
+    $eta_menit = intval((strtotime($d['awal_sesi']) - strtotime('now'))/60);
+    $tanggal_only = date('Y-m-d',strtotime($d['awal_sesi']));
     $eta_day = intval((strtotime($tanggal_only) - strtotime('today'))/(60*60*24));
 
     if($eta_day<0){

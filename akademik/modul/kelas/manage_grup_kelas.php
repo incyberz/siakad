@@ -10,7 +10,16 @@ if(!$id_kurikulum || $id_kurikulum<1) die('<script>location.replace("?manage_kel
 # ==============================================================
 # GET OPTION JALUR DAFTAR
 # ==============================================================
-$rjalur = [1=>'REG',2=>'KIP',3=>'KIP-C',4=>'MBKM']; // zzz default | tidak sesuai db
+$rjalur = [];
+$s = "SELECT * FROM tb_jalur";
+$q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+$i=0;
+while ($d=mysqli_fetch_assoc($q)){
+  $i++;
+  $rjalur[$i] = $d['singkatan'];
+}
+
+
 $opt_jalur = '';
 foreach ($rjalur as $key => $value) $opt_jalur.= "<option value='$key'>$value</option>";
 

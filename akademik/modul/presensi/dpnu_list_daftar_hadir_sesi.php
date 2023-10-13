@@ -3,7 +3,7 @@ $s = "SELECT
 a.id as id_sesi,
 a.pertemuan_ke,
 a.nama as nama_sesi,
-a.tanggal_sesi,
+a.awal_sesi,
 b.nama as nama_dosen,
 (
   SELECT nama FROM tb_status_sesi c WHERE c.id=a.id_status_sesi 
@@ -28,13 +28,13 @@ $thead = "
 ";
 $tr = '';
 while ($d=mysqli_fetch_assoc($q)) {
-  $tanggal_sesi = date('d-M-y ~ H:i',strtotime($d['tanggal_sesi']));
+  $awal_sesi = date('d-M-y ~ H:i',strtotime($d['awal_sesi']));
 
   $tr .= "
   <tr>
     <td>$d[pertemuan_ke]</td>
     <td>$d[nama_sesi]</td>
-    <td>$tanggal_sesi</td>
+    <td>$awal_sesi</td>
     <td>$d[nama_dosen]</td>
     <td>
       <a href='?dpnu&kelas=$kelas&id_jadwal=$id_jadwal&id_sesi=$d[id_sesi]' class='btn btn-info btn-sm'>Daftar Hadir Sesi</a>

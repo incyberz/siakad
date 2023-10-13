@@ -34,14 +34,19 @@ while ($d=mysqli_fetch_assoc($q)) {
 # ==============================================================
 $tahun_jenjang['D3'] = 3;
 $tahun_jenjang['S1'] = 4;
-$rta = [];
+$arr_unsigned_ta = [];
+$arr_smt_ta = [];
 $s = "SELECT * FROM tb_tahun_ajar";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
+$i=0;
 while ($d=mysqli_fetch_assoc($q)) {
+  // hanya untuk angkatan ini dan sesuai dg jenjang
   if($d['angkatan'] >= $angkatan AND $d['angkatan'] < ($angkatan+$tahun_jenjang[$jenjang])){
+    $i++;
     if(!in_array($d['tahun_ajar'],$arr_kelas_ta)){
-      array_push($rta,"$d[tahun_ajar]");
+      array_push($arr_unsigned_ta,"$d[tahun_ajar]");
     }
+    $arr_smt_ta[$d['tahun_ajar']] = $i;
   }
 }
 
@@ -66,7 +71,8 @@ if(isset($_POST['btn_tambah']) || isset($_POST['btn_hapus'])){
       (kelas,tahun_ajar) VALUES 
       ('$kelas','$tahun_ajar')";
       $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-      echo div_alert('success', "Tambah Kelas-TA berhasil.");
+      echo div_alert('success', "Tambah Kelas-TA berhasil. | <a href='?manage_kelas_ta&kelas=$_GET[kelas]&id_kurikulum=$_GET[id_kurikulum]'>Back</a>");
+      exit;
     }
   }else{ // btn_hapus 
     $aksi = 'Hapus';
@@ -128,13 +134,13 @@ if(mysqli_num_rows($q)==0){
 }
 
 $opt_ta = '';
-foreach ($rta as $value){
+foreach ($arr_unsigned_ta as $value){
   if($value<$angkatan) continue;
-  $opt_ta.= "<option>$value</option>";
+  $opt_ta.= "<option>$value (smt-$arr_smt_ta[$value])</option>";
 }
 
 
-$tr_tambah = count($rta)==0 ? "<tr><td colspan=4><div class='kecil miring abu'>Semua tahun ajar jenjang $jenjang sudah ditambahkan.</div></td></tr>" : "
+$tr_tambah = count($arr_unsigned_ta)==0 ? "<tr><td colspan=4><div class='kecil miring abu'>Semua tahun ajar jenjang $jenjang sudah ditambahkan.</div></td></tr>" : "
 <tr>
   <td>#</td>
   <td colspan=3>
@@ -146,7 +152,7 @@ $tr_tambah = count($rta)==0 ? "<tr><td colspan=4><div class='kecil miring abu'>S
 ";
 
 $tb = "
-<p>Misal: kelas <u class=darkblue>$kelas ~ TA2020</u> mungkin saja tidak sama dengan kelas <u class=darkblue>$kelas ~ TA2021</u>. Anda harus menentukan sendiri Jumlah Peserta Mhs tiap tahun ajarnya.</p>
+<p>Setelah menambah Kelas-TA, silahkan tentukan Peserta Mhs untuk setiap semesternya.</p>
 <form method=post>
   <table class=table>
     <thead>

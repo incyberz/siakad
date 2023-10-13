@@ -205,7 +205,13 @@ while ($d=mysqli_fetch_assoc($q)) {
   (
     SELECT awal_kuliah FROM tb_jadwal WHERE id_kurikulum_mk=b.id AND shift='$shift') as awal_kuliah, 
   (
-    SELECT akhir_kuliah FROM tb_jadwal WHERE id_kurikulum_mk=b.id AND shift='$shift') as akhir_kuliah 
+    SELECT akhir_kuliah FROM tb_jadwal WHERE id_kurikulum_mk=b.id AND shift='$shift') as akhir_kuliah,
+  (
+    SELECT count(1) 
+    FROM tb_sesi p 
+    JOIN tb_jadwal q ON p.id_jadwal=q.id 
+    WHERE q.id_kurikulum_mk=b.id AND q.shift='$shift') as jumlah_sub_sesi
+
 
 
   FROM tb_mk a 
@@ -226,6 +232,14 @@ while ($d=mysqli_fetch_assoc($q)) {
   while ($d2=mysqli_fetch_assoc($q2)) { 
     $j++;
     $id_jadwal = $d2['id_jadwal'];
+
+    # ===============================================
+    # SUB SESI
+    # ===============================================
+    $jumlah_sub_sesi = $d2['jumlah_sub_sesi'];
+    # ===============================================
+
+
     $awal_kuliah_uts = $d2['awal_kuliah_uts']=='' ? "$unset | <a href='?manage_semester&id_semester=$d2[id_semester]' target=_blank>Manage Penanggalan Semester</a>" : "<a href='?manage_semester&id_semester=$d2[id_semester]' target=_blank onclick='return confirm(\"Ingin mengubah Awal Perkuliahan Semester ini?\")'>".date('D, d-M-Y',strtotime($d2['awal_kuliah_uts'])).'</a>';
 
     $jadwal_show = $d2['id_jadwal']=='' ? "$img_aksi[prev]" : $img_aksi['check'];
@@ -266,7 +280,9 @@ while ($d=mysqli_fetch_assoc($q)) {
       $akhir_kuliah = $d2['akhir_kuliah'] ?? date('Y-m-d H:i',strtotime($d2['awal_kuliah'])+($bobot*45*60));
       $akhir_kuliah_show = date('H:i',strtotime($akhir_kuliah));
       $awal_kuliah_show = '<span class=green>'.date('D, d-M-Y',strtotime($d2['awal_kuliah']))." Pukul $awal_kuliah - $akhir_kuliah_show $img_aksi[check]</span>";
-      $lanjut_ke = "<div class='kecil'><a href='?manage_sesi_detail&id_jadwal=$id_jadwal' target=_blank>Manage Sesi Detail $img_aksi[next] </a></div>";
+      $lanjut_ke = $jumlah_sub_sesi 
+        ? "<div class=kecil>Sudah ada <a href='?manage_sesi_detail&id_jadwal=$id_jadwal' target=_blank>$jumlah_sub_sesi Sub-sesi-$shift $img_aksi[check]</a></div>" 
+        : "<div class='kecil'>Silahkan lanjut ke <a href='?manage_sesi_detail&id_jadwal=$id_jadwal' target=_blank>Manage Sesi Detail $img_aksi[next] </a></div>";
 
       $select_jam = date('H',strtotime($d2['awal_kuliah']));
       $select_menit = date('i',strtotime($d2['awal_kuliah']));
@@ -312,41 +328,50 @@ while ($d=mysqli_fetch_assoc($q)) {
 
     $btn_set = "<button class='btn btn-info btn-sm btn_aksi' id=set__$id_jadwal >Set</button>";
 
-    $blok_awal_kuliah = ($d2['nama_dosen']=='' || $d2['awal_kuliah_uts']=='') ? '-' : "
-      <div class='kecil miring mb1' id=awal_kuliah_show__$id_jadwal>Jam Kuliah : $awal_kuliah_show</div>
-      <div class=flexy>
-        <div><input type=date value='$tanggal_awal_kuliah' class='awal_kuliah_triger form-control' id=tanggal_awal_kuliah__$id_jadwal></div>
-        <div>
-          <select id=select_jam__$id_jadwal class='awal_kuliah_triger form-control'>
-            $opt_jam
-          </select>
+    if($d2['nama_dosen']==''){
+      $blok_awal_kuliah = '<div class="red kecil">Silahkan seting dahulu Dosen untuk jadwal ini!</div>';
+    }elseif($d2['awal_kuliah_uts']==''){
+      $blok_awal_kuliah = '<div class="red kecil">Awal semester belum diisi. Silahkan Manage Penanggalan Semester dahulu!</div>';
+    }elseif($jumlah_sub_sesi){
+      $blok_awal_kuliah = '';
+    }else{
+      $blok_awal_kuliah = "
+        <div class='kecil miring mb1' id=awal_kuliah_show__$id_jadwal>Jam Kuliah : $awal_kuliah_show</div>
+        <div class=flexy>
+          <div><input type=date value='$tanggal_awal_kuliah' class='awal_kuliah_triger form-control' id=tanggal_awal_kuliah__$id_jadwal></div>
+          <div>
+            <select id=select_jam__$id_jadwal class='awal_kuliah_triger form-control'>
+              $opt_jam
+            </select>
+          </div>
+          <div>
+            <select id=select_menit__$id_jadwal class='awal_kuliah_triger form-control'>
+              $opt_menit
+            </select>
+          </div>
+          <div>
+            s.d
+          </div>
+          <div>
+            <select id=select_jam_akhir__$id_jadwal class='awal_kuliah_triger form-control'>
+              $opt_jam_akhir
+            </select>
+          </div>
+          <div>
+            <select id=select_menit_akhir__$id_jadwal class='awal_kuliah_triger form-control'>
+              $opt_menit_akhir
+            </select>
+          </div>
+  
+          <div id=blok_btn_set__$id_jadwal class=hideit>$btn_set</div>
+          <div id=ket_error_durasi__$id_jadwal class='red small miring'></div>
+          $debug
         </div>
-        <div>
-          <select id=select_menit__$id_jadwal class='awal_kuliah_triger form-control'>
-            $opt_menit
-          </select>
-        </div>
-        <div>
-          s.d
-        </div>
-        <div>
-          <select id=select_jam_akhir__$id_jadwal class='awal_kuliah_triger form-control'>
-            $opt_jam_akhir
-          </select>
-        </div>
-        <div>
-          <select id=select_menit_akhir__$id_jadwal class='awal_kuliah_triger form-control'>
-            $opt_menit_akhir
-          </select>
-        </div>
+      ";
+    }
 
-        <div id=blok_btn_set__$id_jadwal class=hideit>$btn_set</div>
-        <div id=ket_error_durasi__$id_jadwal class='red small miring'></div>
-        $debug
-      </div>
-      $lanjut_ke
-      <div id=hasil_ajax__$id_jadwal></div>
-    ";
+    $blok_awal_kuliah.="$lanjut_ke <div id=hasil_ajax__$id_jadwal></div>";
+
 
     $bobot_show = ($d2['bobot']>0 AND $d2['bobot']<=6) ? "<span id=bobot__$id_jadwal>$d2[bobot]</span> SKS" : '<span class=red>invalid bobot SKS</span>';
 
@@ -356,7 +381,7 @@ while ($d=mysqli_fetch_assoc($q)) {
       <td>
         <div class='kecil miring'>
           $d2[nama_mk] | $d2[kode_mk] | $bobot_show 
-          <span class=debug style=background:yellow>id_jadwal:$id_jadwal | </debug>
+          <span class=debug style=background:yellow>id_jadwal:$id_jadwal | jumlah_sub_sesi: $jumlah_sub_sesi</debug>
         </div>
         <div class=darkblue>$jadwal_show | Dosen: $nama_dosen</div>
       </td>

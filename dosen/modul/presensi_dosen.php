@@ -49,7 +49,7 @@ $s = "SELECT
 a.id as id_sesi, 
 a.nama as nama_sesi, 
 a.id_status_sesi, 
-a.tanggal_sesi,
+a.awal_sesi,
 a.materi,
 c.id as id_kurikulum_mk,
 d.nama as nama_mk,
@@ -68,7 +68,7 @@ join tb_mk d on d.id=c.id_mk
 join tb_dosen e on e.id=a.id_dosen  
 where a.id_dosen=$id_dosen 
 and a.id=$id_sesi 
-order by a.tanggal_sesi 
+order by a.awal_sesi 
 limit 20
 ";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
@@ -80,9 +80,9 @@ $nama_sesi = $d['nama_sesi'];
 $materi = $d['materi'];
 
 $status_sesi = ($d['status_sesi']=='' || $d['status_sesi']==0) ? "<div class='miring kecil red'>--Belum-Terlaksana-</div>" : $d['status_sesi'];
-$tanggal_sesi = date('Y-m-d', strtotime($d['tanggal_sesi']));
-$eta = strtotime($d['tanggal_sesi'])-strtotime('now')-$menit_start_presensi*60; //$menit_start_presensi menit sebelum kuliah dimulai
-$eta_date = strtotime($tanggal_sesi)-strtotime('today');
+$awal_sesi = date('Y-m-d', strtotime($d['awal_sesi']));
+$eta = strtotime($d['awal_sesi'])-strtotime('now')-$menit_start_presensi*60; //$menit_start_presensi menit sebelum kuliah dimulai
+$eta_date = strtotime($awal_sesi)-strtotime('today');
 $eta_hari
  = intval($eta_date/(60*60*24));
 $eta_jam = ($eta/(60*60)) % 
@@ -92,7 +92,7 @@ $eta_show = "$eta_hari hari
 <br>$eta_jam jam
 <br>$eta_menit menit
 ";
-$akhir_sesi = date('Y-m-d H:i',strtotime($d['tanggal_sesi'])+$d['bobot']*45*60);
+$akhir_sesi = date('Y-m-d H:i',strtotime($d['awal_sesi'])+$d['bobot']*45*60);
 $sedang_berlangsung = ((strtotime($akhir_sesi)-strtotime('now'))>0 and $eta<0) ? 1 : 0;
 
 $eta_jam_show = $eta_jam==0 ? "$eta_menit menit lagi" : "$eta_jam jam $eta_menit menit lagi";
@@ -132,8 +132,8 @@ if($d['jumlah_ruang']){
 # ========================================================
 # TANGGAL DAN PUKUL
 # ========================================================
-$tanggal_sesi_show = $nama_hari[date('w',strtotime($d['tanggal_sesi']))].', '.date('d-M-Y', strtotime($d['tanggal_sesi']));
-$pukul_show = date('H:i', strtotime($d['tanggal_sesi'])).' s.d '.date('H:i', strtotime($akhir_sesi));
+$tanggal_sesi_show = $nama_hari[date('w',strtotime($d['awal_sesi']))].', '.date('d-M-Y', strtotime($d['awal_sesi']));
+$pukul_show = date('H:i', strtotime($d['awal_sesi'])).' s.d '.date('H:i', strtotime($akhir_sesi));
 
 # ========================================================
 # DESAIN-UI JADWAL-HARI-INI DAN BESOK

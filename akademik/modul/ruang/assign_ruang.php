@@ -89,14 +89,15 @@ a.id_jadwal,
 a.pertemuan_ke,
 a.nama as nama_sesi,
 a.id_dosen, 
-a.tanggal_sesi,
+a.awal_sesi,
 c.id_kurikulum_mk,
 d.id_semester,
 d.id_kurikulum,
 e.nomor as no_semester,
-b.nama as nama_dosen,
+b.nama as pengajar,
 g.id as id_mk,
 g.nama as nama_mk,
+g.kode as kode_mk,
 (g.bobot_teori + g.bobot_praktik) as bobot,
 (SELECT count(1) FROM tb_assign_ruang WHERE id_sesi=a.id) as jumlah_ruang 
 
@@ -111,10 +112,10 @@ where a.id=$id_sesi";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $d=mysqli_fetch_assoc($q);
 
-$sesi = "P$d[pertemuan_ke]  / $d[nama_sesi] / $d[nama_mk]";
+$sesi = "P$d[pertemuan_ke]  | $d[nama_sesi] | $d[nama_mk] | $d[kode_mk]";
 
-$tanggal_sesi = $d['tanggal_sesi'];
-$tsesi = strtotime($tanggal_sesi);
+$awal_sesi = $d['awal_sesi'];
+$tsesi = strtotime($awal_sesi);
 $jam_keluar = date('H:i',$tsesi + $d['bobot']*45*60);
 $stop_sesi = date('Y-m-d H:i',$tsesi + $d['bobot']*45*60);
 
@@ -134,10 +135,10 @@ JOIN tb_ruang b on a.id_ruang=b.id
 where id_sesi=$id_sesi";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 if(mysqli_num_rows($q)){
-  while ($r=mysqli_fetch_assoc($q)) {
+  while ($d2=mysqli_fetch_assoc($q)) {
     $kotaks.="
       <div class='kotak gradasi-hijau text-center'>
-          $r[nama]
+          $d2[nama]
       </div>
     ";
   }
@@ -165,43 +166,92 @@ if(mysqli_num_rows($q)){
 
   // belum ada assign ruang
   $kotaks='';
-  $s = "SELECT a.* ,
+  $s2 = "SELECT a.* ,
+  a.id as id_ruang,
   (
-    SELECT concat(b.nama,' MK ',e.nama,'|',b.tanggal_sesi,'|',e.bobot_teori,'|',e.bobot_praktik) 
-    FROM tb_assign_ruang t 
-    JOIN tb_sesi b on b.id=t.id_sesi 
-    JOIN tb_jadwal c on c.id=b.id_jadwal 
-    JOIN tb_kurikulum_mk d on d.id=c.id_kurikulum_mk 
-    JOIN tb_mk e on e.id=d.id_mk 
-    WHERE (b.tanggal_sesi >= '$tanggal_sesi' and b.tanggal_sesi < '$stop_sesi')
-    AND t.id_ruang=a.id  
-    LIMIT 1) as terpakai_oleh   
+    SELECT q.id  
+    FROM tb_assign_ruang p 
+    JOIN tb_sesi q on q.id=p.id_sesi 
+    WHERE (q.awal_sesi >= '$awal_sesi' and q.awal_sesi < '$stop_sesi')
+    AND p.id_ruang=a.id  
+    LIMIT 10) as terpakai_oleh   
   
   FROM tb_ruang a 
   WHERE kondisi=1 
   AND kapasitas>0
   ";
-  // echo '<pre>'; var_dump($s); echo '</pre>'; 
+  echo '<pre>'; var_dump($s2); echo '</pre>'; 
   // exit;
-  $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
-  while ($r=mysqli_fetch_assoc($q)) {
-    if($r['terpakai_oleh']!=''){
-      $z = explode('|',$r['terpakai_oleh']);
-      $by_sesi = $z[0]; // sesi + MK
-      $start_sesi = $z[1]; // Y-m-d H:i:s
-      $start_sesi_show = date('d M',strtotime($start_sesi)) ;
-      $bobot = $z[2] + $z[3];
-      $stop_sesi = date('Y-m-d H:i',strtotime($start_sesi)+$bobot*$menit_sks*60);
-      $durasi = date('H:i',strtotime($start_sesi)).' s.d '.date('H:i',strtotime($stop_sesi));
+  $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
+  while ($d2=mysqli_fetch_assoc($q2)) {
+    $id_ruang = $d2['id_ruang'];
+    if($d2['terpakai_oleh']!=''){
+      $s3 = "SELECT  
+      a.id as id_sesi,
+      a.nama as nama_sesi,
+      a.awal_sesi,
+      b.awal_kuliah,
+      b.akhir_kuliah,
+      d.nama as nama_mk,
+      d.kode as kode_mk,
+      e.nama as pengajar
+      FROM tb_sesi a 
+      JOIN tb_jadwal b ON a.id_jadwal=b.id 
+      JOIN tb_kurikulum_mk c ON b.id_kurikulum_mk=c.id 
+      JOIN tb_mk d ON c.id_mk=d.id 
+      JOIN tb_dosen e ON a.id_dosen=e.id 
+      WHERE a.id='$d2[terpakai_oleh]'
+      ";
+
+      // echo '<pre>';
+      // var_dump($s3);
+      // echo '</pre>';
+      $q3 = mysqli_query($cn,$s3) or die(mysqli_error($cn));
+      $d3 = mysqli_fetch_assoc($q3);
+
+      $durasi_detik = strtotime($d3['akhir_kuliah']) - strtotime($d3['awal_kuliah']);
+      $awal_sesi = $d3['awal_sesi'];
+      $akhir_sesi = date('Y-m-d H:i',strtotime($awal_sesi)+$durasi_detik);
+
+      $jam_awal_sesi = date('H:i',strtotime($awal_sesi));
+      $jam_akhir_sesi = date('H:i',strtotime($akhir_sesi));
+
+
+      $is_pengajar_sama = $d['pengajar']==$d3['pengajar'] ? 1 : 0;
+      $is_mk_sama = $d['kode_mk']==$d3['kode_mk'] ? 1 : 0;
+
+      $pengajar_sama_show = $is_pengajar_sama ? '<span class="blue bold">(sama)</span>' : '<span class=red>(beda)</span>';
+      $mk_sama_show = $is_mk_sama ? '<span class="blue bold">(sama)</span>' : '<span class=red>(beda)</span>';
+
+      if($is_pengajar_sama){
+        $join_ruang = "<a href='?join_ruang&id_ruang=$id_ruang&id_sesi=$id_sesi&join_with=$d3[id_sesi]' class='btn btn-primary btn-sm btn-block'>Join ke Ruangan ini</a>";
+      }else{
+        $join_ruang = "<span class='kecil miring abu'>Tidak bisa join ruang</span>";
+      }
+
+      $by_sesi = "
+        <ul class='m0 p0 kecil' style='padding-left:15px; font-size: 10px'>
+          <li>$d3[nama_mk] | $d3[kode_mk] $mk_sama_show</li>
+          <li>$d3[pengajar] $pengajar_sama_show</li>
+          <li><span class=red>$jam_awal_sesi - $jam_akhir_sesi</span></li>
+        </ul>
+        <div class=mt1>$join_ruang</div>
+        ";
     }
-    $terpakai_oleh = ($r['terpakai_oleh']!='' and $r['id']!=1) ? "<br><span class='red kecil miring'>Sesi $by_sesi | $start_sesi_show |  $durasi</span>" : '';
+    $terpakai_oleh = ($d2['terpakai_oleh']!='' and $d2['id']!=1) 
+      ? "
+      <div class='kecil red'>Telah dipakai oleh:</div>
+      $by_sesi
+      " 
+      : '';
     $disabled = $terpakai_oleh==''?'':'disabled';
     $gradasi = $terpakai_oleh==''?'hijau':'merah';
     $kotaks.="
       <div class='kotak gradasi-$gradasi' style='padding:0'>
-        <label style='display:block;padding:5px 5px 5px 15px; margin:0;cursor:pointer;'>
-          <input type='checkbox' name='cb__$r[id]' id='cb__$r[id]' class=cb_ruang $disabled>
-          $r[nama] $terpakai_oleh 
+        <label style='display:block;padding: 5px 8px 8px 8px; margin:0;cursor:pointer;'>
+          <input type='checkbox' name='cb__$d2[id]' id='cb__$d2[id]' class=cb_ruang $disabled>
+          $d2[nama] 
+          $terpakai_oleh 
         </label>
       </div>
     ";
@@ -281,7 +331,7 @@ if(mysqli_num_rows($q)){
 
     <tr>
       <td>Pengajar</td>
-      <td><?=$d['nama_dosen'] ?></td>
+      <td><?=$d['pengajar'] ?></td>
     </tr>
 
     <tr>
