@@ -16,7 +16,7 @@
 }.sesi-now{ background: #cfc; border: solid 2px blue;
 }.sesi-prev{ background: #ffa;
 }.sedang-berlangsung{ background: #8f8; border: solid 4px blue;
-}
+}.td-join-class{background: #eee}
 </style>
 <?php
 include 'include/akademik_icons.php';
@@ -49,7 +49,7 @@ include '../include/include_rid_prodi.php';
 include '../include/include_rangkatan.php';
 
 # =============================================================
-# GLOBAL VARIABEL
+# GLOBAL | INITIAL VARIABEL
 # =============================================================
 $null = '<span class="red miring kecil">null</span>';
 
@@ -153,7 +153,8 @@ $sql_angkatan = ($angkatan=='all'||$angkatan=='') ? '1' : "i.angkatan='$angkatan
 $sql_id_prodi = ($id_prodi=='all'||$id_prodi=='') ? '1' : "h.id='$id_prodi'";
 $sql_shift = ($shift=='all'||$shift=='') ? '1' : "c.shift='$shift'";
 
-$s = "SELECT a.id,
+$s = "SELECT a.id, 
+a.id as id_sesi,
 a.awal_sesi,
 a.pertemuan_ke,
 a.nama as nama_sesi,
@@ -165,6 +166,7 @@ c.akhir_kuliah,
 c.shift,
 h.singkatan as prodi,
 (e.bobot_teori+e.bobot_praktik) as bobot,
+e.kode as kode_mk,
 e.nama as nama_mk,
 f.nomor as semester,
 g.id as id_kurikulum,
@@ -186,7 +188,7 @@ AND $sql_angkatan
 AND $sql_id_prodi 
 AND $sql_shift 
 
-ORDER BY a.awal_sesi
+ORDER BY a.awal_sesi, b.id 
 ";
 // echo '<pre>';
 // echo $s;
@@ -195,9 +197,18 @@ $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 
 $tr = '';
 if(mysqli_num_rows($q)){
-  $i=0;
+  $nomor_sesi=0;
+  # ====================================================
+  # JOIN CLASS HANDLER
+  # ====================================================
+  # IF(DOSEN_SAMA and MENIT_SAMA) MAKA JOIN_CLASS
+  $is_join_class = 0;
+  $is_dosen_sama = 0;
+  $is_menit_sama = 0;
+  $arr_id_dosen_time_sesi = [];
+  $is_last_type_join_class = 0;
+  # ====================================================
   while ($d=mysqli_fetch_assoc($q)) {
-    $i++;
 
     $hari_show = $nama_hari[date('w',strtotime($d['awal_sesi']))];
     $tanggal_show = date('d M Y',strtotime($d['awal_sesi']));
@@ -209,6 +220,9 @@ if(mysqli_num_rows($q)){
     $pukul_show.= " s.d $jam_akhir ($durasi menit)";
 
     if($d['jumlah_assign_ruang']){
+      # ===============================================
+      # GET MULTIPLE RUANG
+      # ===============================================
       $ruang_show = "<a href='?manage_sesi_detail&id_jadwal=$d[id_jadwal]' target=_blank onclick='return confirm(\"Menuju Reset Ruangan di TAB baru?\")'>$d[jumlah_assign_ruang] ruangan</a>";
 
       $s2 = "SELECT a.*,
@@ -231,11 +245,11 @@ if(mysqli_num_rows($q)){
     $tanggal_only = date('Y-m-d',strtotime($d['awal_sesi']));
     $eta_day = intval((strtotime($tanggal_only) - strtotime('today'))/(60*60*24));
 
+    $mulai_sty = '';
     if($eta_day<0){
       $sesi_sty = 'sesi-prev';
       $info_hari = "<div class='kecil miring abu'>$eta_day hari yang lalu</div>";
       $info_mulai = '';
-      $mulai_sty = '';
     }else{
       if($eta_day == 0){
         $sesi_sty = 'sesi-now';
@@ -259,37 +273,99 @@ if(mysqli_num_rows($q)){
       }
     }
 
-    $tr.= "
-    <tr class='$sesi_sty $mulai_sty'>
-      <td>
-        $i
-        $info_hari
-        $info_mulai
-        <div class=debug style=background:yellow>eta_menit:$eta_menit</div>
-      </td>
-      <td>
-        $d[nama_mk]
-        <br>P$d[pertemuan_ke] | $d[nama_sesi]
-        <br>Pengajar: 
-        <a href='?lihat_dosen&id_dosen=$d[id_dosen]'  target=_blank onclick='return confirm(\"Lihat Profil Dosen di TAB baru?\")'>$d[nama_dosen]</a> 
-        <a href='?login_as_dosen&id_dosen=$d[id_dosen]'  target=_blank onclick='return confirm(\"Login as Dosen ini di TAB baru?\")'>$img_aksi[login_as]</a> 
-        
-        <br>$d[bobot] SKS
-      </td>
-      <td>
-        Kurikulum: <a href='?manage_kurikulum&id_kurikulum=$d[id_kurikulum]' target=_blank onclick='return confirm(\"Manage Kurikulum ini di TAB baru?\")'>$d[prodi]-$d[angkatan]</a>
-        <br>Semester: $d[semester]
-        <br>Shift: Kelas $d[shift]
-      </td>
-      <td>
-        <div>Hari: $hari_show</div>
-        <div>Tanggal: $tanggal_show</div>
-        <div>Pukul: $pukul_show</div>
-        <div>Ruang: $ruang_show</div>
-      </td>
-    </tr>";
+
+    # ===================================================================
+    # JOIN CLASS HANDLER
+    # ===================================================================
+    $id_dosen_time_sesi = $d['id_dosen'].'-'.strtotime($d['awal_sesi']);
+
+    if(in_array($id_dosen_time_sesi,$arr_id_dosen_time_sesi)){
+      $is_join_class=1;
+
+      # ===================================================================
+      # TR OUTPUT TEMPORER - JOIN CLASS
+      # ===================================================================
+      $tr_tmp = "
+      <tr class='$sesi_sty $mulai_sty'>
+        <td style='padding:0'>&nbsp;</td>
+        <td style='padding:6px 0 3px 0; background: #ccc' colspan=3 class=' tengah biru tebal kecil consolas'> JOIN CLASS </td>
+      </tr>
+      <tr class='$sesi_sty $mulai_sty miring'>
+        <td>
+          &nbsp;
+          <div class=debug style=background:yellow>id_sesi:$d[id_sesi]</div>
+        </td>
+        <td class='td-join-class'>
+          <div class='kecil abu'>$d[kode_mk] | $d[bobot] SKS</div>
+          <div class='tebal '>$d[nama_mk]</div>
+          Pengajar: $d[nama_dosen]
+        </td>
+        <td class='td-join-class'>
+          <a href='?manage_kurikulum&id_kurikulum=$d[id_kurikulum]' target=_blank onclick='return confirm(\"Manage Kurikulum ini di TAB baru?\")'>$d[prodi]-$d[angkatan] Smt-$d[semester]</a>
+          <br>Jadwal $d[shift]
+        </td>
+        <td class='td-join-class'>
+          <div>Hari: $hari_show, $tanggal_show</div>
+          <div>$pukul_show</div>
+          <div>$ruang_show</div>
+        </td>
+      </tr>";         
+      $is_last_type_join_class = 1;
+    }else{
+      array_push($arr_id_dosen_time_sesi,$id_dosen_time_sesi);
+
+      $nomor_sesi++;
+      # ===================================================================
+      # TR OUTPUT TEMPORER - NO JOIN CLASS
+      # ===================================================================
+      $border_top = $is_last_type_join_class ? "border-top: solid 5px #faf" : '';
+
+      $tr_tmp = "
+      <tr class='$sesi_sty $mulai_sty' style='$border_top'>
+        <td>
+          $nomor_sesi
+          $info_hari
+          $info_mulai
+          <div class=debug style=background:yellow>id_sesi:$d[id_sesi]<br>eta_menit:$eta_menit</div>
+        </td>
+        <td>
+          <div class='kecil abu'>$d[kode_mk] | $d[bobot] SKS</div>
+          <div class='tebal darkblue'>$d[nama_mk]</div>
+          <div class='mb1 kecil miring abu'>P$d[pertemuan_ke] | $d[nama_sesi]</div>
+          Pengajar: 
+          <a href='?lihat_dosen&id_dosen=$d[id_dosen]'  target=_blank onclick='return confirm(\"Lihat Profil Dosen di TAB baru?\")'>$d[nama_dosen]</a> 
+          <a href='?login_as_dosen&id_dosen=$d[id_dosen]'  target=_blank onclick='return confirm(\"Login as Dosen ini di TAB baru?\")'>$img_aksi[login_as]</a> 
+        </td>
+        <td>
+          <a href='?manage_kurikulum&id_kurikulum=$d[id_kurikulum]' target=_blank onclick='return confirm(\"Manage Kurikulum ini di TAB baru?\")'>$d[prodi]-$d[angkatan] Smt-$d[semester]</a>
+          <br>Jadwal $d[shift]
+        </td>
+        <td>
+          <div>Hari: $hari_show, $tanggal_show</div>
+          <div>$pukul_show</div>
+          <div>$ruang_show</div>
+        </td>
+      </tr>";    
+      $is_last_type_join_class = 0;
+    }
+
+
+
+
+
+
+    # ===================================================================
+    # FINAL OUTPUT SESI
+    # ===================================================================
+    $tr.=$tr_tmp;
+
   }
 }
+
+// echo '<pre>';
+// var_dump($arr_id_dosen_time_sesi);
+// echo '</pre>';
+
 
 if($angkatan=='all'||$id_prodi=='all'||$shift=='all'){
   $link_opsi = "<hr>

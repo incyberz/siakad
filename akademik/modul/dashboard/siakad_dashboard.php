@@ -124,28 +124,28 @@ $chart_jumlah[$chart_no] = array_sum($rsum[$chart_no]);
 # ======================================================
 $chart_no = 2;
 # ======================================================
-$judul_item[$chart_no] = 'Jalur Daftar';
-$judul_chart[$chart_no] = 'Jalur Daftar';
-$tb_header[$chart_no] = ['Jalur Daftar','Persen','Jumlah'];
-$satuan[$chart_no] = 'Mhs';
-$sub_judul_chart[$chart_no] = "$jumlah_mhs_aktif Mhs Aktif";
-$rlabel[$chart_no] = [];
-$rsum[$chart_no] = [];
-$rlink[$chart_no] = [];
-$rwarna[$chart_no] = '';
-foreach ($rid_jalur as $id_jalur){
-	array_push($rsum[$chart_no],$jumlah_mhs_aktif_jalur[$id_jalur]);
-	array_push($rlabel[$chart_no],$rjalur[$id_jalur]);
-	array_push($rlink[$chart_no],'?master_mhs&status_mhs=1&id_jalur='.$id_jalur);
-	$rwarna[$chart_no] .= '"'. $rwarna_jalur[$id_jalur].'",';
-}
-if($jumlah_mhs_aktif_unjalur){
-  array_push($rsum[$chart_no],$jumlah_mhs_aktif_unjalur);
-  array_push($rlabel[$chart_no],'NULL');
-	array_push($rlink[$chart_no],'?master_mhs&status_mhs=1&id_jalur=null');
-  $rwarna[$chart_no] .= '"#ff0000",';
-}
-$chart_jumlah[$chart_no] = array_sum($rsum[$chart_no]);
+// $judul_item[$chart_no] = 'Jalur Daftar';
+// $judul_chart[$chart_no] = 'Jalur Daftar';
+// $tb_header[$chart_no] = ['Jalur Daftar','Persen','Jumlah'];
+// $satuan[$chart_no] = 'Mhs';
+// $sub_judul_chart[$chart_no] = "$jumlah_mhs_aktif Mhs Aktif";
+// $rlabel[$chart_no] = [];
+// $rsum[$chart_no] = [];
+// $rlink[$chart_no] = [];
+// $rwarna[$chart_no] = '';
+// foreach ($rid_jalur as $id_jalur){
+// 	array_push($rsum[$chart_no],$jumlah_mhs_aktif_jalur[$id_jalur]);
+// 	array_push($rlabel[$chart_no],$rjalur[$id_jalur]);
+// 	array_push($rlink[$chart_no],'?master_mhs&status_mhs=1&id_jalur='.$id_jalur);
+// 	$rwarna[$chart_no] .= '"'. $rwarna_jalur[$id_jalur].'",';
+// }
+// if($jumlah_mhs_aktif_unjalur){
+//   array_push($rsum[$chart_no],$jumlah_mhs_aktif_unjalur);
+//   array_push($rlabel[$chart_no],'NULL');
+// 	array_push($rlink[$chart_no],'?master_mhs&status_mhs=1&id_jalur=null');
+//   $rwarna[$chart_no] .= '"#ff0000",';
+// }
+// $chart_jumlah[$chart_no] = array_sum($rsum[$chart_no]);
 
 
 

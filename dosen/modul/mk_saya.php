@@ -5,6 +5,9 @@ $div_ok = [];
 $div_not_ok = [];
 $divs = '';
 
+$empat_bulan_lalu = date('Y-m-d H:i',strtotime('today') - (4*30*24*60*60));
+// echo $empat_bulan_lalu;
+
 $s = "SELECT 
 a.id as id_jadwal,
 a.tanggal_approve_sesi,
@@ -28,7 +31,11 @@ JOIN tb_kurikulum d ON d.id=b.id_kurikulum
 JOIN tb_kalender e ON e.id=d.id_kalender 
 JOIN tb_prodi f ON f.id=d.id_prodi 
 
-WHERE a.id_dosen=$id_dosen";
+WHERE a.id_dosen=$id_dosen 
+AND a.awal_kuliah is not null
+AND a.awal_kuliah > '$empat_bulan_lalu'
+ORDER BY a.awal_kuliah DESC 
+";
 $q = mysqli_query($cn,$s) or die(mysqli_error($cn));
 $thead='
   <thead>
@@ -74,15 +81,19 @@ while ($d=mysqli_fetch_assoc($q)) {
     # ========================================================
     $jumlah_peserta_mhs=0;
     $tahun_ajar = $d['angkatan'] + intval(($d['semester']-1)/2);
+    $ganjil_genap = ($d['semester'] % 2 == 0) ? 2 : 1;
+
     $s2 = "SELECT *,
     (SELECT count(1) FROM tb_kelas_ta_detail WHERE id_kelas_ta=a.id) jumlah_mhs 
     FROM tb_kelas_ta a 
     JOIN tb_kelas b ON a.kelas=b.kelas 
-    WHERE a.tahun_ajar='$tahun_ajar' 
+    WHERE a.tahun_ajar='$tahun_ajar$ganjil_genap' 
     AND b.angkatan='$d[angkatan]' 
     AND b.id_prodi='$d[id_prodi]' 
     AND b.shift='$d[shift]' 
     ";
+
+    // echo "<pre>$s2</pre>";
   
     $q2 = mysqli_query($cn,$s2) or die(mysqli_error($cn));
     $jumlah_kelas_ta = mysqli_num_rows($q2);

@@ -5,7 +5,7 @@ if(isset($cn)){
   $rid_jalur = [];
   $rjalur = [];
   $rnama_jalur = [];
-  $rwarna = ['#F1B327','#C544C3','#5470C6','#73C0DE','#6BAC4C'];
+  $rwarna = ['#F1B327','#C544C3','#5470C6','#73C0DE','#6BAC4C','',''];
   #           MI        KA        TI        RPL        SI
   $i=0;
   while ($d=mysqli_fetch_assoc($q)) {

@@ -176,11 +176,12 @@ while ($d=mysqli_fetch_assoc($q)) {
     # GET KELAS ANGKATAN
     # ========================================================
     $tahun_ajar = $d['angkatan'] + intval(($d['semester']-1)/2);
+    $ganjil_genap = ($d['semester'] % 2 == 0) ? 2 : 1;
     $s2 = "SELECT *,
     (SELECT count(1) FROM tb_kelas_ta_detail WHERE id_kelas_ta=a.id) jumlah_mhs 
     FROM tb_kelas_ta a 
     JOIN tb_kelas b ON a.kelas=b.kelas 
-    WHERE a.tahun_ajar='$tahun_ajar' 
+    WHERE a.tahun_ajar='$tahun_ajar$ganjil_genap' 
     AND b.angkatan='$d[angkatan]' 
     AND b.id_prodi='$d[id_prodi]' 
     AND b.shift='$d[shift]' 

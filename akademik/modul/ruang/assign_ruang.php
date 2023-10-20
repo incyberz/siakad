@@ -1,3 +1,4 @@
+<style>.debug{background:yellow}</style>
 <?php
 if(isset($_POST['btn_assign'])){
   // echo '<pre>';
@@ -174,7 +175,7 @@ if(mysqli_num_rows($q)){
     JOIN tb_sesi q on q.id=p.id_sesi 
     WHERE (q.awal_sesi >= '$awal_sesi' and q.awal_sesi < '$stop_sesi')
     AND p.id_ruang=a.id  
-    LIMIT 10) as terpakai_oleh   
+    LIMIT 1) as terpakai_oleh   
   
   FROM tb_ruang a 
   WHERE kondisi=1 
@@ -224,9 +225,10 @@ if(mysqli_num_rows($q)){
       $mk_sama_show = $is_mk_sama ? '<span class="blue bold">(sama)</span>' : '<span class=red>(beda)</span>';
 
       if($is_pengajar_sama){
-        $join_ruang = "<a href='?join_ruang&id_ruang=$id_ruang&id_sesi=$id_sesi&join_with=$d3[id_sesi]' class='btn btn-primary btn-sm btn-block'>Join ke Ruangan ini</a>";
+        // $join_ruang = "<a href='?join_ruang&id_ruang=$id_ruang&id_sesi=$id_sesi&join_with=$d3[id_sesi]' class='btn btn-primary btn-sm btn-block'>Join ke Ruangan ini</a>";
+        $join_ruang = "<span class='kecil miring biru'>Bisa join ruang</span>";
       }else{
-        $join_ruang = "<span class='kecil miring abu'>Tidak bisa join ruang</span>";
+        $join_ruang = "<span class='kecil miring red'>Tidak bisa join ruang</span>";
       }
 
       $by_sesi = "
@@ -244,13 +246,13 @@ if(mysqli_num_rows($q)){
       $by_sesi
       " 
       : '';
-    $disabled = $terpakai_oleh==''?'':'disabled';
+    $disabled = ($terpakai_oleh!='' && !$is_pengajar_sama)?'disabled':'';
     $gradasi = $terpakai_oleh==''?'hijau':'merah';
     $kotaks.="
       <div class='kotak gradasi-$gradasi' style='padding:0'>
         <label style='display:block;padding: 5px 8px 8px 8px; margin:0;cursor:pointer;'>
           <input type='checkbox' name='cb__$d2[id]' id='cb__$d2[id]' class=cb_ruang $disabled>
-          $d2[nama] 
+          $d2[nama] <span class=debug>$id_ruang</span> 
           $terpakai_oleh 
         </label>
       </div>
